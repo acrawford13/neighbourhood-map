@@ -17,10 +17,13 @@
   },
   "homepage": "https://github.com/acrawford13/neighbourhood-map#readme",
   "devDependencies": {
+    "browser-sync": "^2.18.13",
     "gulp": "^3.9.1",
-    "gulp-rename": "^1.2.2"
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0"
   },
   "dependencies": {
-    "knockout": "^3.4.2"
+    "knockout": "^3.4.2",
+    "normalize.css": "^7.0.0"
   }
 }
