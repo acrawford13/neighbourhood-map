@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/acrawford13/neighbourhood-map#readme",
   "devDependencies": {
-    "grunt": "^1.0.1"
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2"
   },
   "dependencies": {
     "knockout": "^3.4.2"
