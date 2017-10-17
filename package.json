@@ -1,0 +1,22 @@
+{
+  "name": "neighbourhood-map",
+  "version": "0.0.1",
+  "description": "Neighbourhood map project using Knockout.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acrawford13/neighbourhood-map.git"
+  },
+  "author": "Andrea Crawford",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/acrawford13/neighbourhood-map/issues"
+  },
+  "homepage": "https://github.com/acrawford13/neighbourhood-map#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1"
+  }
+}
