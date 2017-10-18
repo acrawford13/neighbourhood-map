@@ -13,7 +13,9 @@
             </div>
         </div>
         <div class="c-overlay">
-            <div class="c-list" data-bind="foreach: favList">
+            <div class="c-list">
+                <h2 class="c-list__heading">My Favourites</h2>
+                <!-- ko foreach: favList -->
                 <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--editing': $data == $parent.editing()}">
                     <div class="c-favourite__details">
                         <span data-bind="text: category" class="c-favourite__category"></span>
@@ -30,6 +32,7 @@
                     </div>
                     <!-- <span data-bind="text: center"></span> -->
                 </div>
+                <!-- /ko -->
             </div>
         </div>
         <!-- <div id="map" class="c-map"></div> -->
