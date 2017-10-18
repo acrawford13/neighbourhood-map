@@ -9,7 +9,7 @@ CRITERIA | MEETS SPECIFICATIONS
 Responsiveness | All application components render on-screen in a responsive manner.
 Usability | All application components are usable across modern desktop, tablet, and phone browsers.
 
-## App Functionality
+### App Functionality
 
 CRITERIA | MEETS SPECIFICATIONS
 --- | ---
