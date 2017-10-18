@@ -5,7 +5,18 @@ $primary-color: #ff2333;
 $title-color: #ff2333;
 $display-font-stack: Bungee, Helvetica, Arial, sans-serif;
 
+html,
+body {
+    height: 100%;
+}
+
 .c-top-bar {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+
     &__container {
         display: flex;
     }
@@ -14,5 +25,15 @@ $display-font-stack: Bungee, Helvetica, Arial, sans-serif;
         color: $title-color;
         font-family: $display-font-stack;
         text-transform: uppercase;
+    }
+}
+
+.c-map {
+    height: 100%;
+}
+
+@media screen and (min-size: 950px) {
+    .c-top-bar {
+        padding: 0;
     }
 }
