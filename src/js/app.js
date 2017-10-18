@@ -36,7 +36,7 @@ var favourites = [
     },
     {
         dish: {
-            name: "Chicken Briyani",
+            name: "Chicken Biryani",
             id: 2
         },
         location: {
