@@ -83,6 +83,7 @@ var ViewModel = function(){
     var self = this;
 
     this.stallError = ko.observable(false);
+    this.favouriteSearch = ko.observable();
 
     this.favList = ko.observableArray([]);
     this.centers = ko.observableArray([]);
@@ -122,6 +123,13 @@ var ViewModel = function(){
         console.log(event);
         favourite.center()
     };
+
+    this.searchResults = ko.computed(function(){
+        var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
+        return self.favList().filter(function(d){
+            return d.category().match(searchTerm);
+        });
+    });
 }
 
 ko.applyBindings(new ViewModel());

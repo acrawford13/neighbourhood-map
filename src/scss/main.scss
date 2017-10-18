@@ -7,6 +7,9 @@ $display-font-stack: Bungee, Helvetica, Arial, sans-serif;
 $primary-font-stack: Roboto, Helvetica, Arial, sans-serif;
 $background-color: #f5f5f5;
 
+* {
+    box-sizing: border-box;
+}
 
 html,
 body {
@@ -64,11 +67,27 @@ h1, h2, h3 {
         border-top: 1px solid #ddd;
     }
 
-    &__heading {
-        padding: 1rem;
-        margin: 0;
+}
+
+.c-favourites {
+    &__header {
         background-color: #eee;
+        padding: 1rem;
+    }
+
+    &__heading {
+        margin-top: 0;
         color: darken($primary-color, 10);
+    }
+
+    &__search {
+        width: 100%;
+        border-radius: 1rem;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        height: 2rem;
+        padding: 0 1rem;
+        outline: none;
     }
 }
 
