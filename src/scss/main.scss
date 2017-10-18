@@ -1,1 +1,18 @@
+@import url('https://fonts.googleapis.com/css?family=Bungee');
+@import 'modules/helpers';
+
 $primary-color: #ff2333;
+$title-color: #ff2333;
+$display-font-stack: Bungee, Helvetica, Arial, sans-serif;
+
+.c-top-bar {
+    &__container {
+        display: flex;
+    }
+
+    &__title {
+        color: $title-color;
+        font-family: $display-font-stack;
+        text-transform: uppercase;
+    }
+}
