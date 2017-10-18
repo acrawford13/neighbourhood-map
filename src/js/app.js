@@ -1,3 +1,22 @@
+var centers = [
+    {
+        name: "Sembawang Hill Food Center",
+        id: 1
+    },
+    {
+        name: "Geylang Serai Marketplace",
+        id: 2
+    },
+    {
+        name: "Sims Vista Food Center",
+        id: 3
+    },
+    {
+        name: "Chomp Chomp",
+        id: 4
+    }
+];
+
 var favourites = [
     {
         dish: {
@@ -55,18 +74,54 @@ var Favourite = function(data){
     this.stall = ko.observable(data.location.stall.name);
 }
 
+var Center = function(data){
+    this.name = ko.observable(data.name);
+    this.id = ko.observable(data.id);
+}
+
 var ViewModel = function(){
     var self = this;
 
+    this.stallError = ko.observable(false);
+
     this.favList = ko.observableArray([]);
+    this.centers = ko.observableArray([]);
 
     favourites.forEach(function(favourite){
         self.favList.push(new Favourite(favourite));
-    })
+    });
 
-    this.setEditing = function(favourite){
-        console.log('editing ' + favourite.category());
-    }
+    centers.forEach(function(center){
+        self.centers.push(new Center(center));
+    });
+
+    this.editing = ko.observable();
+
+    this.stopPropagation = function(data, event){
+        event.stopPropagation();
+    };
+
+    this.resetStall = function(favourite){
+        favourite.stall(null);
+    };
+
+    this.toggleEditing = function(favourite){
+        if (!self.editing() || self.editing().stall()){
+            if (self.editing() == favourite){
+                    self.editing(null);
+            } else {
+                self.editing(favourite);
+            }
+        } else {
+            self.stallError(true);
+        }
+    };
+
+    this.changeFav = function(favourite, event){
+        console.log(favourite);
+        console.log(event);
+        favourite.center()
+    };
 }
 
 ko.applyBindings(new ViewModel());
