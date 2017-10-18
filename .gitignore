@@ -6,5 +6,7 @@ test
 *.json
 
 !README.md
+!package.json
+!package-lock.json
 
 .sass-lint.yml
