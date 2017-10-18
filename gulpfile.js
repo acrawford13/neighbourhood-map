@@ -3,13 +3,13 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var browserSync = require('browser-sync').create();
 
-gulp.task('serve', ['css','html'], function() {
+gulp.task('serve', ['css','html','js'], function() {
     browserSync.init({
         server: "dist"
     });
 
-    gulp.watch('src/**', ['css','html']);
-    gulp.watch("dist/index.html").on('change', browserSync.reload);
+    gulp.watch('src/**', ['js','css','html']);
+    gulp.watch("dist/**").on('change', browserSync.reload);
 });
 
 gulp.task('css', function(){
@@ -22,6 +22,11 @@ gulp.task('css', function(){
 gulp.task('html', function(){
     gulp.src('src/index.html')
         .pipe(gulp.dest('dist/'))
+});
+
+gulp.task('js', function(){
+    gulp.src('src/js/*.js')
+        .pipe(gulp.dest('dist/js/'))
 });
 
 gulp.task('build', ['html','css'], function(){
