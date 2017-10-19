@@ -26,7 +26,18 @@ h1, h2, h3 {
 }
 
 .c-button {
-    &--circle {
+    background-color: $primary-color;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    display: inline-block;
+
+    &--rounded {
+        border-radius: 3rem;
+    }
+
+    &--dark {
+        background-color: darken($primary-color, 10);
     }
 }
 
@@ -59,11 +70,28 @@ h1, h2, h3 {
     z-index: 1000;
 }
 
-.c-list {
-    background-color: $background-color;
-    // border: 1px solid #ddd;
+.c-modal {
     max-width: 600px;
     min-width: 60%;
+
+    &__main {
+        background-color: $background-color;
+    }
+
+    &__above {
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    &__below {
+        color: white;
+        margin-top: 1rem;
+    }
+
+}
+
+.c-list {
+    // border: 1px solid #ddd;
 
     &__item {
         border-top: 1px solid #ddd;

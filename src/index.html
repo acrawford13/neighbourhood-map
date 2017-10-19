@@ -13,30 +13,38 @@
             </div>
         </div>
         <div class="c-overlay">
-            <div class="c-list c-favourites">
-                <div class="c-favourites__header">
-                    <h2 class="c-favourites__heading">My Favourites</h2>
-                    <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
-                </div>
-                <!-- ko foreach: searchResults -->
-                <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--editing': $data == $parent.editing()}">
-                    <div class="c-favourite__details">
-                        <span data-bind="text: category" class="c-favourite__category"></span>
-                        <span class="c-favourite__choice">
-                            <select data-bind="options: $root.centers, optionsValue: 'name', value: center, visible: $data == $parent.editing(), event: {change: $parent.resetStall}"></select>
-                            <input data-bind="textInput: stall, visible: $data == $parent.editing(), event: {blur: $parent.toggleEditing}" type="text"/>
-                            <span data-bind="text: center, visible: $data != $parent.editing()" class="c-favourite__center-name"></span>
-                            <span data-bind="text: stall, visible: $data != $parent.editing()" class="c-favourite__stall-name"></span>
-                        </span>
-                        <span data-bind="visible: $data == $parent.editing() && $parent.stallError()">Please select a stall</span>
+            <div class="c-modal">
+                <div class="c-modal__above"></div>
+                <div class="c-modal__main">
+                    <div class="c-list c-favourites">
+                        <div class="c-favourites__header">
+                            <h2 class="c-favourites__heading">My Favourites</h2>
+                            <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
+                        </div>
+                        <!-- ko foreach: searchResults -->
+                        <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--editing': $data == $parent.editing()}">
+                            <div class="c-favourite__details">
+                                <span data-bind="text: category" class="c-favourite__category"></span>
+                                <span class="c-favourite__choice">
+                                    <select data-bind="options: $root.centers, optionsValue: 'name', value: center, visible: $data == $parent.editing(), event: {change: $parent.resetStall}"></select>
+                                    <input data-bind="textInput: stall, visible: $data == $parent.editing(), event: {blur: $parent.toggleEditing}" type="text"/>
+                                    <span data-bind="text: center, visible: $data != $parent.editing()" class="c-favourite__center-name"></span>
+                                    <span data-bind="text: stall, visible: $data != $parent.editing()" class="c-favourite__stall-name"></span>
+                                </span>
+                                <span data-bind="visible: $data == $parent.editing() && $parent.stallError()">Please select a stall</span>
+                            </div>
+                            <div class="c-favourite__actions">
+                                <a data-bind="click: $parent.toggleEditing" class="c-favourite__action c-favourite__action--edit" href="#"><i class="fa fa-pencil"></i></a>
+                                <a data-bind="click: $parent.toggleEditing" class="c-favourite__action c-favourite__action--delete" href="#"><i class="fa fa-trash-o"></i></a>
+                            </div>
+                            <!-- <span data-bind="text: center"></span> -->
+                        </div>
+                        <!-- /ko -->
                     </div>
-                    <div class="c-favourite__actions">
-                        <a data-bind="click: $parent.toggleEditing" class="c-favourite__action c-favourite__action--edit" href="#"><i class="fa fa-pencil"></i></a>
-                        <a data-bind="click: $parent.toggleEditing" class="c-favourite__action c-favourite__action--delete" href="#"><i class="fa fa-trash-o"></i></a>
-                    </div>
-                    <!-- <span data-bind="text: center"></span> -->
                 </div>
-                <!-- /ko -->
+                <div class="c-modal__below">
+                    <a href="#" class="c-button c-button--rounded c-button--dark">Add a new favourite</a>
+                </div>
             </div>
         </div>
         <!-- <div id="map" class="c-map"></div> -->
