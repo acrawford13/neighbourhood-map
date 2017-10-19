@@ -116,10 +116,8 @@ var ViewModel = function(){
     };
 
     this.addItem = function(item){
-        console.log(item);
         self.favList.push(item);
         self.adding(null);
-        // console.log(self.adding());
     };
 
     this.addNew = function(){
@@ -170,19 +168,19 @@ var ViewModel = function(){
     });
 
     this.clearSelected = function(){
-        console.log('asd');
         if(self.adding()){
             self.adding().category(null);
         }
     };
 
     this.categorySearchResults = ko.computed(function(){
+        console.log('a');
         if(self.adding()){
             // self.adding().category(null);
         };
+        var existing = self.favList().map(function(d){return d.category()});
 
         var searchTerm = new RegExp(self.categorySearch(), 'ig');
-        var existing = self.favList().map(function(d){return d.category()});
         return self.categories().filter(function(d){
             return d.match(searchTerm) && $.inArray(d, existing)==-1;
         }).sort();

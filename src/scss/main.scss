@@ -66,23 +66,19 @@ h1, h2, h3 {
     justify-content: center;
     height: 100%;
     position: absolute;
-    padding: 2rem;
     width: 100%;
     z-index: 1000;
-
-    &--overlay {
-        background-color: rgba(0,0,0,.6);
-    }
+    background-color: $background-color;
 }
 
 .c-modal {
     max-width: 600px;
     min-width: 60%;
+    width: 100%;
     display: flex;
     flex-direction: column;
 
     &__main {
-        border-radius: $container-radius;
         background-color: $background-color;
         display: flex;
         flex-direction: column;
@@ -192,6 +188,7 @@ h1, h2, h3 {
     &__actions {
         padding-right: 1rem;
         text-align: right;
+        flex-basis: 0;
     }
 
     &__action {
@@ -227,7 +224,33 @@ h1, h2, h3 {
     height: 100%;
 }
 
-@media screen and (min-size: 950px) {
+@media screen and (min-width: 360px) {
+
+    .c-favourite {
+        &__actions {
+            flex-basis: 8rem;
+        }
+    }
+}
+
+@media screen and (min-width: 540px) {
+    .c-modal-container {
+        padding: 2rem;
+
+        &--overlay {
+            background-color: rgba(0,0,0,.6);
+        }
+    }
+
+    .c-modal {
+        &__main {
+            border-radius: $container-radius;
+        }
+    }
+
+}
+
+@media screen and (min-width: 950px) {
     .c-top-bar {
         padding: 0;
     }
