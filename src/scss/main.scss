@@ -126,6 +126,24 @@ h1, h2, h3 {
     justify-content: space-between;
     align-items: center;
 
+    &__category {
+        &--existing {
+            opacity: 0.3;
+        }
+    }
+
+    &__choice {
+        &--existing {
+            font-size:0.8rem;
+            color: #666;
+            margin-top: 0.2rem;
+        }
+    }
+
+    &--existing {
+        background-color: red;
+    }
+
     &--editing {
         box-shadow: 0 0 20px rgba(0,0,0,0.4);
         margin-left: -2%;

@@ -17,6 +17,7 @@ var centers = [
     }
 ];
 
+
 var favourites = [
     {
         dish: {
@@ -68,10 +69,11 @@ var favourites = [
     }
 ];
 
+
 var Favourite = function(data){
-    this.category = ko.observable(data.dish.name);
-    this.center = ko.observable(data.location.center.name);
-    this.stall = ko.observable(data.location.stall.name);
+    this.category = ko.observable(data.category);
+    this.center = ko.observable(data.center);
+    this.stall = ko.observable(data.stall);
 }
 
 var Center = function(data){
@@ -81,15 +83,17 @@ var Center = function(data){
 
 var ViewModel = function(){
     var self = this;
+    this.categories = ko.observableArray(['Chicken Rice', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup']);
 
     this.stallError = ko.observable(false);
     this.favouriteSearch = ko.observable();
+    this.categorySearch = ko.observable();
 
     this.favList = ko.observableArray([]);
     this.centers = ko.observableArray([]);
 
     favourites.forEach(function(favourite){
-        self.favList.push(new Favourite(favourite));
+        self.favList.push(new Favourite({category: favourite.dish.name, center: favourite.location.center.name, stall: favourite.location.stall.name}));
     });
 
     centers.forEach(function(center){
@@ -97,6 +101,7 @@ var ViewModel = function(){
     });
 
     this.editing = ko.observable();
+    this.adding = ko.observable();
 
     this.stopPropagation = function(data, event){
         event.stopPropagation();
@@ -104,6 +109,16 @@ var ViewModel = function(){
 
     this.resetStall = function(favourite){
         favourite.stall(null);
+    };
+
+    this.addNew = function(){
+        self.adding(new Favourite({category: null, center: null, stall: null}));
+
+        // var addElem = self.favList.push(
+        //     new Favourite({category:'Test', center:'', stall:''}));
+        // self.adding(self.favList()[addElem-1]);
+        // self.toggleEditing(self.favList()[addElem-1]);
+
     };
 
     this.toggleEditing = function(favourite){
@@ -137,6 +152,28 @@ var ViewModel = function(){
             }
             return 0;
         });
+    });
+
+    this.categoryResultMode = function(item){
+        return item.center ? 'existing-item' : 'category-item';
+    }
+
+    this.categorySearchResults = ko.computed(function(){
+        var searchTerm = new RegExp(self.categorySearch(), 'ig');
+        var existing = self.favList().map(function(d){return d.category()});
+        var combine = self.categories().map(function(d){
+            var inArray = $.inArray(d, existing);
+            // var exists = inArray==-1 ? false : true;
+            if(inArray!=-1){
+                return self.favList()[inArray]
+            } else {
+                return {category: ko.observable(d)};
+            }
+        });
+        console.log(combine);
+        return combine.filter(function(d){
+            return d.category().match(searchTerm);
+        }).sort();
     });
 }
 
