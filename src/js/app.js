@@ -83,7 +83,7 @@ var Center = function(data){
 
 var ViewModel = function(){
     var self = this;
-    this.categories = ko.observableArray(['Chicken Rice', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup']);
+    this.categories = ko.observableArray(['Chicken Porridge', 'Fish Porridge', 'Chicken Rice', 'Carrot Cake', 'Wanton Mee', 'Curry Fish Head', 'Bak Chor Mee', 'Hokkien Prawn Mee', 'Satay Bee Hoon', 'Satay', 'Tau Huay', 'Ice Kacang', 'Chwee Kway', 'Nasi Lemak', 'Mee Siam', 'Mee Rebus', 'Lontong', 'Roti Prata', 'Rojak', 'Duck Rice', 'Char Kway Teow', 'Curry Puff', 'Popiah', 'Char Siew Rice', 'Bak Kut Teh', 'Yong Tau Foo', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup']);
 
     this.stallError = ko.observable(false);
     this.favouriteSearch = ko.observable();
@@ -154,25 +154,11 @@ var ViewModel = function(){
         });
     });
 
-    this.categoryResultMode = function(item){
-        return item.center ? 'existing-item' : 'category-item';
-    }
-
     this.categorySearchResults = ko.computed(function(){
         var searchTerm = new RegExp(self.categorySearch(), 'ig');
         var existing = self.favList().map(function(d){return d.category()});
-        var combine = self.categories().map(function(d){
-            var inArray = $.inArray(d, existing);
-            // var exists = inArray==-1 ? false : true;
-            if(inArray!=-1){
-                return self.favList()[inArray]
-            } else {
-                return {category: ko.observable(d)};
-            }
-        });
-        console.log(combine);
-        return combine.filter(function(d){
-            return d.category().match(searchTerm);
+        return self.categories().filter(function(d){
+            return d.match(searchTerm) && $.inArray(d, existing)==-1;
         }).sort();
     });
 }

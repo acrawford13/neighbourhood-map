@@ -8,6 +8,7 @@ $title-color: #ff2333;
 $display-font-stack: Bungee, Helvetica, Arial, sans-serif;
 $primary-font-stack: Roboto, Helvetica, Arial, sans-serif;
 $background-color: #f5f5f5;
+$container-radius: 3px;
 
 * {
     box-sizing: border-box;
@@ -19,6 +20,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: $primary-font-stack;
+    overflow: hidden;
 }
 
 h1, h2, h3 {
@@ -59,23 +61,31 @@ h1, h2, h3 {
     }
 }
 
-.c-overlay {
+.c-modal-container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    background-color: rgba(0,0,0,.6);
     height: 100%;
     position: absolute;
+    padding: 2rem;
     width: 100%;
     z-index: 1000;
+
+    &--overlay {
+        background-color: rgba(0,0,0,.6);
+    }
 }
 
 .c-modal {
     max-width: 600px;
     min-width: 60%;
+    display: flex;
+    flex-direction: column;
 
     &__main {
+        border-radius: $container-radius;
         background-color: $background-color;
+        display: flex;
+        flex-direction: column;
     }
 
     &__above {
@@ -91,7 +101,21 @@ h1, h2, h3 {
 }
 
 .c-list {
-    // border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+
+    &__header {
+        border-top-left-radius: $container-radius;
+        border-top-right-radius: $container-radius;
+        background-color: #eee;
+        padding: 1rem;
+    }
+
+    &__main {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
 
     &__item {
         border-top: 1px solid #ddd;
@@ -99,11 +123,15 @@ h1, h2, h3 {
 
 }
 
-.c-favourites {
-    &__header {
-        background-color: #eee;
-        padding: 1rem;
+.c-category__item {
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
     }
+}
+
+.c-favourites {
 
     &__heading {
         margin-top: 0;

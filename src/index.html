@@ -12,41 +12,37 @@
                 <h1 class="c-top-bar__title">Hawker</h1>
             </div>
         </div>
-        <div class="c-overlay">
+        <div class="c-modal-container c-modal-container--overlay">
             <div class="c-modal">
                 <div class="c-modal__above"></div>
                 <div class="c-modal__main">
-                    <div data-bind="visible: !adding(), template: 'favourite-template'"></div>
-                    <div data-bind="visible: adding(), template: 'adding-new-template'"></div>
+                    <div class="c-list c-favourites" data-bind="visible: !adding(), template: 'favourite-template'"></div>
+                    <div class="c-list c-favourites" data-bind="visible: adding(), template: 'adding-new-template'"></div>
                 </div>
                 <div class="c-modal__below">
-                    <a data-bind="click: addNew" href="#" class="c-button c-button--rounded c-button--dark">Add a new favourite</a>
+                    <a data-bind="click: addNew, visible: !adding()" href="#" class="c-button c-button--rounded c-button--dark">Add a new favourite</a>
                 </div>
             </div>
         </div>
 
         <script type="text/html" id="favourite-template">
-            <div class="c-list c-favourites">
-                <div class="c-favourites__header">
-                    <h2 class="c-favourites__heading">My Favourites</h2>
-                    <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
-                </div>
-                <div data-bind="template: {name: 'favourite-item', foreach: searchResults}"></div>
+            <div class="c-list__header">
+                <h2 class="c-favourites__heading">My Favourites</h2>
+                <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
             </div>
+            <div class="c-list__main" data-bind="template: {name: 'favourite-item', foreach: searchResults}"></div>
         </script>
         <script type="text/html" id="adding-new-template">
-            <div class="c-list c-favourites">
-                <div class="c-favourites__header">
-                    <h2 class="c-favourites__heading">Add a New Favourite</h2>
-                    <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: categorySearch" />
-                </div>
-                <div data-bind="template: {name: categoryResultMode, foreach: categorySearchResults}"></div>
+            <div class="c-list__header">
+                <h2 class="c-favourites__heading">Add a New Favourite</h2>
+                <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: categorySearch" />
             </div>
+            <div class="c-list__main" data-bind="template: {name: 'category-item', foreach: categorySearchResults}"></div>
         </script>
         <script type="text/html" id="category-item">
-            <div class="c-list__item c-favourite">
+            <div class="c-list__item c-category__item">
                 <div class="c-favourite__details">
-                    <span class="c-favourite__category" data-bind="text: category"></span>
+                    <span class="c-favourite__category" data-bind="text: $data"></span>
                 </div>
             </div>
         </script>
