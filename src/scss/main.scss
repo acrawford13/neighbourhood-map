@@ -112,8 +112,6 @@ h1, h2, h3 {
     }
 
     &__main {
-        display: flex;
-        flex-direction: column;
         overflow-y: auto;
     }
 
@@ -173,11 +171,11 @@ h1, h2, h3 {
     }
 
     &--editing {
-        box-shadow: 0 0 20px rgba(0,0,0,0.4);
-        margin-left: -2%;
-        margin-right: -2%;
+        // box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        // margin-left: -2%;
+        // margin-right: -2%;
         background-color: red;
-        border: 1px solid darkred;
+        // border: 1px solid darkred;
     }
 
     &__details {
@@ -193,6 +191,7 @@ h1, h2, h3 {
 
     &__actions {
         padding-right: 1rem;
+        text-align: right;
     }
 
     &__action {

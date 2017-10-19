@@ -111,14 +111,31 @@ var ViewModel = function(){
         favourite.stall(null);
     };
 
+    this.cancelAdd = function(){
+        self.adding(null);
+    };
+
+    this.addItem = function(item){
+        console.log(item);
+        self.favList.push(item);
+        self.adding(null);
+        // console.log(self.adding());
+    };
+
     this.addNew = function(){
         self.adding(new Favourite({category: null, center: null, stall: null}));
+    };
 
-        // var addElem = self.favList.push(
-        //     new Favourite({category:'Test', center:'', stall:''}));
-        // self.adding(self.favList()[addElem-1]);
-        // self.toggleEditing(self.favList()[addElem-1]);
+    this.addCategory = function(category){
+        self.adding(new Favourite({category: null, center: null, stall: null}));
+        self.adding().category(category);
+        console.log(self.adding());
+        // self.editing(self.adding());
+        // self.adding(null);
+    };
 
+    this.categoryTemplate = function(category){
+        return self.adding() && category == self.adding().category() ? 'adding-item' : 'category-item';
     };
 
     this.toggleEditing = function(favourite){
@@ -134,8 +151,6 @@ var ViewModel = function(){
     };
 
     this.changeFav = function(favourite, event){
-        console.log(favourite);
-        console.log(event);
         favourite.center()
     };
 
@@ -154,7 +169,18 @@ var ViewModel = function(){
         });
     });
 
+    this.clearSelected = function(){
+        console.log('asd');
+        if(self.adding()){
+            self.adding().category(null);
+        }
+    };
+
     this.categorySearchResults = ko.computed(function(){
+        if(self.adding()){
+            // self.adding().category(null);
+        };
+
         var searchTerm = new RegExp(self.categorySearch(), 'ig');
         var existing = self.favList().map(function(d){return d.category()});
         return self.categories().filter(function(d){
