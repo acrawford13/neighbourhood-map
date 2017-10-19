@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Bungee');
 @import 'modules/helpers';
+@import 'node_modules/font-awesome/scss/font-awesome.scss';
+@fa-font-path: "/fonts/";
 
 $primary-color: #ff2333;
 $title-color: #ff2333;
@@ -24,7 +26,8 @@ h1, h2, h3 {
 }
 
 .c-button {
-
+    &--circle {
+    }
 }
 
 .c-top-bar {
@@ -63,7 +66,6 @@ h1, h2, h3 {
     min-width: 60%;
 
     &__item {
-        padding: 1rem;
         border-top: 1px solid #ddd;
     }
 
@@ -92,6 +94,10 @@ h1, h2, h3 {
 }
 
 .c-favourite {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     &--editing {
         box-shadow: 0 0 20px rgba(0,0,0,0.4);
         margin-left: -2%;
@@ -104,26 +110,42 @@ h1, h2, h3 {
         display: flex;
         flex-direction: column;
         align-items: stretch;
+        padding: 1rem;
     }
 
     &__category {
         font-weight: bold;
     }
 
+    &__actions {
+        padding-right: 1rem;
+    }
+
     &__action {
-        display: none;
+        $circle-size: 2.75rem;
         cursor: pointer;
+        display: inline-block;
+        font-size: 1.2rem;
+        color: inherit;
+        border-radius: 50%;
+        height: $circle-size;
+        width: $circle-size;
+        line-height: $circle-size;
+        text-align: center;
+        transition: all 0.2s;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, .05);
+        }
 
         &--edit {
-            &::after {
-                content: '✎';
-            }
+
         }
     }
 
     &:hover {
         .c-favourite__action {
-            display: inline;
+            // display: inline;
         }
     }
 }

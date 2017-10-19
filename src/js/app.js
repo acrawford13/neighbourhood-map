@@ -128,6 +128,14 @@ var ViewModel = function(){
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
         return self.favList().filter(function(d){
             return d.category().match(searchTerm);
+        }).sort(function(a, b){
+            if(a.category() < b.category()){
+                return -1;
+            }
+            if(a.category() > b.category()){
+                return 1;
+            }
+            return 0;
         });
     });
 }

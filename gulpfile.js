@@ -29,13 +29,18 @@ gulp.task('js', function(){
         .pipe(gulp.dest('dist/js/'))
 });
 
-gulp.task('build', ['html','css'], function(){
+gulp.task('fonts', function(){
+    gulp.src('node_modules/font-awesome/fonts/**')
+        .pipe(gulp.dest('dist/fonts/'))
+});
+
+gulp.task('build', ['html','css','fonts'], function(){
     gulp.src('node_modules/knockout/build/output/knockout-latest.js')
         .pipe(rename('knockout.js'))
         .pipe(gulp.dest('dist/js/vendor/'));
 });
 
-gulp.task('build:dev', ['html','css'], function(){
+gulp.task('build:dev', ['html','css','fonts'], function(){
     gulp.src('node_modules/knockout/build/output/knockout-latest.debug.js')
         .pipe(rename('knockout.js'))
         .pipe(gulp.dest('dist/js/vendor/'));

@@ -23,6 +23,7 @@
     "gulp-sass": "^3.1.0"
   },
   "dependencies": {
+    "font-awesome": "^4.7.0",
     "knockout": "^3.4.2",
     "normalize.css": "^7.0.0"
   }
