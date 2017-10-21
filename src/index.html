@@ -313,12 +313,13 @@
                         var ranking = Math.ceil(index/categories.length);
                         return function(){
                             thisMarker.setAnimation(google.maps.Animation.DROP);
-                            infoWindow.setContent('<h4>' + thisInfo + '</h4>'+
+                            infoWindow.setContent('<div class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
                                 '<hr><i class="fa fa-certificate"></i> ' +
-                                '<strong>#'+ranking+'</strong> for ' + categories[index % categories.length]);
+                                '<strong>#'+ranking+'</strong> for ' + categories[index % categories.length] +
+                                '</div>');
                             infoWindow.open(map, thisMarker);
                         }
-                    })(marker, centers[i]['name'], i))
+                    })(marker, centers[i], i))
                 };
 
 

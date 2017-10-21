@@ -53,6 +53,18 @@ h1, h2, h3 {
     }
 }
 
+.c-infowindow {
+    hr {
+        border: none;
+        border-bottom: 0.5px solid #444;
+        height: 1px;
+    }
+    h4 {
+        margin-bottom: 0;
+
+    }
+}
+
 .c-top-bar {
     padding: 1rem;
     width: 100%;
