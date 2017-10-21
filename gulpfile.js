@@ -25,6 +25,10 @@ gulp.task('html', function(){
 });
 
 gulp.task('js', function(){
+    gulp.src('node_modules/jquery/dist/jquery.min.js')
+        .pipe(gulp.dest('dist/js/vendor/'));
+    gulp.src('node_modules/sammy/lib/min/sammy-latest.min.js')
+        .pipe(gulp.dest('dist/js/vendor/'));
     gulp.src('src/js/*.js')
         .pipe(gulp.dest('dist/js/'))
 });
@@ -38,14 +42,10 @@ gulp.task('build', ['html','js','css','fonts'], function(){
     gulp.src('node_modules/knockout/build/output/knockout-latest.js')
         .pipe(rename('knockout.js'))
         .pipe(gulp.dest('dist/js/vendor/'));
-    gulp.src('node_modules/jquery/dist/jquery.min.js')
-        .pipe(gulp.dest('dist/js/vendor/'));
 });
 
 gulp.task('build:dev', ['html','js','css','fonts'], function(){
     gulp.src('node_modules/knockout/build/output/knockout-latest.debug.js')
         .pipe(rename('knockout.js'))
-        .pipe(gulp.dest('dist/js/vendor/'));
-    gulp.src('node_modules/jquery/dist/jquery.min.js')
         .pipe(gulp.dest('dist/js/vendor/'));
 });

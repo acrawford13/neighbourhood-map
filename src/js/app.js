@@ -81,9 +81,15 @@ var Center = function(data){
     this.id = ko.observable(data.id);
 }
 
+var categories = ['Chicken Porridge', 'Fish Porridge', 'Chicken Rice', 'Carrot Cake', 'Wanton Mee', 'Curry Fish Head', 'Bak Chor Mee', 'Hokkien Prawn Mee', 'Satay Bee Hoon', 'Satay', 'Tau Huay', 'Ice Kacang', 'Chwee Kway', 'Nasi Lemak', 'Mee Siam', 'Mee Rebus', 'Lontong', 'Roti Prata', 'Rojak', 'Duck Rice', 'Char Kway Teow', 'Curry Puff', 'Popiah', 'Char Siew Rice', 'Bak Kut Teh', 'Yong Tau Foo', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup'];
+
 var ViewModel = function(){
     var self = this;
-    this.categories = ko.observableArray(['Chicken Porridge', 'Fish Porridge', 'Chicken Rice', 'Carrot Cake', 'Wanton Mee', 'Curry Fish Head', 'Bak Chor Mee', 'Hokkien Prawn Mee', 'Satay Bee Hoon', 'Satay', 'Tau Huay', 'Ice Kacang', 'Chwee Kway', 'Nasi Lemak', 'Mee Siam', 'Mee Rebus', 'Lontong', 'Roti Prata', 'Rojak', 'Duck Rice', 'Char Kway Teow', 'Curry Puff', 'Popiah', 'Char Siew Rice', 'Bak Kut Teh', 'Yong Tau Foo', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup']);
+    // track which view model should be shown on screen
+    this.favourites = ko.observable(new FavouritesModel());
+    this.currentViewModel = ko.observable(this.favourites);
+
+    this.categories = ko.observableArray(categories);
 
     this.stallError = ko.observable(false);
     this.favouriteSearch = ko.observable();
@@ -127,9 +133,6 @@ var ViewModel = function(){
     this.addCategory = function(category){
         self.adding(new Favourite({category: null, center: null, stall: null}));
         self.adding().category(category);
-        console.log(self.adding());
-        // self.editing(self.adding());
-        // self.adding(null);
     };
 
     this.categoryTemplate = function(category){
@@ -187,4 +190,9 @@ var ViewModel = function(){
     });
 }
 
+var FavouritesModel = function(){
+    this.time = ko.observable(5);
+};
+
 ko.applyBindings(new ViewModel());
+// ko.applyBindings(new FavouritesModel(), document.getElementById('favourites-view'));
