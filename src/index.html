@@ -88,6 +88,24 @@
             </div>
         </script>
         <script src="js/vendor/jquery.min.js"></script>
+        <script>
+        // var data = {
+        //   resource_id: '8f6bba57-19fc-4f36-8dcf-c0bda382364d',
+        //   limit: 200,
+        // };
+        // var hawkerCentres;
+        // $.ajax({
+        //   url: 'https://data.gov.sg/api/action/datastore_search',
+        //   data: data,
+        //   dataType: 'json',
+        //   success: function(data) {
+        //     hawkerCentres = data.result.records;
+        //     hawkerCentres = hawkerCentres.filter(function(d){
+        //         return d.no_of_cooked_food_stalls != 0;
+        //     });
+        //   }
+        // });
+</script>
         <script src="js/vendor/sammy-latest.min.js"></script>
         <script src="js/vendor/knockout.js"></script>
         <script src="js/app.js"></script>
@@ -273,6 +291,8 @@
                 }
             ]
 
+            var markers = [];
+
             function initMap(){
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: 1.3521, lng: 103.8198},
@@ -280,6 +300,28 @@
                     mapTypeControl: false,
                     styles: mapStyles,
                 });
+
+                var infoWindow = new google.maps.InfoWindow({});
+
+                for(var i=0; i<centers.length; i++){
+                    var marker = new google.maps.Marker({
+                        position: centers[i]['location'],
+                        map: map,
+                    });
+
+                    marker.addListener('click', (function(thisMarker, thisInfo, index){
+                        var ranking = Math.ceil(index/categories.length);
+                        return function(){
+                            thisMarker.setAnimation(google.maps.Animation.DROP);
+                            infoWindow.setContent('<h4>' + thisInfo + '</h4>'+
+                                '<hr><i class="fa fa-certificate"></i> ' +
+                                '<strong>#'+ranking+'</strong> for ' + categories[index % categories.length]);
+                            infoWindow.open(map, thisMarker);
+                        }
+                    })(marker, centers[i]['name'], i))
+                };
+
+
             }
         </script>
     </body>
