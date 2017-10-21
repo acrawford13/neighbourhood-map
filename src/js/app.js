@@ -86,8 +86,7 @@ var categories = ['Chicken Porridge', 'Fish Porridge', 'Chicken Rice', 'Carrot C
 var ViewModel = function(){
     var self = this;
     // track which view model should be shown on screen
-    this.favourites = ko.observable(new FavouritesModel());
-    this.currentViewModel = ko.observable(this.favourites);
+    this.route = ko.observable();
 
     this.categories = ko.observableArray(categories);
 
@@ -108,6 +107,14 @@ var ViewModel = function(){
 
     this.editing = ko.observable();
     this.adding = ko.observable();
+
+    this.exitFavourites = function(){
+        this.route(null);
+    };
+
+    this.editFavourites = function(){
+        this.route('favourites');
+    };
 
     this.stopPropagation = function(data, event){
         event.stopPropagation();
@@ -190,9 +197,4 @@ var ViewModel = function(){
     });
 }
 
-var FavouritesModel = function(){
-    this.time = ko.observable(5);
-};
-
 ko.applyBindings(new ViewModel());
-// ko.applyBindings(new FavouritesModel(), document.getElementById('favourites-view'));
