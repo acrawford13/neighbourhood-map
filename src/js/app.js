@@ -1,3 +1,19 @@
+
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBta7AfhTHCSOXWX5KOl5-y_-CiVdyJkpo",
+    authDomain: "hawker-app-firestore.firebaseapp.com",
+    databaseURL: "https://hawker-app-firestore.firebaseio.com",
+    projectId: "hawker-app-firestore",
+    storageBucket: "hawker-app-firestore.appspot.com",
+    messagingSenderId: "1097689933359"
+  };
+  firebase.initializeApp(config);
+
+  var db = firebase.firestore();
+
+
+
 var centers = [
    {
       "id":0,
@@ -1576,7 +1592,36 @@ var Center = function(data){
 var categories = ['Chicken Porridge', 'Fish Porridge', 'Chicken Rice', 'Carrot Cake', 'Wanton Mee', 'Curry Fish Head', 'Bak Chor Mee', 'Hokkien Prawn Mee', 'Satay Bee Hoon', 'Satay', 'Tau Huay', 'Ice Kacang', 'Chwee Kway', 'Nasi Lemak', 'Mee Siam', 'Mee Rebus', 'Lontong', 'Roti Prata', 'Rojak', 'Duck Rice', 'Char Kway Teow', 'Curry Puff', 'Popiah', 'Char Siew Rice', 'Bak Kut Teh', 'Yong Tau Foo', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup'];
 
 var ViewModel = function(){
+
     var self = this;
+
+    this.favList = ko.observableArray([]);
+    this.centers = ko.observableArray([]);
+
+    var userFaves = [];
+    var dishes = [];
+    var centres = [];
+    db.collection('centres').get().then(function(d){
+        d.docs.forEach(function(e){
+            centres.push(e.data());
+            self.centers.push(new Center(e.data()));
+        })
+    }).then(
+    db.collection('dishes').get().then(function(d){
+        d.docs.forEach(function(e){
+            dishes.push(e.data());
+        })
+    })).then(
+    db.collection('users').doc('acrawford').collection('favourites').get().then(function(d){
+        d.docs.forEach(function(e){
+            var data = {
+                center: centres[parseInt(e.data().centreId)].name,
+                category: dishes[parseInt(e.data().dishId)].name,
+                stall: '',
+            };
+            self.favList.push(new Favourite(data));
+        })
+    }))
     // track which view model should be shown on screen
     this.route = ko.observable();
 
@@ -1586,16 +1631,13 @@ var ViewModel = function(){
     this.favouriteSearch = ko.observable();
     this.categorySearch = ko.observable();
 
-    this.favList = ko.observableArray([]);
-    this.centers = ko.observableArray([]);
+    // favourites.forEach(function(favourite){
+    //     self.favList.push(new Favourite({category: favourite.dish.name, center: favourite.location.center.name, stall: favourite.location.stall.name}));
+    // });
 
-    favourites.forEach(function(favourite){
-        self.favList.push(new Favourite({category: favourite.dish.name, center: favourite.location.center.name, stall: favourite.location.stall.name}));
-    });
-
-    centers.forEach(function(center){
-        self.centers.push(new Center(center));
-    });
+    // centers.forEach(function(center){
+    //     self.centers.push(new Center(center));
+    // });
     self.centers(centers.sort(function(a,b){if(a.name < b.name){return -1}else if(a.name > b.name){return 1} else {return 0}}));
 
 
