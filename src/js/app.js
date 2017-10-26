@@ -1594,6 +1594,7 @@ var centers = [];
 var dishes = [];
 var dishes2 = {};
 var centers2 = {};
+var favs = {};
 // var categories = ['Chicken Porridge', 'Fish Porridge', 'Chicken Rice', 'Carrot Cake', 'Wanton Mee', 'Curry Fish Head', 'Bak Chor Mee', 'Hokkien Prawn Mee', 'Satay Bee Hoon', 'Satay', 'Tau Huay', 'Ice Kacang', 'Chwee Kway', 'Nasi Lemak', 'Mee Siam', 'Mee Rebus', 'Lontong', 'Roti Prata', 'Rojak', 'Duck Rice', 'Char Kway Teow', 'Curry Puff', 'Popiah', 'Char Siew Rice', 'Bak Kut Teh', 'Yong Tau Foo', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup'];
 
 var ViewModel = function(){
@@ -1607,11 +1608,53 @@ var ViewModel = function(){
     var userFaves = [];
     db.collection('centres').get().then(function(d){
         d.docs.forEach(function(e){
-            centers.push(e.data());
-            centers2[e.id] = e.data();
-            self.centers.push(new Center(e.data()));
-        })
+            var centre = e.data();
+            var ranking = [];
+            for(key in centre.ranking){
+                if(centre.ranking[key].position != null){
+                    ranking.push(centre.ranking[key]);
+                }
+            }
+            ranking.sort(function(a, b){
+                var pos = b.position - a.position;
+                if (pos != 0){
+                    return pos;
+                } else {
+                    if (a.dishName > b.dishName){
+                        return 1;
+                    } else if (a.dishName < b.dishName){
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+            centre.ranking = ranking;
+            centers2[e.id] = centre;
+            // centers2[e.id]['rankings'] = [];
+            // e.ref.collection('rankings').get().then(function(f){
+                // f.docs.forEach(function(g){
+                    // console.log(g.data());
+                    // centers2[e.id]['rankings'].push(g.data());
+                // })
+                centers.push(centre);
+                self.centers.push(new Center(centre));
+            // });
+            // e.ref.collection('rankings').get().then(function(f){
+            //     centers2[e.id].rankings = ['dsa'];
+            //     f.docs.forEach(function(g){
+            //         centers2[e.id].rankings.push(g.data());
+            //     })
+            // })
+        });
     }).then(
+    // db.collection('centres').get().then(function(d){
+    //     d.docs.forEach(function(e){
+    //         centers.push(e.data());
+    //         centers2[e.id] = e.data();
+    //         self.centers.push(new Center(e.data()));
+    //     })
+    // }).then(
     db.collection('dishes').get().then(function(d){
         d.docs.forEach(function(e){
             dishes.push(e.data());
@@ -1688,7 +1731,7 @@ var ViewModel = function(){
         item.center(selectedName);
         self.favList.push(item);
         db.collection('users').doc('acrawford').collection('favourites').doc(item.dishId())
-            .set({centreId: item.centerId(), dishId: item.dishId()})
+            .set({centreId: item.centerId(), dishName: item.category(), dishId: item.dishId()})
             .then(function(){self.updateFavourites();});
 
     };

@@ -282,23 +282,28 @@
 
                 var infoWindow = new google.maps.InfoWindow({});
 
-                for(var i=0; i<centers.length; i++){
+                for(var key in centers2){
                     var marker = new google.maps.Marker({
-                        position: centers[i]['location'],
+                        position: centers2[key]['location'],
                         map: map,
                     });
 
-                    marker.addListener('click', (function(thisMarker, thisInfo, index){
-                        var ranking = Math.ceil(index/dishes.length);
+                    marker.addListener('click', (function(thisMarker, thisInfo){
+                        var rankingHTML = '';
+                        if(thisInfo.ranking.length > 0){
+                            rankingHTML += '<hr/>';
+                            for(var i = 0; i<thisInfo.ranking.length && i<3; i++){
+                                rankingHTML += '<i class="fa fa-certificate"></i> <strong>' + thisInfo.ranking[i].position + '</strong> for ' + thisInfo.ranking[i].dishName + '</br>';
+                            };
+                        }
                         return function(){
                             thisMarker.setAnimation(google.maps.Animation.DROP);
                             infoWindow.setContent('<div class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                                '<hr><i class="fa fa-certificate"></i> ' +
-                                '<strong>#'+ranking+'</strong> for ' + dishes[index % dishes.length] +
+                                rankingHTML +
                                 '</div>');
                             infoWindow.open(map, thisMarker);
                         }
-                    })(marker, centers[i], i))
+                    })(marker, centers2[key]))
                 };
 
 
