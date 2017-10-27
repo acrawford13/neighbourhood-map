@@ -60,9 +60,20 @@ h1, h2, h3 {
         height: 1px;
     }
     h4 {
-        margin-bottom: 0;
-
+        margin: 0;
     }
+}
+
+.c-ranking--1 {
+    color: #CFB53B;
+}
+
+.c-ranking--2 {
+    color: silver;
+}
+
+.c-ranking--3 {
+    color: #A57164;
 }
 
 .c-top-bar {

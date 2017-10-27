@@ -293,7 +293,7 @@
                         if(thisInfo.ranking.length > 0){
                             rankingHTML += '<hr/>';
                             for(var i = 0; i<thisInfo.ranking.length && i<3; i++){
-                                rankingHTML += '<i class="fa fa-certificate"></i> <strong>' + thisInfo.ranking[i].position + '</strong> for ' + thisInfo.ranking[i].dishName + '</br>';
+                                rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.ranking[i].position + '"></i> <strong>#' + thisInfo.ranking[i].position + '</strong> for ' + thisInfo.ranking[i].dishName + '</br>';
                             };
                         }
                         return function(){

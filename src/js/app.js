@@ -1616,7 +1616,8 @@ var ViewModel = function(){
                 }
             }
             ranking.sort(function(a, b){
-                var pos = b.position - a.position;
+                var pos = a.position - b.position;
+                console.log(pos);
                 if (pos != 0){
                     return pos;
                 } else {
@@ -1667,15 +1668,16 @@ var ViewModel = function(){
             var data = {
                 centerId: e.data().centreId,
                 dishId: e.data().dishId,
-                center: centers2[parseInt(e.data().centreId)].name,
-                category: dishes2[parseInt(e.data().dishId)].name,
+                center: e.data().centreName,
+                category: e.data().dishName,
             };
+            // console.log(data);
             self.favList.push(new Favourite(data));
+            // console.log(self.favList());
         })
     }))
     // track which view model should be shown on screen
     this.route = ko.observable();
-
     this.favouriteSearch = ko.observable();
     this.categorySearch = ko.observable();
 
@@ -1686,11 +1688,12 @@ var ViewModel = function(){
                 var data = {
                     centerId: e.data().centreId,
                     dishId: e.data().dishId,
-                    center: centers2[parseInt(e.data().centreId)].name,
-                    category: dishes2[parseInt(e.data().dishId)].name,
+                    center: e.data().centreName,
+                    category: e.data().dishName,
                 };
+                // console.log(data);
                 self.favList.push(new Favourite(data));
-                console.log('updating favourites');
+                // console.log('updating favourites');
             })
         });
     };
@@ -1726,20 +1729,27 @@ var ViewModel = function(){
     };
 
     this.addItem = function(item){
+        // console.log(item);
         self.adding(null);
         var selectedName = centers2[parseInt(item.centerId())].name;
         item.center(selectedName);
         self.favList.push(item);
         db.collection('users').doc('acrawford').collection('favourites').doc(item.dishId())
-            .set({centreId: item.centerId(), dishName: item.category(), dishId: item.dishId()})
+            .set({centreId: item.centerId(), centreName: item.center(), dishName: item.category(), dishId: item.dishId()})
             .then(function(){self.updateFavourites();});
 
     };
+//
+//     for(var i=0; i<30; i++){
+// 	var centreId = Math.round(Math.random()*116);
+// db.collection('users').doc('ccrawford').collection('favourites').doc(''+i)
+//             .set({centreId: centreId, centers2[centreId]['name'], dishName: item.category(), dishId: i})
+// }
 
     this.deleteItem = function(item){
         self.adding(null);
         self.favList.remove(item);
-        db.collection('users').doc('acrawford').collection('favourites').doc(item.dishId())
+        db.collection('users').doc('acrawford').collection('favourites').doc(''+item.dishId())
             .delete().then(function(){self.updateFavourites();});
     };
 
@@ -1772,6 +1782,7 @@ var ViewModel = function(){
     this.searchResults = ko.computed(function(){
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
         return self.favList().filter(function(d){
+            // console.log(d);
             return d.category().match(searchTerm);
         }).sort(function(a, b){
             if(a.category() < b.category()){
