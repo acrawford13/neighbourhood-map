@@ -9,5 +9,6 @@ test
 !README.md
 !package.json
 !package-lock.json
+!data.json
 
 .sass-lint.yml
