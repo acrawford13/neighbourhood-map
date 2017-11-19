@@ -56,8 +56,8 @@
         <script type="text/html" id="adding-item">
             <div class="c-list__item c-favourite" data-bind="with: $root.adding()">
                 <div class="c-favourite__details">
-                    <span class="c-favourite__category" data-bind="text: category, visible: !category()"></span>
-                    <h4>Which hawker centre has the best <span data-bind="text: category"></span>?</h4>
+                    <span class="c-favourite__category" data-bind="text: dish_name, visible: !dish_name()"></span>
+                    <h4>Which hawker centre has the best <span data-bind="text: dish_name"></span>?</h4>
                     <span class="c-favourite__choice">
                         <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', optionsValue: 'id', value: centerId"></select>
                     </span>
@@ -71,10 +71,10 @@
         <script type="text/html" id="favourite-item">
             <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--editing': $data == $parent.editing()}">
                 <div class="c-favourite__details">
-                    <span data-bind="text: category" class="c-favourite__category"></span>
+                    <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
-                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsValue: 'name', value: 'id', visible: $data == $parent.editing()"></select>
-                        <span data-bind="text: center, visible: $data != $parent.editing()" class="c-favourite__center-name"></span>
+                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsValue: 'name', valueAllowUnset: true, value: $data.centre_name, visible: $data == $parent.editing()"></select>
+                        <span data-bind="text: centre_name, visible: $data != $parent.editing()" class="c-favourite__center-name"></span>
                     </span>
                 </div>
                 <div class="c-favourite__actions">

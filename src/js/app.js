@@ -53,10 +53,12 @@ var favourites = [
 
 
 var Favourite = function(data){
-    this.dishId = ko.observable(data.dishId),
-    this.category = ko.observable(data.category);
-    this.centerId = ko.observable(data.centerId);
-    this.center = ko.observable(data.center);
+    console.log(data);
+    this.dish_id = data.dish_id,
+    this.dish_name = data.dish_name;
+    this.centre_id = ko.observable(data.centre_id);
+    this.centre_name = ko.observable(data.centre_name);
+    console.log(this.centre_name());
 }
 
 var Center = function(data){
@@ -157,11 +159,13 @@ var ViewModel = function(){
         'success': function(data){
             for(var i = 0; i<data.favourites.length; i++){
                 var item = data.favourites[i];
-                self.favList.push(new Favourite({centerId: item.centre_id,
-                                                 dishId: item.dish_id,
-                                                 center: item.centre_name,
-                                                 category: item.dish_name,
-                                                }));
+                // var test = new Favourite({"dish_name":"Bak Kut Teh", "centre_name": "andrea"});
+                var test = new Favourite({'centre_id': item.centre_id,
+                                          'dish_id': item.dish_id,
+                                          'centre_name': item.centre_name,
+                                          'dish_name': item.dish_name});
+                console.log(test);
+                self.favList.push(test);
             }
             console.log(self.favList());
         }
@@ -174,7 +178,6 @@ var ViewModel = function(){
                 var item = data[key];
                 self.centers.push(new Center({name: item.name, id: item.id}));
             }
-
             console.log(self.centers());
         }
     })
@@ -244,6 +247,13 @@ var ViewModel = function(){
         var selectedName = centers2[parseInt(item.centerId())].name;
         item.center(selectedName);
         self.favList.push(item);
+        $.ajax({
+            'url': 'http://andreacrawford.design/hawkerdb/votes/',
+            'data' : self.editing(),
+            'success': function(data){
+                console.log(self.editing());
+            }
+        })
         // db.collection('users').doc('acrawford').collection('favourites').doc(item.dishId())
         //     .set({centreId: item.centerId(), centreName: item.center(), dishName: item.category(), dishId: item.dishId()})
         //     .then(function(){self.updateFavourites();});
@@ -285,6 +295,16 @@ var ViewModel = function(){
                 self.editing(favourite);
             }
         } else {
+            $.ajax({
+                'url':'http://andreacrawford.design/hawkerdb/votes',
+                'method':'post',
+                'data':{
+                    'dish_id': favourite.dishId,
+                    'user_id': 1,
+                    'centre_id': favourite.centerId,
+                }
+            })
+            console.log(favourite);
             self.editing(!self.editing);
         }
     };
@@ -293,12 +313,12 @@ var ViewModel = function(){
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
         return self.favList().filter(function(d){
             // console.log(d);
-            return d.category().match(searchTerm);
+            return d.dish_name.match(searchTerm);
         }).sort(function(a, b){
-            if(a.category() < b.category()){
+            if(a.dish_name < b.dish_name){
                 return -1;
             }
-            if(a.category() > b.category()){
+            if(a.dish_name > b.dish_name){
                 return 1;
             }
             return 0;
@@ -315,7 +335,7 @@ var ViewModel = function(){
         if(self.adding()){
             // self.adding().category(null);
         };
-        var existing = self.favList().map(function(d){return d.category()});
+        var existing = self.favList().map(function(d){return d.dish_name});
         var searchTerm = new RegExp(self.categorySearch(), 'ig');
         return self.categories().filter(function(d){
             return d.name.match(searchTerm) && $.inArray(d.name, existing)==-1;
