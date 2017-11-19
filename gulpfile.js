@@ -29,7 +29,7 @@ gulp.task('js', function(){
         .pipe(gulp.dest('dist/js/vendor/'));
     gulp.src('node_modules/sammy/lib/min/sammy-latest.min.js')
         .pipe(gulp.dest('dist/js/vendor/'));
-    gulp.src('src/js/*.js')
+    gulp.src('src/js/**')
         .pipe(gulp.dest('dist/js/'))
 });
 

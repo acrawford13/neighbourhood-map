@@ -73,7 +73,7 @@
                 <div class="c-favourite__details">
                     <span data-bind="text: category" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
-                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsValue: 'name', value: center, visible: $data == $parent.editing()"></select>
+                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsValue: 'name', value: 'id', visible: $data == $parent.editing()"></select>
                         <span data-bind="text: center, visible: $data != $parent.editing()" class="c-favourite__center-name"></span>
                     </span>
                 </div>
@@ -84,12 +84,12 @@
             </div>
         </script>
         <script src="js/vendor/jquery.min.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+        <!-- <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
         <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase-firestore.js"></script>
-        <script src="js/vendor/sammy-latest.min.js"></script>
+        <script src="js/vendor/sammy-latest.min.js"></script> -->
         <script src="js/vendor/knockout.js"></script>
         <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHBvf6-JlN0Svg5kpADRsuo7bFPWj1wt0&v=3">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHBvf6-JlN0Svg5kpADRsuo7bFPWj1wt0&callback=initMap&v=3">
         </script>
         <script>
             var map;
@@ -282,33 +282,39 @@
 
                 var infoWindow = new google.maps.InfoWindow({});
 
-                for(var key in centers2){
-                    var marker = new google.maps.Marker({
-                        position: centers2[key]['location'],
-                        map: map,
-                    });
+                $.ajax({
+                    'url': 'http://andreacrawford.design/hawkerdb/centres/',
+                    'success': function(data){
+                        for(var key in data){
+                            var marker = new google.maps.Marker({
+                                position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
+                                map: map,
+                            });
 
-                    marker.addListener('click', (function(thisMarker, thisInfo){
-                        var rankingHTML = '';
-                        if(thisInfo.ranking.length > 0){
-                            rankingHTML += '<hr/>';
-                            for(var i = 0; i<thisInfo.ranking.length && i<3; i++){
-                                rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.ranking[i].position + '"></i> <strong>#' + thisInfo.ranking[i].position + '</strong> for ' + thisInfo.ranking[i].dishName + '</br>';
-                            };
+                            marker.addListener('click', (function(thisMarker, thisInfo){
+                                var rankingHTML = '';
+                                if(thisInfo.rankings.length > 0){
+                                    rankingHTML += '<hr/>';
+                                    for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
+                                        rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
+                                    };
+                                }
+                                return function(){
+                                    thisMarker.setAnimation(google.maps.Animation.DROP);
+                                    infoWindow.setContent('<div class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+                                        rankingHTML +
+                                        '</div>');
+                                    infoWindow.open(map, thisMarker);
+                                }
+                            })(marker, data[key]))
                         }
-                        return function(){
-                            thisMarker.setAnimation(google.maps.Animation.DROP);
-                            infoWindow.setContent('<div class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                                rankingHTML +
-                                '</div>');
-                            infoWindow.open(map, thisMarker);
-                        }
-                    })(marker, centers2[key]))
-                };
+                    },
+                })
 
 
             }
         </script>
+        <!-- <script src="js/data.js"></script> -->
         <script src="js/app.js"></script>
     </body>
 </html>

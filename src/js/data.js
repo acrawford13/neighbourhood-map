@@ -1,4 +1,4 @@
-var centers = [
+var centres = [
    {
       "id":0,
       "name":"Blk 20 Ghim Moh Road",
@@ -1507,132 +1507,140 @@ var centers = [
          "lng":103.9355390963504
       }
    }
-]
+];
+var users = {
+    "acrawford" : {
+        "name" : "Andrea Crawford",
+        "favourites" : {
+            "dish-0" : {
+                "dishId" : 0,
+                "dishName" : "Chicken Porridge",
+                "centreId" : 56,
+                "centreName" : "Blk 724 Ang Mo Kio Ave 6",
+            }
+        }
+    }
+};
 
 var dishes = [
     {
         "id":0,
+        "name":"Chicken Porridge"
+    },
+    {
+        "id":1,
+        "name":"Fish Porridge"
+    },
+    {
+        "id":2,
         "name":"Chicken Rice"
+    },
+    {
+        "id":3,
+        "name":"Carrot Cake"
+    },
+    {
+        "id":4,
+        "name":"Wanton Mee"
+    },
+    {
+        "id":5,
+        "name":"Curry Fish Head"
+    },
+    {
+        "id":6,
+        "name":"Bak Chor Mee"
+    },
+    {
+        "id":7,
+        "name":"Hokkien Prawn Mee"
+    },
+    {
+        "id":8,
+        "name":"Satay Bee Hoon"
+    },
+    {
+        "id":9,
+        "name":"Satay"
+    },
+    {
+        "id":10,
+        "name":"Tau Huay"
+    },
+    {
+        "id":11,
+        "name":"Ice Kacang"
+    },
+    {
+        "id":12,
+        "name":"Chwee Kway"
+    },
+    {
+        "id":13,
+        "name":"Nasi Lemak"
+    },
+    {
+        "id":14,
+        "name":"Mee Siam"
+    },
+    {
+        "id":15,
+        "name":"Mee Rebus"
+    },
+    {
+        "id":16,
+        "name":"Lontong"
+    },
+    {
+        "id":17,
+        "name":"Roti Prata"
+    },
+    {
+        "id":18,
+        "name":"Rojak"
+    },
+    {
+        "id":19,
+        "name":"Duck Rice"
+    },
+    {
+        "id":20,
+        "name":"Char Kway Teow"
+    },
+    {
+        "id":21,
+        "name":"Curry Puff"
+    },
+    {
+        "id":22,
+        "name":"Popiah"
+    },
+    {
+        "id":23,
+        "name":"Char Siew Rice"
+    },
+    {
+        "id":24,
+        "name":"Bak Kut Teh"
+    },
+    {
+        "id":25,
+        "name":"Yong Tau Foo"
+    },
+    {
+        "id":26,
+        "name":"Chicken Biryani"
+    },
+    {
+        "id":27,
+        "name":"Mutton Biryani"
+    },
+    {
+        "id":28,
+        "name":"Laksa"
+    },
+    {
+        "id":29,
+        "name":"Pig Organ Soup"
     }
 ]
-
-var dishes = [{
-    "id":0,
-    "name":"Chicken Porridge"
-},
-{
-    "id":1,
-    "name":"Fish Porridge"
-},
-{
-    "id":2,
-    "name":"Chicken Rice"
-},
-{
-    "id":3,
-    "name":"Carrot Cake"
-},
-{
-    "id":4,
-    "name":"Wanton Mee"
-},
-{
-    "id":5,
-    "name":"Curry Fish Head"
-},
-{
-    "id":6,
-    "name":"Bak Chor Mee"
-},
-{
-    "id":7,
-    "name":"Hokkien Prawn Mee"
-},
-{
-    "id":8,
-    "name":"Satay Bee Hoon"
-},
-{
-    "id":9,
-    "name":"Satay"
-},
-{
-    "id":10,
-    "name":"Tau Huay"
-},
-{
-    "id":11,
-    "name":"Ice Kacang"
-},
-{
-    "id":12,
-    "name":"Chwee Kway"
-},
-{
-    "id":13,
-    "name":"Nasi Lemak"
-},
-{
-    "id":14,
-    "name":"Mee Siam"
-},
-{
-    "id":15,
-    "name":"Mee Rebus"
-},
-{
-    "id":16,
-    "name":"Lontong"
-},
-{
-    "id":17,
-    "name":"Roti Prata"
-},
-{
-    "id":18,
-    "name":"Rojak"
-},
-{
-    "id":19,
-    "name":"Duck Rice"
-},
-{
-    "id":20,
-    "name":"Char Kway Teow"
-},
-{
-    "id":21,
-    "name":"Curry Puff"
-},
-{
-    "id":22,
-    "name":"Popiah"
-},
-{
-    "id":23,
-    "name":"Char Siew Rice"
-},
-{
-    "id":24,
-    "name":"Bak Kut Teh"
-},
-{
-    "id":25,
-    "name":"Yong Tau Foo"
-},
-{
-    "id":26,
-    "name":"Chicken Biryani"
-},
-{
-    "id":27,
-    "name":"Mutton Biryani"
-},
-{
-    "id":28,
-    "name":"Laksa"
-},
-{
-    "id":29,
-    "name":"Pig Organ Soup"
-}];
