@@ -55,11 +55,7 @@ var favourites = [
 var Favourite = function(data){
     this.dish_id = data.dish_id,
     this.dish_name = data.dish_name;
-    // this.centre_id = ko.observable(data.centre_id);
-    // this.centre_name = ko.observable(data.centre_name);
-    // console.log($.grep(ViewModel.centers(), function(e){return e.id == data.centre_id}));
     this.centre = ko.observable(data.centre)
-    console.log(data.centre);
 }
 
 var Center = function(data){
