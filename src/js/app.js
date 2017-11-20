@@ -53,12 +53,13 @@ var favourites = [
 
 
 var Favourite = function(data){
-    console.log(data);
     this.dish_id = data.dish_id,
     this.dish_name = data.dish_name;
-    this.centre_id = ko.observable(data.centre_id);
-    this.centre_name = ko.observable(data.centre_name);
-    console.log(this.centre_name());
+    // this.centre_id = ko.observable(data.centre_id);
+    // this.centre_name = ko.observable(data.centre_name);
+    // console.log($.grep(ViewModel.centers(), function(e){return e.id == data.centre_id}));
+    this.centre = ko.observable(data.centre)
+    console.log(data.centre);
 }
 
 var Center = function(data){
@@ -78,6 +79,7 @@ var ViewModel = function(){
     var self = this;
 
     this.favList = ko.observableArray([]);
+    this.testCenters = ko.observableArray([]);
     this.centers = ko.observableArray([]);
     this.categories = ko.observableArray([]);
 
@@ -155,30 +157,27 @@ var ViewModel = function(){
     // }))
 
     $.ajax({
-        'url': 'http://andreacrawford.design/hawkerdb/user/1',
-        'success': function(data){
-            for(var i = 0; i<data.favourites.length; i++){
-                var item = data.favourites[i];
-                // var test = new Favourite({"dish_name":"Bak Kut Teh", "centre_name": "andrea"});
-                var test = new Favourite({'centre_id': item.centre_id,
-                                          'dish_id': item.dish_id,
-                                          'centre_name': item.centre_name,
-                                          'dish_name': item.dish_name});
-                console.log(test);
-                self.favList.push(test);
-            }
-            console.log(self.favList());
-        }
-    })
-
-    $.ajax({
         'url': 'http://andreacrawford.design/hawkerdb/centres/',
         'success': function(data){
             for(var key in data){
                 var item = data[key];
                 self.centers.push(new Center({name: item.name, id: item.id}));
             }
-            console.log(self.centers());
+
+            $.ajax({
+                'url': 'http://andreacrawford.design/hawkerdb/user/1',
+                'success': function(data){
+                    for(var i = 0; i<data.favourites.length; i++){
+                        var item = data.favourites[i];
+                        // var test = new Favourite({"dish_name":"Bak Kut Teh", "centre_name": "andrea"});
+                        var test = new Favourite({'centre': $.grep(self.centers(), function(e){return e.id() == item.centre_id})[0],
+                                                  // 'centre_name': item.centre_name,
+                                                  'dish_id': item.dish_id,
+                                                  'dish_name': item.dish_name});
+                        self.favList.push(test);
+                    }
+                }
+            })
         }
     })
 
@@ -299,11 +298,12 @@ var ViewModel = function(){
                 'url':'http://andreacrawford.design/hawkerdb/votes',
                 'method':'post',
                 'data':{
-                    'dish_id': favourite.dishId,
+                    'dish_id': favourite.dish_id,
                     'user_id': 1,
-                    'centre_id': favourite.centerId,
-                }
-            })
+                    'centre_id': favourite.centre().id,
+                },
+                'success':function(){console.log('success')}
+            });
             console.log(favourite);
             self.editing(!self.editing);
         }
