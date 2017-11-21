@@ -1,57 +1,3 @@
-var favourites = [
-    {
-        dish: {
-            name: "Chicken Rice",
-            id: 1
-        },
-        location: {
-            center: {
-                name: "Sembawang Hills Food Centre",
-                id: 1
-            },
-            stall: {
-                name: "#08-09",
-                id: 1,
-            }
-        }
-    },
-    {
-        dish: {
-            name: "Chicken Biryani",
-            id: 2
-        },
-        location: {
-            center: {
-                name: "Geylang Serai Market",
-                id: 2
-            },
-            stall: {
-                name: "#00-09",
-                id: 3,
-            }
-        }
-    },
-    {
-        dish: {
-            name: "Pig Organ Soup",
-            id: 3
-        },
-        location: {
-            center: {
-                name: "Sembawang Hills Food Centre",
-                id: 1
-            },
-            stall: {
-                name: "#02-01",
-                id: 3,
-            }
-        }
-    }
-];
-
-
-
-
 var Favourite = function(data){
     this.dish_id = data.dish_id,
     this.dish_name = data.dish_name;
@@ -63,13 +9,6 @@ var Center = function(data){
     this.id = ko.observable(data.id);
 }
 
-// var centers = [];
-// var dishes = [];
-// var dishes2 = {};
-// var centers2 = {};
-// var favs = {};
-// var categories = ['Chicken Porridge', 'Fish Porridge', 'Chicken Rice', 'Carrot Cake', 'Wanton Mee', 'Curry Fish Head', 'Bak Chor Mee', 'Hokkien Prawn Mee', 'Satay Bee Hoon', 'Satay', 'Tau Huay', 'Ice Kacang', 'Chwee Kway', 'Nasi Lemak', 'Mee Siam', 'Mee Rebus', 'Lontong', 'Roti Prata', 'Rojak', 'Duck Rice', 'Char Kway Teow', 'Curry Puff', 'Popiah', 'Char Siew Rice', 'Bak Kut Teh', 'Yong Tau Foo', 'Chicken Biryani', 'Mutton Biryani', 'Laksa', 'Pig Organ Soup'];
-
 var ViewModel = function(){
 
     var self = this;
@@ -80,77 +19,6 @@ var ViewModel = function(){
     this.categories = ko.observableArray([]);
 
     var userFaves = [];
-
-    // db.collection('centres').get().then(function(d){
-    //     centres.forEach(function(e){
-    //         var centre = e.data();
-    //         var ranking = [];
-    //         for(key in centre.ranking){
-    //             if(centre.ranking[key].position != null){
-    //                 ranking.push(centre.ranking[key]);
-    //             }
-    //         }
-    //         ranking.sort(function(a, b){
-    //             var pos = a.position - b.position;
-    //             console.log(pos);
-    //             if (pos != 0){
-    //                 return pos;
-    //             } else {
-    //                 if (a.dishName > b.dishName){
-    //                     return 1;
-    //                 } else if (a.dishName < b.dishName){
-    //                     return -1;
-    //                 } else {
-    //                     return 0;
-    //                 }
-    //             }
-    //         });
-    //         centre.ranking = ranking;
-    //         centers2[e.id] = centre;
-    //         // centers2[e.id]['rankings'] = [];
-    //         // e.ref.collection('rankings').get().then(function(f){
-    //             // f.docs.forEach(function(g){
-    //                 // console.log(g.data());
-    //                 // centers2[e.id]['rankings'].push(g.data());
-    //             // })
-    //             centers.push(centre);
-    //             self.centers.push(new Center(centre));
-    //         // });
-    //         // e.ref.collection('rankings').get().then(function(f){
-    //         //     centers2[e.id].rankings = ['dsa'];
-    //         //     f.docs.forEach(function(g){
-    //         //         centers2[e.id].rankings.push(g.data());
-    //         //     })
-    //         // })
-    //     });
-    // }).then(
-    // // db.collection('centres').get().then(function(d){
-    // //     d.docs.forEach(function(e){
-    // //         centers.push(e.data());
-    // //         centers2[e.id] = e.data();
-    // //         self.centers.push(new Center(e.data()));
-    // //     })
-    // // }).then(
-    // db.collection('dishes').get().then(function(d){
-    //     d.docs.forEach(function(e){
-    //         dishes.push(e.data());
-    //         dishes2[e.id] = e.data();
-    //         self.categories.push({name: e.data().name, id: e.id});
-    //     })
-    // })).then(initMap).then(
-    // db.collection('users').doc('acrawford').collection('favourites').get().then(function(d){
-    //     d.docs.forEach(function(e){
-    //         var data = {
-    //             centerId: e.data().centreId,
-    //             dishId: e.data().dishId,
-    //             center: e.data().centreName,
-    //             category: e.data().dishName,
-    //         };
-    //         // console.log(data);
-    //         self.favList.push(new Favourite(data));
-    //         // console.log(self.favList());
-    //     })
-    // }))
 
     $.ajax({
         'url': 'http://andreacrawford.design/hawkerdb/centres/',
@@ -165,29 +33,18 @@ var ViewModel = function(){
                 'success': function(data){
                     for(var i = 0; i<data.favourites.length; i++){
                         var item = data.favourites[i];
-                        // var test = new Favourite({"dish_name":"Bak Kut Teh", "centre_name": "andrea"});
-                        var test = new Favourite({'centre': $.grep(self.centers(), function(e){return e.id() == item.centre_id})[0],
-                                                  // 'centre_name': item.centre_name,
+                        self.favList.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id() == item.centre_id})[0],
                                                   'dish_id': item.dish_id,
-                                                  'dish_name': item.dish_name});
-                        self.favList.push(test);
+                                                  'dish_name': item.dish_name}));
                     }
                 }
             })
         }
     })
-
-    // for(i in centres){
-    //     var centre = centres[i];
-    //     self.centers.push(new Center(centre));
-    // }
-
     // track which view model should be shown on screen
     this.route = ko.observable();
     this.favouriteSearch = ko.observable();
     this.categorySearch = ko.observable();
-
-
 
     // this.updateFavourites = function(){
     //     return db.collection('users').doc('acrawford').collection('favourites').get().then(function(d){

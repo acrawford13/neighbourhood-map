@@ -15,6 +15,7 @@
                 <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
             </div>
         </div>
+        <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
         <main class="c-main h-container">
         </main>
         <div class="c-modal-container c-modal-container--overlay" data-bind="visible: route() == 'favourites'">
@@ -44,6 +45,7 @@
                 <h2 class="c-favourites__heading">Add a New Favourite</h2>
                 <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: categorySearch, event: {keyup: $root.clearSelected}" />
             </div>
+            <span data-bind="visible: categorySearchResults().length == 0">HELLO</span>
             <div class="c-list__main" data-bind="template: {name: categoryTemplate, foreach: categorySearchResults}"></div>
         </script>
         <script type="text/html" id="category-item">
@@ -311,6 +313,7 @@
                                 }
                             })(marker, data[key]))
                         }
+                        $('#centres-loading-icon').hide();
                     },
                 })
 

@@ -27,6 +27,10 @@ h1, h2, h3 {
     font-family: $display-font-stack;
 }
 
+main {
+    position: fixed;
+}
+
 .c-button {
     background-color: $primary-color;
     color: white;
@@ -51,6 +55,14 @@ h1, h2, h3 {
             background-color: darken($primary-color, 15);
         }
     }
+}
+
+.c-loading-icon {
+    width: 100px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .c-infowindow {
@@ -99,7 +111,7 @@ h1, h2, h3 {
     justify-content: center;
     height: 100%;
     top: 0;
-    position: absolute;
+    position: fixed;
     width: 100%;
     z-index: 100;
     background-color: $background-color;

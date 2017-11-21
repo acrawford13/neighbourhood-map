@@ -3,12 +3,12 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var browserSync = require('browser-sync').create();
 
-gulp.task('serve', ['css','html','js'], function() {
+gulp.task('serve', ['css','html','js','img'], function() {
     browserSync.init({
         server: "dist"
     });
 
-    gulp.watch('src/**', ['js','css','html']);
+    gulp.watch('src/**', ['js','css','html','img']);
     gulp.watch("dist/**").on('change', browserSync.reload);
 });
 
@@ -22,6 +22,11 @@ gulp.task('css', function(){
 gulp.task('html', function(){
     gulp.src('src/index.html')
         .pipe(gulp.dest('dist/'))
+});
+
+gulp.task('img', function(){
+    gulp.src('src/img/**')
+        .pipe(gulp.dest('dist/img/'))
 });
 
 gulp.task('js', function(){
