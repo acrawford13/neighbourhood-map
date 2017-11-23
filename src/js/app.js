@@ -5,8 +5,14 @@ var Favourite = function(data){
 }
 
 var Center = function(data){
-    this.name = ko.observable(data.name);
-    this.id = ko.observable(data.id);
+    this.name = data.name;
+    this.id = data.id;
+    this.streetname = data.streetname;
+    this.streetno = data.streetno;
+    this.postalcode = data.postalcode;
+    this.lat = data.lat;
+    this.lng = data.lng;
+    this.rankings = data.rankings;
 }
 
 var ViewModel = function(){
@@ -26,7 +32,7 @@ var ViewModel = function(){
             'success': function(data){
                 for(var key in data){
                     var item = data[key];
-                    self.centers.push(new Center({name: item.name, id: item.id}));
+                    self.centers.push(new Center(item));
                     console.log(self.centers().length);
                 }
 
@@ -35,7 +41,7 @@ var ViewModel = function(){
                     'success': function(data){
                         for(var i = 0; i<data.favourites.length; i++){
                             var item = data.favourites[i];
-                            self.favList.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id() == item.centre_id})[0],
+                            self.favList.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id == item.centre_id})[0],
                                                       'dish_id': item.dish_id,
                                                       'dish_name': item.dish_name}));
                         }
@@ -142,7 +148,7 @@ var ViewModel = function(){
 
     this.moreInfo = function(id){
         // console.log(self.centers().length);
-        var item = $.grep(self.centers(), function(e){return e.id() == id})[0]
+        var item = $.grep(self.centers(), function(e){return e.id == id})[0]
         console.log(item);
         console.log(id);
         self.viewing(item);

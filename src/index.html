@@ -8,6 +8,16 @@
     </head>
     <body>
         <div id="map" class="c-map"></div>
+        <div class="c-sidebar" data-bind="visible: viewing, with: viewing">
+            <h2 class="c-sidebar__title" data-bind="text: name"></h2>
+            <h3 data-bind="visible: rankings.length">Rankings</h3>
+            <ul data-bind="foreach: rankings">
+                <li><i data-bind="attr: { class: 'fa fa-certificate c-ranking--' + rank }"></i> Ranked #<span data-bind="text: rank"></span> for <span data-bind="text: dish_name"></span></li>
+            </ul>
+            <span data-bind="text: streetno"></span>
+            <span data-bind="text: streetname"></span>
+            <span data-bind="text: postalcode"></span>
+        </div>
         <main>
         <div class="c-top-bar">
             <div class="c-top-bar__container h-container">
