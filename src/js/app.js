@@ -20,32 +20,34 @@ var ViewModel = function(){
 
     var userFaves = [];
 
-    $.ajax({
-        'url': 'http://andreacrawford.design/hawkerdb/centres/',
-        'success': function(data){
-            for(var key in data){
-                var item = data[key];
-                self.centers.push(new Center({name: item.name, id: item.id}));
-            }
-
-            $.ajax({
-                'url': 'http://andreacrawford.design/hawkerdb/user/1',
-                'success': function(data){
-                    for(var i = 0; i<data.favourites.length; i++){
-                        var item = data.favourites[i];
-                        self.favList.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id() == item.centre_id})[0],
-                                                  'dish_id': item.dish_id,
-                                                  'dish_name': item.dish_name}));
-                    }
+    this.init = function(){
+        $.ajax({
+            'url': 'http://andreacrawford.design/hawkerdb/centres/',
+            'success': function(data){
+                for(var key in data){
+                    var item = data[key];
+                    self.centers.push(new Center({name: item.name, id: item.id}));
+                    console.log(self.centers().length);
                 }
-            })
-        }
-    })
+
+                $.ajax({
+                    'url': 'http://andreacrawford.design/hawkerdb/user/1',
+                    'success': function(data){
+                        for(var i = 0; i<data.favourites.length; i++){
+                            var item = data.favourites[i];
+                            self.favList.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id() == item.centre_id})[0],
+                                                      'dish_id': item.dish_id,
+                                                      'dish_name': item.dish_name}));
+                        }
+                    }
+                })
+            }
+        })
+    };
     // track which view model should be shown on screen
     this.route = ko.observable();
     this.favouriteSearch = ko.observable();
     this.categorySearch = ko.observable();
-
     // this.updateFavourites = function(){
     //     return db.collection('users').doc('acrawford').collection('favourites').get().then(function(d){
     //         self.favList([]);
@@ -75,6 +77,9 @@ var ViewModel = function(){
 
     this.editing = ko.observable();
     this.adding = ko.observable();
+    this.viewing = ko.observable();
+
+    // this.init();
 
 
     this.exitFavourites = function(){
@@ -135,6 +140,14 @@ var ViewModel = function(){
         self.adding().dishId(category.id);
     };
 
+    this.moreInfo = function(id){
+        // console.log(self.centers().length);
+        var item = $.grep(self.centers(), function(e){return e.id() == id})[0]
+        console.log(item);
+        console.log(id);
+        self.viewing(item);
+    };
+
     this.categoryTemplate = function(category){
         return self.adding() && category.name == self.adding().category() ? 'adding-item' : 'category-item';
     };
@@ -157,7 +170,7 @@ var ViewModel = function(){
                 },
                 'success':function(){console.log('success')}
             });
-            console.log(favourite);
+            // console.log(favourite);
             self.editing(!self.editing);
         }
     };
@@ -202,6 +215,11 @@ var ViewModel = function(){
             return 0;
         });
     });
+
 }
 
-ko.applyBindings(new ViewModel());
+$(document).ready(function(){
+    vm = new ViewModel();
+    ko.applyBindings(vm);
+    vm.init();
+})
