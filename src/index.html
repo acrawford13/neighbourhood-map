@@ -18,7 +18,8 @@
             <span data-bind="text: streetname"></span>
             <span data-bind="text: postalcode"></span>
         </div>
-        <main>
+        <main class="c-main h-container">
+            <input type="text" data-bind="textInput: generalSearch" />
         <div class="c-top-bar">
             <div class="c-top-bar__container h-container">
                 <h1 class="c-top-bar__title">Hawker</h1>
@@ -26,7 +27,6 @@
             </div>
         </div>
         <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
-        <main class="c-main h-container">
         </main>
         <div class="c-modal-container c-modal-container--overlay" data-bind="visible: route() == 'favourites'">
             <div class="c-modal">
@@ -100,8 +100,7 @@
         <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase-firestore.js"></script>
         <script src="js/vendor/sammy-latest.min.js"></script> -->
         <script src="js/vendor/knockout.js"></script>
-        <script>var vm;</script>
-        <script src="js/app.js"></script>
+        <script>var vm; var test;</script>
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHBvf6-JlN0Svg5kpADRsuo7bFPWj1wt0&callback=initMap&v=3">
         </script>
@@ -286,6 +285,8 @@
 
             var markers = [];
 
+            // to do: add data layer so that vm can update markers
+
             function initMap(){
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: 1.3521, lng: 103.8198},
@@ -294,52 +295,53 @@
                     styles: mapStyles,
                 });
 
-                var infoWindow = new google.maps.InfoWindow({});
-
-                infoWindow.addListener('closeclick', function(){
-                    vm.clearViewing();
-                });
-
-                $.ajax({
-                    'url': 'http://andreacrawford.design/hawkerdb/centres/',
-                    'success': function(data){
-                        for(var key in data){
-                            var marker = new google.maps.Marker({
-                                position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
-                                map: map,
-                            });
-
-                            marker.addListener('click', (function(thisMarker, thisInfo){
-                                var rankingHTML = '';
-                                if(thisInfo.rankings.length > 0){
-                                    rankingHTML += '<hr/>';
-                                    for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
-                                        rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
-                                    };
-                                    if(thisInfo.rankings.length > 3){
-                                        rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
-                                    };
-                                }
-                                return function(){
-                                    // console.log(vm.editing());
-                                    // console.log('asdasdasd');
-                                    vm.changeViewing(thisInfo.id);
-                                    thisMarker.setAnimation(google.maps.Animation.DROP);
-                                    infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                                        rankingHTML +
-                                        '</div>');
-                                    infoWindow.open(map, thisMarker);
-                                    ko.applyBindings(vm, document.getElementById('info-window'));
-                                }
-                            })(marker, data[key]))
-                        }
-                        $('#centres-loading-icon').hide();
-                    },
-                })
+                // var infoWindow = new google.maps.InfoWindow({});
+                //
+                // infoWindow.addListener('closeclick', function(){
+                //     vm.clearViewing();
+                // });
+                //
+                // $.ajax({
+                //     'url': 'http://andreacrawford.design/hawkerdb/centres/',
+                //     'success': function(data){
+                //         for(var key in data){
+                //             var marker = new google.maps.Marker({
+                //                 position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
+                //                 map: map,
+                //             });
+                //
+                //             marker.addListener('click', (function(thisMarker, thisInfo){
+                //                 var rankingHTML = '';
+                //                 if(thisInfo.rankings.length > 0){
+                //                     rankingHTML += '<hr/>';
+                //                     for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
+                //                         rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
+                //                     };
+                //                     if(thisInfo.rankings.length > 3){
+                //                         rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
+                //                     };
+                //                 }
+                //                 return function(){
+                //                     // console.log(vm.editing());
+                //                     // console.log('asdasdasd');
+                //                     vm.changeViewing(thisInfo.id);
+                //                     thisMarker.setAnimation(google.maps.Animation.DROP);
+                //                     infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+                //                         rankingHTML +
+                //                         '</div>');
+                //                     infoWindow.open(map, thisMarker);
+                //                     ko.applyBindings(vm, document.getElementById('info-window'));
+                //                 }
+                //             })(marker, data[key]))
+                //         }
+                //         $('#centres-loading-icon').hide();
+                //     },
+                // })
 
 
             }
         </script>
+        <script src="js/app.js"></script>
         <!-- <script src="js/data.js"></script> -->
     </body>
 </html>

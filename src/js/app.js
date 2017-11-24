@@ -34,8 +34,40 @@ var ViewModel = function(){
                 for(var key in data){
                     var item = data[key];
                     self.centers.push(new Center(item));
-                    console.log(self.centers().length);
-                }
+
+                    var infoWindow = new google.maps.InfoWindow({});
+
+                    infoWindow.addListener('closeclick', function(){
+                        vm.clearViewing();
+                    });
+                    
+                    var marker = new google.maps.Marker({
+                        position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
+                        map: map,
+                    });
+                    marker.addListener('click', (function(thisMarker, thisInfo){
+                            var rankingHTML = '';
+                            if(thisInfo.rankings.length > 0){
+                                rankingHTML += '<hr/>';
+                                for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
+                                    rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
+                                };
+                                if(thisInfo.rankings.length > 3){
+                                    rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
+                                };
+                            }
+                            return function(){
+                                vm.changeViewing(thisInfo.id);
+                                thisMarker.setAnimation(google.maps.Animation.DROP);
+                                infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+                                    rankingHTML +
+                                    '</div>');
+                                infoWindow.open(map, thisMarker);
+                                ko.applyBindings(vm, document.getElementById('info-window'));
+                            }
+                        })(marker, data[key]))
+                    }
+                    $('#centres-loading-icon').hide();
 
                 $.ajax({
                     'url': 'http://andreacrawford.design/hawkerdb/user/1',
@@ -54,6 +86,7 @@ var ViewModel = function(){
     // track which view model should be shown on screen
     this.route = ko.observable();
     this.favouriteSearch = ko.observable();
+    this.generalSearch = ko.observable();
     this.categorySearch = ko.observable();
     // this.updateFavourites = function(){
     //     return db.collection('users').doc('acrawford').collection('favourites').get().then(function(d){
@@ -207,6 +240,39 @@ var ViewModel = function(){
             }
             return 0;
         });
+    });
+
+
+
+    this.generalResults = ko.computed(function(){
+        var searchTerm = new RegExp(self.generalSearch(), 'ig');
+        console.log(self.centers().filter(
+            function(d){
+                return d.rankings.filter(
+                    function(e){
+                        return e['dish_name'].match(searchTerm);
+                    }).length > 0;
+                }));
+        test = self.centers();
+        return self.centers().filter(
+            function(d){
+                return d.rankings.filter(
+                    function(e){
+                        return e['dish_name'].match(searchTerm);
+                    }).length > 0;
+                });
+        // return self.centers().filter(function(d){
+        //     // console.log(d);
+        //     return d.rankings[0]['dish_name'].match(searchTerm);
+        // }).sort(function(a, b){
+        //     if(a.dish_name < b.dish_name){
+        //         return -1;
+        //     }
+        //     if(a.dish_name > b.dish_name){
+        //         return 1;
+        //     }
+        //     return 0;
+        // });
     });
 
     this.clearSelected = function(){
