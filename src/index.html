@@ -296,6 +296,10 @@
 
                 var infoWindow = new google.maps.InfoWindow({});
 
+                infoWindow.addListener('closeclick', function(){
+                    vm.clearViewing();
+                });
+
                 $.ajax({
                     'url': 'http://andreacrawford.design/hawkerdb/centres/',
                     'success': function(data){
@@ -317,13 +321,15 @@
                                     };
                                 }
                                 return function(){
+                                    // console.log(vm.editing());
+                                    // console.log('asdasdasd');
+                                    vm.changeViewing(thisInfo.id);
                                     thisMarker.setAnimation(google.maps.Animation.DROP);
                                     infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
                                         rankingHTML +
                                         '</div>');
                                     infoWindow.open(map, thisMarker);
                                     ko.applyBindings(vm, document.getElementById('info-window'));
-                                    // console.log(infoWindow.getContent());
                                 }
                             })(marker, data[key]))
                         }

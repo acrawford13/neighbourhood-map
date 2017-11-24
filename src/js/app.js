@@ -30,6 +30,7 @@ var ViewModel = function(){
         $.ajax({
             'url': 'http://andreacrawford.design/hawkerdb/centres/',
             'success': function(data){
+                self.centers.removeAll();
                 for(var key in data){
                     var item = data[key];
                     self.centers.push(new Center(item));
@@ -152,6 +153,17 @@ var ViewModel = function(){
         console.log(item);
         console.log(id);
         self.viewing(item);
+    };
+
+    this.changeViewing = function(id){
+        var item = $.grep(self.centers(), function(e){return e.id == id})[0]
+        if(self.viewing()){
+            self.viewing(item);
+        }
+    };
+
+    this.clearViewing = function(){
+        self.viewing(null);
     };
 
     this.categoryTemplate = function(category){
