@@ -83,8 +83,10 @@ var ViewModel = function(){
 
                     item['marker'] = marker;
 
-                    self.centers.push(new Center(item));
+                    tempArray.push(new Center(item));
                 }
+
+                self.centers(tempArray);
 
                 var tempDishes = [].concat.apply([],self.centers().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
                 tempDishes = $.grep(tempDishes, function(d, i){
@@ -272,6 +274,13 @@ var ViewModel = function(){
                         return e['dish_name'].match(searchTerm);
                     }).length > 0;
         });
+        // var visibleMarkers = self.centers().filter(
+        //     function(d){
+        //         return d.rankings.filter(
+        //             function(e){
+        //                 return e['dish_name'].match(searchTerm);
+        //             }).length > 0;
+        // });
         var hiddenMarkers = self.centers().filter(
             function(d){
                 return d.rankings.filter(
@@ -291,7 +300,15 @@ var ViewModel = function(){
             if (d.marker.getMap()==null){
                 d.marker.setMap(map);
             }
-            d.marker.setIcon(self.iconStyles[d.rankings[0].rank]);
+            // console.log(self.generalSearch());
+            var searchString = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
+            var index = $.inArray(searchString, d.rankings.map(function(e){
+                return e.dish_name.toLowerCase();
+            }));
+            if(index == -1){
+                index = 0;
+            };
+            d.marker.setIcon(self.iconStyles[d.rankings[index].rank]);
         });
         return self.visibleMarkers(visibleMarkers);
     });
