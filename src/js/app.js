@@ -28,6 +28,15 @@ var ViewModel = function(){
     this.markers = ko.observableArray([]);
     this.dishes = ko.observableArray([]);
 
+    this.iconStyles = {
+        gold: {url: '../img/markers.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
+        silver: {url: '../img/markers.png', origin: new google.maps.Point(17.5, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
+        bronze: {url: '../img/markers.png', origin: new google.maps.Point(35, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
+        '1': {url: '../img/markers.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
+        '2': {url: '../img/markers.png', origin: new google.maps.Point(17.5, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
+        '3': {url: '../img/markers.png', origin: new google.maps.Point(35, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
+    };
+
     var userFaves = [];
 
 
@@ -47,6 +56,7 @@ var ViewModel = function(){
                     var marker = new google.maps.Marker({
                         position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
                         map: map,
+                        icon: self.iconStyles.gold,
                     });
 
                     marker.addListener('click', (function(thisMarker, thisInfo){
@@ -281,6 +291,7 @@ var ViewModel = function(){
             if (d.marker.getMap()==null){
                 d.marker.setMap(map);
             }
+            d.marker.setIcon(self.iconStyles[d.rankings[0].rank]);
         });
         return self.visibleMarkers(visibleMarkers);
     });
