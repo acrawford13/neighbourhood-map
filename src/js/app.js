@@ -23,7 +23,7 @@ var ViewModel = function(){
     this.favList = ko.observableArray([]);
     this.testCenters = ko.observableArray([]);
     this.centers = ko.observableArray([]);
-    this.visibleCenters = ko.observableArray([]);
+    this.visibleMarkers = ko.observableArray([]);
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
 
@@ -44,7 +44,7 @@ var ViewModel = function(){
                 }
 
                 self.centers(tempArray);
-                self.updateMarkers();
+                // self.updateMarkers();
 
                 $.ajax({
                     'url': 'http://andreacrawford.design/hawkerdb/user/1',
@@ -158,10 +158,7 @@ var ViewModel = function(){
     };
 
     this.moreInfo = function(id){
-        // console.log(self.centers().length);
         var item = $.grep(self.centers(), function(e){return e.id == id})[0]
-        console.log(item);
-        console.log(id);
         self.viewing(item);
     };
 
@@ -219,94 +216,130 @@ var ViewModel = function(){
         });
     });
 
-    this.updateMarkers = ko.computed(function(){
-        console.log(self.markers());
-        for(var i=0; i<self.markers().length; i++){
-            self.markers()[i].setMap(null);
-        };
-
-        self.markers([]);
-
-        var infoWindow = new google.maps.InfoWindow({});
-
-        // console.log(map.markers.length);
-        console.log('aaaaaaaaaaaaaaaand here i am');
-        console.log(self.centers().length);
-
-        for(var i=0; i<self.visibleCenters().length; i++){
-            var marker = new google.maps.Marker({
-                position: {lng:parseFloat(self.visibleCenters()[i]['lng']), lat:parseFloat(self.visibleCenters()[i]['lat'])},
-                map: map,
-            });
-
-            marker.addListener('click', (function(thisMarker, thisInfo){
-                var rankingHTML = '';
-                if(thisInfo.rankings.length > 0){
-                    rankingHTML += '<hr/>';
-                    for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
-                        rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
-                    };
-                    if(thisInfo.rankings.length > 3){
-                        rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
-                    };
-                }
-                return function(){
-                    self.changeViewing(thisInfo.id);
-                    thisMarker.setAnimation(google.maps.Animation.DROP);
-                    infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                    rankingHTML +
-                    '</div>');
-                    infoWindow.open(map, thisMarker);
-                    ko.applyBindings(self, document.getElementById('info-window'));
-                }
-            })(marker, self.visibleCenters()[i]))
-
-            self.markers.push(marker);
-
-            infoWindow.addListener('closeclick', function(){
-                self.clearViewing();
-            });
-
-
-            }
-        $('#centres-loading-icon').hide();
-    });
-
-
-
-    this.generalResults = ko.computed(function(){
+    this.getVisibleMarkers = ko.computed(function(){
         var searchTerm = new RegExp(self.generalSearch(), 'ig');
-        // var searchTerm = new RegExp('chicken porridge', 'ig');
-        console.log('running generalResults');
-        // self.updateMarkers(self.centers().filter(
-        //     function(d){
-        //         return d.rankings.filter(
-        //             function(e){
-        //                 return e['dish_name'].match(searchTerm);
-        //             }).length > 0;
-        //         }));
-        // test = self.centers();
-        self.visibleCenters(self.centers().filter(
+        var visibleMarkers = self.centers().filter(
             function(d){
                 return d.rankings.filter(
                     function(e){
                         return e['dish_name'].match(searchTerm);
                     }).length > 0;
-                }));
-        // self.updateMarkers();
-        // return self.centers().filter(function(d){
-        //     // console.log(d);
-        //     return d.rankings[0]['dish_name'].match(searchTerm);
-        // }).sort(function(a, b){
-        //     if(a.dish_name < b.dish_name){
-        //         return -1;
-        //     }
-        //     if(a.dish_name > b.dish_name){
-        //         return 1;
-        //     }
-        //     return 0;
-        // });
+        });
+        var hiddenMarkers = self.centers().filter(
+            function(d){
+                return d.rankings.filter(
+                    function(e){
+                        return e['dish_name'].match(searchTerm);
+                    }).length == 0;
+        });
+        hiddenMarkers.forEach(function(d){
+            if(d.marker){
+                d.marker.setMap(null);
+            }
+        });
+        visibleMarkers.forEach(function(d){
+            if(!d.marker){
+                var marker = new google.maps.Marker({
+                    position: {lng:parseFloat(d['lng']), lat:parseFloat(d['lat'])},
+                    map: map,
+                });
+                d.marker = marker;
+            } else if (d.marker.getMap()==null){
+                d.marker.setMap(map);
+            }
+        });
+        $('#centres-loading-icon').hide();
+        return self.visibleMarkers(visibleMarkers);
     });
+
+    // this.updateMarkers = ko.computed(function(){
+    //     console.log(self.markers());
+    //     for(var i=0; i<self.markers().length; i++){
+    //         self.markers()[i].setMap(null);
+    //     };
+    //
+    //     self.markers([]);
+    //
+    //     var infoWindow = new google.maps.InfoWindow({});
+    //
+    //     // console.log(map.markers.length);
+    //     console.log('aaaaaaaaaaaaaaaand here i am');
+    //     console.log(self.centers().length);
+    //
+    //     for(var i=0; i<self.visibleCenters().length; i++){
+    //         var marker = new google.maps.Marker({
+    //             position: {lng:parseFloat(self.visibleCenters()[i]['lng']), lat:parseFloat(self.visibleCenters()[i]['lat'])},
+    //             map: map,
+    //         });
+    //
+    //         marker.addListener('click', (function(thisMarker, thisInfo){
+    //             var rankingHTML = '';
+    //             if(thisInfo.rankings.length > 0){
+    //                 rankingHTML += '<hr/>';
+    //                 for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
+    //                     rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
+    //                 };
+    //                 if(thisInfo.rankings.length > 3){
+    //                     rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
+    //                 };
+    //             }
+    //             return function(){
+    //                 self.changeViewing(thisInfo.id);
+    //                 thisMarker.setAnimation(google.maps.Animation.DROP);
+    //                 infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+    //                 rankingHTML +
+    //                 '</div>');
+    //                 infoWindow.open(map, thisMarker);
+    //                 ko.applyBindings(self, document.getElementById('info-window'));
+    //             }
+    //         })(marker, self.visibleCenters()[i]))
+    //
+    //         self.markers.push(marker);
+    //
+    //         infoWindow.addListener('closeclick', function(){
+    //             self.clearViewing();
+    //         });
+    //
+    //
+    //         }
+    //     $('#centres-loading-icon').hide();
+    // });
+
+
+    //
+    // this.generalResults = ko.computed(function(){
+    //     var searchTerm = new RegExp(self.generalSearch(), 'ig');
+    //     // var searchTerm = new RegExp('chicken porridge', 'ig');
+    //     console.log('running generalResults');
+    //     // self.updateMarkers(self.centers().filter(
+    //     //     function(d){
+    //     //         return d.rankings.filter(
+    //     //             function(e){
+    //     //                 return e['dish_name'].match(searchTerm);
+    //     //             }).length > 0;
+    //     //         }));
+    //     // test = self.centers();
+    //     self.visibleCenters(self.centers().filter(
+    //         function(d){
+    //             return d.rankings.filter(
+    //                 function(e){
+    //                     return e['dish_name'].match(searchTerm);
+    //                 }).length > 0;
+    //             }));
+    //     // self.updateMarkers();
+    //     // return self.centers().filter(function(d){
+    //     //     // console.log(d);
+    //     //     return d.rankings[0]['dish_name'].match(searchTerm);
+    //     // }).sort(function(a, b){
+    //     //     if(a.dish_name < b.dish_name){
+    //     //         return -1;
+    //     //     }
+    //     //     if(a.dish_name > b.dish_name){
+    //     //         return 1;
+    //     //     }
+    //     //     return 0;
+    //     // });
+    // });
 
     this.clearSelected = function(){
         if(self.adding()){
