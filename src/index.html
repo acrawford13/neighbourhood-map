@@ -19,7 +19,10 @@
             <span data-bind="text: postalcode"></span>
         </div>
         <main class="c-main h-container">
-            <input type="text" data-bind="textInput: generalSearch" />
+            <input list="dish-search" type="text" data-bind="textInput: generalSearch" />
+            <datalist id="dish-search" data-bind="foreach: $root.dishes">
+                <option data-bind="value: $data">
+            </datalist>
         <div class="c-top-bar">
             <div class="c-top-bar__container h-container">
                 <h1 class="c-top-bar__title">Hawker</h1>

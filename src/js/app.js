@@ -26,6 +26,7 @@ var ViewModel = function(){
     this.visibleMarkers = ko.observableArray([]);
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
+    this.dishes = ko.observableArray([]);
 
     var userFaves = [];
 
@@ -75,10 +76,12 @@ var ViewModel = function(){
                     self.centers.push(new Center(item));
                 }
 
+                var tempDishes = [].concat.apply([],self.centers().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
+                tempDishes = $.grep(tempDishes, function(d, i){
+                    return $.inArray(d, tempDishes) === i;
+                }).sort();
+                self.dishes(tempDishes);
                 $('#centres-loading-icon').hide();
-
-                // self.centers(tempArray);
-                // self.updateMarkers();
 
                 $.ajax({
                     'url': 'http://andreacrawford.design/hawkerdb/user/1',
