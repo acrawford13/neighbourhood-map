@@ -30,12 +30,13 @@ var ViewModel = function(){
     this.iconHeight = 35;
     this.iconWidth = this.iconHeight/1.42857143;
     this.iconStyles = {
-        gold: {url: '../img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
-        silver: {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
-        bronze: {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
-        '1': {url: '../img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
-        '2': {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
-        '3': {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
+        gold: {url: './img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
+        silver: {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
+        bronze: {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
+        red: {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 3, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
+        '1': {url: './img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
+        '2': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
+        '3': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
     };
 
     var userFaves = [];
@@ -57,7 +58,7 @@ var ViewModel = function(){
                     var marker = new google.maps.Marker({
                         position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
                         map: map,
-                        icon: self.iconStyles.gold,
+                        icon: self.iconStyles.red,
                     });
 
                     marker.addListener('click', (function(thisMarker, thisInfo){
@@ -81,6 +82,10 @@ var ViewModel = function(){
                             ko.applyBindings(self, document.getElementById('info-window'));
                         }
                     })(marker, data[key]));
+            
+                    infoWindow.addListener('closeclick', function(){
+                        self.clearViewing();
+                    });
 
                     item['marker'] = marker;
 
@@ -309,7 +314,8 @@ var ViewModel = function(){
             if(index == -1){
                 index = 0;
             };
-            d.marker.setIcon(self.iconStyles[d.rankings[index].rank]);
+            var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
+            d.marker.setIcon(self.iconStyles[markerRank]);
         });
         return self.visibleMarkers(visibleMarkers);
     });
