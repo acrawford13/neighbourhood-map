@@ -27,14 +27,15 @@ var ViewModel = function(){
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
     this.dishes = ko.observableArray([]);
-
+    this.iconHeight = 35;
+    this.iconWidth = this.iconHeight/1.42857143;
     this.iconStyles = {
-        gold: {url: '../img/markers.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
-        silver: {url: '../img/markers.png', origin: new google.maps.Point(17.5, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
-        bronze: {url: '../img/markers.png', origin: new google.maps.Point(35, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
-        '1': {url: '../img/markers.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
-        '2': {url: '../img/markers.png', origin: new google.maps.Point(17.5, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
-        '3': {url: '../img/markers.png', origin: new google.maps.Point(35, 0), size: new google.maps.Size(17.5, 25), scaledSize: new google.maps.Size(52.5, 25)},
+        gold: {url: '../img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
+        silver: {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
+        bronze: {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
+        '1': {url: '../img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
+        '2': {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
+        '3': {url: '../img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 3, this.iconHeight)},
     };
 
     var userFaves = [];
