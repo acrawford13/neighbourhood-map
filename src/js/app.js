@@ -13,7 +13,7 @@ var Center = function(data){
     this.lat = data.lat;
     this.lng = data.lng;
     this.rankings = data.rankings;
-    this.marker = null;
+    this.marker = data.marker;
 }
 
 var ViewModel = function(){
@@ -38,12 +38,46 @@ var ViewModel = function(){
                 self.centers.removeAll();
 
                 var tempArray = [];
+                var infoWindow = new google.maps.InfoWindow({});
+
                 for(var key in data){
                     var item = data[key];
-                    tempArray.push(new Center(item));
+
+                    var marker = new google.maps.Marker({
+                        position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
+                        map: map,
+                    });
+
+                    marker.addListener('click', (function(thisMarker, thisInfo){
+                        var rankingHTML = '';
+                        if(thisInfo.rankings.length > 0){
+                            rankingHTML += '<hr/>';
+                            for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
+                                rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
+                            };
+                            if(thisInfo.rankings.length > 3){
+                                rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
+                            };
+                        }
+                        return function(){
+                            self.changeViewing(thisInfo.id);
+                            thisMarker.setAnimation(google.maps.Animation.DROP);
+                            infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+                            rankingHTML +
+                            '</div>');
+                            infoWindow.open(map, thisMarker);
+                            ko.applyBindings(self, document.getElementById('info-window'));
+                        }
+                    })(marker, data[key]));
+
+                    item['marker'] = marker;
+
+                    self.centers.push(new Center(item));
                 }
 
-                self.centers(tempArray);
+                $('#centres-loading-icon').hide();
+
+                // self.centers(tempArray);
                 // self.updateMarkers();
 
                 $.ajax({
@@ -232,23 +266,19 @@ var ViewModel = function(){
                         return e['dish_name'].match(searchTerm);
                     }).length == 0;
         });
+
         hiddenMarkers.forEach(function(d){
             if(d.marker){
                 d.marker.setMap(null);
             }
         });
+
+
         visibleMarkers.forEach(function(d){
-            if(!d.marker){
-                var marker = new google.maps.Marker({
-                    position: {lng:parseFloat(d['lng']), lat:parseFloat(d['lat'])},
-                    map: map,
-                });
-                d.marker = marker;
-            } else if (d.marker.getMap()==null){
+            if (d.marker.getMap()==null){
                 d.marker.setMap(map);
             }
         });
-        $('#centres-loading-icon').hide();
         return self.visibleMarkers(visibleMarkers);
     });
 
