@@ -260,7 +260,6 @@ var ViewModel = function(){
     this.searchResults = ko.computed(function(){
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
         return self.favList().filter(function(d){
-            // console.log(d);
             return d.dish_name.match(searchTerm);
         }).sort(function(a, b){
             if(a.dish_name < b.dish_name){
@@ -274,8 +273,9 @@ var ViewModel = function(){
     });
 
     this.getVisibleMarkers = ko.computed(function(){
-        console.log('going');
         var searchTerm = new RegExp(self.generalSearch(), 'ig');
+
+        // find which markers should be visible
         var visibleMarkers = self.centers().filter(
             function(d){
                 return d.rankings.filter(
@@ -283,14 +283,11 @@ var ViewModel = function(){
                         return e['dish_name'].match(searchTerm);
                     }).length > 0;
         });
+
+        // set visibleMarkers to the temporary variable visibleMarkers
         self.visibleMarkers(visibleMarkers);
-        // var visibleMarkers = self.centers().filter(
-        //     function(d){
-        //         return d.rankings.filter(
-        //             function(e){
-        //                 return e['dish_name'].match(searchTerm);
-        //             }).length > 0;
-        // });
+
+        // find which markers should be hidden
         var hiddenMarkers = self.centers().filter(
             function(d){
                 return d.rankings.filter(
@@ -299,36 +296,58 @@ var ViewModel = function(){
                     }).length == 0;
         });
 
+        // hide all the hidden markers
         hiddenMarkers.forEach(function(d){
             if(d.marker){
                 d.marker.setMap(null);
             }
         });
 
+        // if self.generalSearch is defined, searchString is the lowercase version
+        // otherwise it's an empty string
         var searchString = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
 
+        var dishExists = $.inArray(searchString, self.dishes().map(function(d){
+            return d.toLowerCase();
+        })) == -1 ? false : true;
+
+        if(!dishExists){
+            // if the searchString is not a dish name, highlight the first ranking in each item's list
+            // and set topRanked to empty
+            self.topRanked([]);
+        } else {
+            // else populate top ranked with the visible markers
+            // this is the same data as visibleMarkers, just re-ordered
+            self.topRanked(self.visibleMarkers().map(function(d){return {'name': d.name, 'id': d.id, 'rank': d.rankings.filter(function(e){return e.dish_name.toLowerCase()==searchString})[0].rank}}).sort(function(a,b){return a.rank - b.rank}))
+        }
+
         visibleMarkers.forEach(function(d){
+            // if the marker should be visible and has no map set, set the map
             if (d.marker.getMap()==null){
                 d.marker.setMap(map);
             }
-            // console.log(self.generalSearch());
-            var index = $.inArray(searchString, d.rankings.map(function(e){
-                return e.dish_name.toLowerCase();
-            }));
-            if(index == -1){
-                index = 0;
-                self.topRanked([]);
-            } else {
-                self.topRanked(self.visibleMarkers().map(function(d){return {'name': d.name, 'rank': d.rankings.filter(function(e){return e.dish_name.toLowerCase()==searchString})[0].rank}}).sort(function(a,b){return a.rank - b.rank}))
-            }
 
+            var index = 0;
+
+            if(dishExists){
+                index = $.inArray(searchString, d.rankings.map(function(e){
+                    return e.dish_name.toLowerCase();
+                }));
+            }
+            // get the marker style for each item based on its rank
             var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
+
+            // set the icon
             d.marker.setIcon(self.iconStyles[markerRank]);
         });
 
         test = self.topRanked();
 
+        // make a temporary ranking array to push info to
         var tempRanking = [];
+
+        // topRanked, rankingList and visibleMarkers all show the same info
+        // just rearranged...
 
         self.topRanked().forEach(function(f){
         	if(tempRanking[f.rank]){
@@ -340,14 +359,7 @@ var ViewModel = function(){
 
         self.rankingList(tempRanking);
 
-        // self.topRanked().forEach(function(d){
-        //     if(self.rankingList()[d.rankings])
-        // })
-
-        // test = self.visibleMarkers();
-
         return self.visibleMarkers();
-        // return "hey girl hey";
     });
 
     // this.updateMarkers = ko.computed(function(){

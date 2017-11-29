@@ -19,27 +19,27 @@
             <span data-bind="text: postalcode"></span>
         </div>
         <main class="c-main h-container">
-            <input list="dish-search" type="text" data-bind="textInput: generalSearch" />
-            <datalist id="dish-search" data-bind="foreach: $root.dishes">
-                <option data-bind="value: $data">
-            </datalist>
         <div class="c-top-bar">
             <div class="c-top-bar__container h-container">
                 <h1 class="c-top-bar__title">Hawker</h1>
+                <input placeholder="Search for your hawker favourites" class="c-top-bar__search" list="dish-search" type="text" data-bind="textInput: generalSearch" />
+                <datalist id="dish-search" data-bind="foreach: $root.dishes">
+                    <option data-bind="value: $data">
+                </datalist>
                 <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
             </div>
             <div class="c-top-bar__container h-container">
+                <div>
                 <h3 data-bind="text: generalSearch, visible: rankingList().length > 0"></h3>
                 <ul class="c-ranking-list" data-bind="foreach: rankingList">
-                    <!-- ko  -->
                     <li data-bind="if: $data">
                         <span class="c-ranking-list__group-title" data-bind="text: 'Ranking: ' + ($index())"></span>
                         <ul data-bind="foreach: $data">
-                            <li data-bind="text: name">d</li>
+                            <li data-bind="text: name, click: function(){$root.moreInfo(id)}">d</li>
                         </ul>
                     </li>
-                    <!-- /ko -->
                 </ul>
+                </div>
             </div>
         </div>
         <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
