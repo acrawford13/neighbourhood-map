@@ -45,7 +45,7 @@ var ViewModel = function(){
 
     this.init = function(){
         $.ajax({
-            'url': 'http://andreacrawford.design/hawkerdb/centres/',
+            'url': 'http://andreacrawford.design/hawkerdb/centres?ranklimit=10',
             'success': function(data){
                 self.centers.removeAll();
 
@@ -82,7 +82,7 @@ var ViewModel = function(){
                             ko.applyBindings(self, document.getElementById('info-window'));
                         }
                     })(marker, data[key]));
-            
+
                     infoWindow.addListener('closeclick', function(){
                         self.clearViewing();
                     });
@@ -150,6 +150,8 @@ var ViewModel = function(){
     this.editing = ko.observable();
     this.adding = ko.observable();
     this.viewing = ko.observable();
+    this.topRanked = ko.observableArray();
+    this.rankingList = ko.observableArray();
 
     // this.init();
 
@@ -272,6 +274,7 @@ var ViewModel = function(){
     });
 
     this.getVisibleMarkers = ko.computed(function(){
+        console.log('going');
         var searchTerm = new RegExp(self.generalSearch(), 'ig');
         var visibleMarkers = self.centers().filter(
             function(d){
@@ -280,6 +283,7 @@ var ViewModel = function(){
                         return e['dish_name'].match(searchTerm);
                     }).length > 0;
         });
+        self.visibleMarkers(visibleMarkers);
         // var visibleMarkers = self.centers().filter(
         //     function(d){
         //         return d.rankings.filter(
@@ -301,23 +305,49 @@ var ViewModel = function(){
             }
         });
 
+        var searchString = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
 
         visibleMarkers.forEach(function(d){
             if (d.marker.getMap()==null){
                 d.marker.setMap(map);
             }
             // console.log(self.generalSearch());
-            var searchString = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
             var index = $.inArray(searchString, d.rankings.map(function(e){
                 return e.dish_name.toLowerCase();
             }));
             if(index == -1){
                 index = 0;
-            };
+                self.topRanked([]);
+            } else {
+                self.topRanked(self.visibleMarkers().map(function(d){return {'name': d.name, 'rank': d.rankings.filter(function(e){return e.dish_name.toLowerCase()==searchString})[0].rank}}).sort(function(a,b){return a.rank - b.rank}))
+            }
+
             var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
             d.marker.setIcon(self.iconStyles[markerRank]);
         });
-        return self.visibleMarkers(visibleMarkers);
+
+        test = self.topRanked();
+
+        var tempRanking = [];
+
+        self.topRanked().forEach(function(f){
+        	if(tempRanking[f.rank]){
+        		tempRanking[f.rank].push(f);
+            } else {
+        		tempRanking[f.rank] = [f];
+            }
+        });
+
+        self.rankingList(tempRanking);
+
+        // self.topRanked().forEach(function(d){
+        //     if(self.rankingList()[d.rankings])
+        // })
+
+        // test = self.visibleMarkers();
+
+        return self.visibleMarkers();
+        // return "hey girl hey";
     });
 
     // this.updateMarkers = ko.computed(function(){

@@ -81,6 +81,19 @@ main {
     }
 }
 
+.c-ranking-list {
+    &__group-title {
+        color: $title-color;
+        display: block;
+        border-bottom: 0.5px solid $title-color;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        margin-top: 0.5rem;
+    }
+}
+
 .c-ranking--1 {
     color: #CFB53B;
 }
