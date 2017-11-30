@@ -26,6 +26,7 @@
                 <datalist id="dish-search" data-bind="foreach: $root.dishes">
                     <option data-bind="value: $data">
                 </datalist>
+                <input type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
                 <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
             </div>
             <div class="c-top-bar__container h-container">

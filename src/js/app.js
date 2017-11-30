@@ -27,6 +27,7 @@ var ViewModel = function(){
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
     this.dishes = ko.observableArray([]);
+    this.filterRanking = ko.observableArray();
     this.iconHeight = 35;
     this.iconWidth = this.iconHeight/1.42857143;
     this.iconStyles = {
@@ -41,11 +42,13 @@ var ViewModel = function(){
 
     var userFaves = [];
 
-
-
     this.init = function(){
         $.ajax({
-            'url': 'http://andreacrawford.design/hawkerdb/centres?ranklimit=10',
+            // you need to fix this. if you limit the ranking,
+            // centres with no rank above the limit will not be fetched.
+            // this causes problems when the user has that in their favourites
+            // (and cause we never fetch that center EVER);
+            'url': 'http://andreacrawford.design/hawkerdb/centres?ranklimit=1',
             'success': function(data){
                 self.centers.removeAll();
 
@@ -93,7 +96,7 @@ var ViewModel = function(){
                 }
 
                 self.centers(tempArray);
-
+                // what is this doing again?
                 var tempDishes = [].concat.apply([],self.centers().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
                 tempDishes = $.grep(tempDishes, function(d, i){
                     return $.inArray(d, tempDishes) === i;
@@ -101,15 +104,21 @@ var ViewModel = function(){
                 self.dishes(tempDishes);
                 $('#centres-loading-icon').hide();
 
+                var tempFavs = [];
+
+                console.log(self.centers());
+
                 $.ajax({
                     'url': 'http://andreacrawford.design/hawkerdb/user/1',
                     'success': function(data){
                         for(var i = 0; i<data.favourites.length; i++){
                             var item = data.favourites[i];
-                            self.favList.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id == item.centre_id})[0],
+                            tempFavs.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id == item.centre_id})[0],
                                                       'dish_id': item.dish_id,
                                                       'dish_name': item.dish_name}));
                         }
+
+                        self.favList(tempFavs);
                     }
                 })
             }
@@ -259,6 +268,7 @@ var ViewModel = function(){
 
     this.searchResults = ko.computed(function(){
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
+        console.log(self.favList());
         return self.favList().filter(function(d){
             return d.dish_name.match(searchTerm);
         }).sort(function(a, b){
@@ -341,7 +351,7 @@ var ViewModel = function(){
             d.marker.setIcon(self.iconStyles[markerRank]);
         });
 
-        test = self.topRanked();
+        test = self.visibleMarkers();
 
         // make a temporary ranking array to push info to
         var tempRanking = [];
@@ -360,6 +370,77 @@ var ViewModel = function(){
         self.rankingList(tempRanking);
 
         return self.visibleMarkers();
+    });
+
+    this.changeRank = ko.computed(function(){
+        if(self.filterRanking() > 0){
+        $('#centres-loading-icon').show();
+        $('#rankingFilter').attr('disabled', true);
+        $.ajax({
+            // you need to fix this. if you limit the ranking,
+            // centres with no rank above the limit will not be fetched.
+            // this causes problems when the user has that in their favourites
+            // (and cause we never fetch that center EVER);
+            'url': 'http://andreacrawford.design/hawkerdb/centres?ranklimit=' + self.filterRanking(),
+            'success': function(data){
+                console.log(data);
+                self.centers().forEach(function(d){
+                    d.marker.setMap(null);
+                });
+                self.centers.removeAll();
+
+                var tempArray = [];
+                var infoWindow = new google.maps.InfoWindow({});
+
+                for(var key in data){
+                    var item = data[key];
+
+                    var marker = new google.maps.Marker({
+                        position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
+                        map: map,
+                        icon: self.iconStyles.red,
+                    });
+
+                    marker.addListener('click', (function(thisMarker, thisInfo){
+                        var rankingHTML = '';
+                        if(thisInfo.rankings.length > 0){
+                            rankingHTML += '<hr/>';
+                            for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
+                                rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
+                            };
+                            if(thisInfo.rankings.length > 3){
+                                rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
+                            };
+                        }
+                        return function(){
+                            self.changeViewing(thisInfo.id);
+                            thisMarker.setAnimation(google.maps.Animation.DROP);
+                            infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+                            rankingHTML +
+                            '</div>');
+                            infoWindow.open(map, thisMarker);
+                            ko.applyBindings(self, document.getElementById('info-window'));
+                        }
+                    })(marker, data[key]));
+
+                    infoWindow.addListener('closeclick', function(){
+                        self.clearViewing();
+                    });
+
+                    item['marker'] = marker;
+
+                    tempArray.push(new Center(item));
+                }
+
+                self.centers(tempArray);
+                self.getVisibleMarkers();
+                $('#rankingFilter').attr('disabled', false);
+                $('#rankingFilter').focus();
+                $('#centres-loading-icon').hide();
+            },
+        });
+
+        };
     });
 
     // this.updateMarkers = ko.computed(function(){
