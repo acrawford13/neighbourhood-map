@@ -27,7 +27,7 @@ var ViewModel = function(){
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
     this.dishes = ko.observableArray([]);
-    this.filterRanking = ko.observableArray();
+    this.filterRanking = ko.observable(10);
     this.iconHeight = 35;
     this.iconWidth = this.iconHeight/1.42857143;
     this.iconStyles = {
@@ -48,7 +48,7 @@ var ViewModel = function(){
             // centres with no rank above the limit will not be fetched.
             // this causes problems when the user has that in their favourites
             // (and cause we never fetch that center EVER);
-            'url': 'http://andreacrawford.design/hawkerdb/centres?ranklimit=1',
+            'url': 'http://andreacrawford.design/hawkerdb/centres',
             'success': function(data){
                 self.centers.removeAll();
 
@@ -555,6 +555,12 @@ var ViewModel = function(){
             }
             return 0;
         });
+    });
+    this.messages = ko.computed(function(){
+        var plural = self.visibleMarkers().length == 1 ? '' : 's';
+        var wording = self.filterRanking() == 1 ? '' : ' or higher';
+        var category = self.generalSearch() ? ' in the category ' + self.generalSearch() : ' in any category';
+        return [{message: "Showing " +  self.visibleMarkers().length + " result" + plural + " with a ranking of " + self.filterRanking() + wording + category}];
     });
 
 }
