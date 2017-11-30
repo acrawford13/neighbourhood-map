@@ -31,9 +31,9 @@
             </div>
             <div class="c-top-bar__container h-container">
                 <div>
-                    <!-- ko foreach: messages -->
-                    <p data-bind="text: message"></p>
-                    <!-- /ko -->
+                    <ul class="c-message-list" data-bind="foreach: messages">
+                        <li class="c-message-list__message" data-bind="html: message"></li>
+                    </ul>
                 <h3 data-bind="text: generalSearch, visible: rankingList().length > 0"></h3>
                 <ul class="c-ranking-list" data-bind="foreach: rankingList">
                     <li data-bind="if: $data">
