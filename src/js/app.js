@@ -108,11 +108,14 @@ var ViewModel = function(){
         });
     });
 
+    self.infoWindow = ko.observable(new google.maps.InfoWindow({}));
+
     var userFaves = [];
 
     this.clearMap = function(){
         self.centers().forEach(function(d){
             d.marker.setVisible(false);
+            // d.marker.off('click');
         });
     }
 
@@ -139,7 +142,7 @@ var ViewModel = function(){
         var tempArray = [];
 
         // create a new infoWindow
-        var infoWindow = new google.maps.InfoWindow({});
+
 
         // loop through each item in the results
         for(var key in data){
@@ -168,15 +171,15 @@ var ViewModel = function(){
                 return function(){
                     self.changeViewing(thisInfo.id);
                     thisMarker.setAnimation(google.maps.Animation.DROP);
-                    infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+                    self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
                     rankingHTML +
                     '</div>');
-                    infoWindow.open(map, thisMarker);
+                    self.infoWindow().open(map, thisMarker);
                     ko.applyBindings(self, document.getElementById('info-window'));
                 }
             })(marker, data[key]));
 
-            infoWindow.addListener('closeclick', function(){
+            self.infoWindow().addListener('closeclick', function(){
                 self.clearViewing();
             });
 
