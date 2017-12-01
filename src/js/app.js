@@ -27,7 +27,6 @@ var ViewModel = function(){
     this.viewing = ko.observable();
     this.topRanked = ko.observableArray();
     this.rankingList = ko.observableArray();
-    this.dishExists = ko.observable();
     this.favList = ko.observableArray([]);
     this.testCenters = ko.observableArray([]);
     this.centers = ko.observableArray([]);
@@ -91,6 +90,11 @@ var ViewModel = function(){
     }
 
     this.generalSearch = ko.observable();
+    this.dishExists = ko.computed(function(){
+        var searchTerm = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
+        return self.dishes()[$.inArray(searchTerm, self.dishes().map(function(d){return d.toLowerCase()}))];
+    });
+
     this.visibleMarkers = ko.computed(function(){
         console.log('updating visible markers');
         // general search bar
