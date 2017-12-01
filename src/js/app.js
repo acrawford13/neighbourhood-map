@@ -101,7 +101,13 @@ var ViewModel = function(){
             // for each center
             function(d){
                 // filter its rankings
-                d.filteredRankings = d.rankings.filter(function(e){return parseInt(e.rank) <= parseInt(self.filterRanking())})
+                d.filteredRankings = d.rankings.filter(
+                    function(e){
+                        var dishMatch = e.dish_name.match(searchTerm) ? true : false;
+                        var rankMatch = parseInt(e.rank) <= parseInt(self.filterRanking());
+                        return dishMatch && rankMatch
+                    }
+                );
                 var filterRanking = d.filteredRankings.find(
                     // for each ranking
                     function(e, i){
