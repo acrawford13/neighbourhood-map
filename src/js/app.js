@@ -20,10 +20,16 @@ var ViewModel = function(){
 
     var self = this;
 
+
+    this.editing = ko.observable();
+    this.adding = ko.observable();
+    this.viewing = ko.observable();
+    this.topRanked = ko.observableArray();
+    this.rankingList = ko.observableArray();
+    this.dishExists = ko.observable();
     this.favList = ko.observableArray([]);
     this.testCenters = ko.observableArray([]);
     this.centers = ko.observableArray([]);
-    this.visibleMarkers = ko.observableArray([]);
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
     this.dishes = ko.observableArray([]);
@@ -39,6 +45,68 @@ var ViewModel = function(){
         '2': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
         '3': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
     };
+
+    this.setMarkerColors = function(){
+        var searchTerm = new RegExp(self.generalSearch(), 'i');
+        self.visibleMarkers().forEach(function(d){
+            var rank = null;
+
+            // if(self.dishExists()){
+            //     // console.log('asdasd');
+            //     var index = $.inArray(searchString, d.rankings.map(function(e){
+            //         return e.dish_name.toLowerCase();
+            //     }));
+            //     rank = d.rankings[index];
+            // } else {
+            d.rankings.find(function(e, i){
+                if(e.dish_name.match(searchTerm)){
+                    rank = e.rank;
+                    return true;
+                }
+            });
+            // }
+
+            // console.log(index);
+
+            self.setIcon(d.marker, rank);
+
+            // get the marker style for each item based on its rank
+            // var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
+
+            // set the icon
+            // d.marker.setIcon(self.iconStyles[markerRank]);
+        });
+    }
+
+    this.setIcon = function(marker, rank){
+        var markerRank = rank <= 3 ? rank : 'red';
+        // console.log(markerRank);
+        marker.setIcon(self.iconStyles[markerRank]);
+        // console.log(marker);
+    }
+
+    this.generalSearch = ko.observable();
+    this.visibleMarkers = ko.computed(function(){
+        console.log('updating visible markers');
+        // general search bar
+        var searchTerm = new RegExp(self.generalSearch(), 'i');
+        var markerIndex = 0;
+        // filter centers array
+        return self.centers().filter(
+            // for each center
+            function(d){
+                // filter its rankings
+                var filterRanking = d.rankings.find(
+                    // for each ranking
+                    function(e, i){
+                        if(e['dish_name'].match(searchTerm)){
+                            self.setIcon(d.marker, e.rank);
+                            return true;
+                        }
+                });
+                return (typeof(filterRanking)!=='undefined');
+        });
+    });
 
     var userFaves = [];
 
@@ -56,6 +124,8 @@ var ViewModel = function(){
                 d.marker.setVisible(true);
             }
         });
+
+        self.setMarkerColors();
 
         $('#centres-loading-icon').hide();
     }
@@ -204,7 +274,6 @@ var ViewModel = function(){
     // track which view model should be shown on screen
     this.route = ko.observable();
     this.favouriteSearch = ko.observable();
-    this.generalSearch = ko.observable();
     this.categorySearch = ko.observable();
     // this.updateFavourites = function(){
     //     return db.collection('users').doc('acrawford').collection('favourites').get().then(function(d){
@@ -232,13 +301,6 @@ var ViewModel = function(){
     // });
     // self.centers(centers.sort(function(a,b){if(a.name < b.name){return -1}else if(a.name > b.name){return 1} else {return 0}}));
 
-
-    this.editing = ko.observable();
-    this.adding = ko.observable();
-    this.viewing = ko.observable();
-    this.topRanked = ko.observableArray();
-    this.rankingList = ko.observableArray();
-    this.dishExists = ko.observable();
 
     // this.init();
 
@@ -359,69 +421,71 @@ var ViewModel = function(){
         });
     });
 
-    this.getVisibleMarkers = ko.computed(function(){
-        console.log('running getVisibleMarkers function');
-        var searchTerm = new RegExp(self.generalSearch(), 'ig');
-
-        //find which markers should be visible
-        var visibleMarkers = self.centers().filter(
-            function(d){
-                return d.rankings.filter(
-                    function(e){
-                        return e['dish_name'].match(searchTerm);
-                    }).length > 0;
-        });
-
-
-        // if self.generalSearch is defined, searchString is the lowercase version
-        // otherwise it's an empty string
-        var searchString = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
-        var dishIndex = $.inArray(searchString, self.dishes().map(function(d){
-            return d.toLowerCase();
-        }));
-
-        if(dishIndex == -1){
-            self.dishExists(false);
-        } else {
-            self.dishExists(self.dishes()[dishIndex]);
-        }
-
-        if(!self.dishExists()){
-            // if the searchString is not a dish name, highlight the first ranking in each item's list
-            // and set topRanked to empty
-            self.topRanked([]);
-        } else {
-            // else populate top ranked with the visible markers
-            // this is the same data as visibleMarkers, just re-ordered
-            self.topRanked(visibleMarkers.map(function(d){return {'name': d.name, 'id': d.id, 'rank': d.rankings.filter(function(e){return e.dish_name.toLowerCase()==searchString})[0].rank}}).sort(function(a,b){return a.rank - b.rank}))
-        }
-
-        visibleMarkers.forEach(function(d){
-            var index = 0;
-
-            if(self.dishExists()){
-                index = $.inArray(searchString, d.rankings.map(function(e){
-                    return e.dish_name.toLowerCase();
-                }));
-            } else {
-                d.rankings.find(function(e, i){
-                    if(e.dish_name.match(searchTerm)){
-                        index = i;
-                        return true;
-                    }
-                })
-            }
-
-            // get the marker style for each item based on its rank
-            var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
-
-            // set the icon
-            d.marker.setIcon(self.iconStyles[markerRank]);
-        });
-
-        self.visibleMarkers(visibleMarkers);
-        self.updateMap();
-    });
+    // this probably shouldn't be computed - what should be computed is visibleMarkers
+    // this.getVisibleMarkers = ko.computed(function(){
+    //     console.log('running getVisibleMarkers function');
+    //     // general search bar
+    //     var searchTerm = new RegExp(self.generalSearch(), 'ig');
+    //
+    //     //find which markers should be visible
+    //     var visibleMarkers = self.centers().filter(
+    //         function(d){
+    //             return d.rankings.filter(
+    //                 function(e){
+    //                     return e['dish_name'].match(searchTerm);
+    //                 }).length > 0;
+    //     });
+    //
+    //
+    //     // if self.generalSearch is defined, searchString is the lowercase version
+    //     // otherwise it's an empty string
+    //     var searchString = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
+    //     var dishIndex = $.inArray(searchString, self.dishes().map(function(d){
+    //         return d.toLowerCase();
+    //     }));
+    //
+    //     if(dishIndex == -1){
+    //         self.dishExists(false);
+    //     } else {
+    //         self.dishExists(self.dishes()[dishIndex]);
+    //     }
+    //
+    //     if(!self.dishExists()){
+    //         // if the searchString is not a dish name, highlight the first ranking in each item's list
+    //         // and set topRanked to empty
+    //         self.topRanked([]);
+    //     } else {
+    //         // else populate top ranked with the visible markers
+    //         // this is the same data as visibleMarkers, just re-ordered
+    //         self.topRanked(visibleMarkers.map(function(d){return {'name': d.name, 'id': d.id, 'rank': d.rankings.filter(function(e){return e.dish_name.toLowerCase()==searchString})[0].rank}}).sort(function(a,b){return a.rank - b.rank}))
+    //     }
+    //
+    //     visibleMarkers.forEach(function(d){
+    //         var index = 0;
+    //
+    //         if(self.dishExists()){
+    //             index = $.inArray(searchString, d.rankings.map(function(e){
+    //                 return e.dish_name.toLowerCase();
+    //             }));
+    //         } else {
+    //             d.rankings.find(function(e, i){
+    //                 if(e.dish_name.match(searchTerm)){
+    //                     index = i;
+    //                     return true;
+    //                 }
+    //             })
+    //         }
+    //
+    //         // get the marker style for each item based on its rank
+    //         var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
+    //
+    //         // set the icon
+    //         d.marker.setIcon(self.iconStyles[markerRank]);
+    //     });
+    //
+    //     // self.visibleMarkers(visibleMarkers);
+    //     self.updateMap();
+    // });
 
 
 
@@ -527,9 +591,9 @@ var ViewModel = function(){
 
                     // self.centers(tempArray);
                     self.makeCentresFromData(data);
-                    self.visibleMarkers(self.centers().filter(function(d){
-                        return d.rankings.length;
-                    }));
+                    // self.visibleMarkers(self.centers().filter(function(d){
+                    //     return d.rankings.length;
+                    // }));
                     self.updateMap();
                     $('#rankingFilter').attr('disabled', false);
                     $('#rankingFilter').focus();
