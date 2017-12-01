@@ -112,6 +112,7 @@ var ViewModel = function(){
                     // for each ranking
                     function(e, i){
                         if(e['dish_name'].match(searchTerm)){
+                            d.marker.setZIndex(-e.rank);
                             self.setIcon(d.marker, e.rank);
                             return true;
                         }
