@@ -403,6 +403,13 @@ var ViewModel = function(){
                 index = $.inArray(searchString, d.rankings.map(function(e){
                     return e.dish_name.toLowerCase();
                 }));
+            } else {
+                d.rankings.find(function(e, i){
+                    if(e.dish_name.match(searchTerm)){
+                        index = i;
+                        return true;
+                    }
+                })
             }
 
             // get the marker style for each item based on its rank
