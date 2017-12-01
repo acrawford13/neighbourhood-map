@@ -13,6 +13,7 @@ var Center = function(data){
     this.lat = data.lat;
     this.lng = data.lng;
     this.rankings = data.rankings;
+    this.filteredRankings = [];
     this.marker = data.marker;
 }
 
@@ -85,6 +86,10 @@ var ViewModel = function(){
         // console.log(marker);
     }
 
+    this.setRanking = function(marker, rankings){
+
+    }
+
     this.generalSearch = ko.observable();
     this.visibleMarkers = ko.computed(function(){
         console.log('updating visible markers');
@@ -96,7 +101,8 @@ var ViewModel = function(){
             // for each center
             function(d){
                 // filter its rankings
-                var filterRanking = d.rankings.find(
+                d.filteredRankings = d.rankings.filter(function(e){return parseInt(e.rank) <= parseInt(self.filterRanking())})
+                var filterRanking = d.filteredRankings.find(
                     // for each ranking
                     function(e, i){
                         if(e['dish_name'].match(searchTerm)){
@@ -104,6 +110,34 @@ var ViewModel = function(){
                             return true;
                         }
                 });
+                d.marker.setVisible(typeof(filterRanking)!=='undefined');
+
+                // console.log(d.marker);
+                google.maps.event.clearListeners(d.marker, 'click');
+
+                d.marker.addListener('click', (function(thisMarker, thisInfo){
+                    var rankingHTML = '';
+                    if(thisInfo.filteredRankings.length > 0){
+                        rankingHTML += '<hr/>';
+                        for(var i = 0; i<thisInfo.filteredRankings.length && i<3; i++){
+                            rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.filteredRankings[i].rank + '"></i> <strong>#' + thisInfo.filteredRankings[i].rank + '</strong> for ' + thisInfo.filteredRankings[i].dish_name + '</br>';
+                        };
+                        if(thisInfo.filteredRankings.length > 3){
+                            rankingHTML += 'And '+ (thisInfo.filteredRankings.length - 3) +' more&hellip;';
+                        };
+                    }
+                    return function(){
+                        self.changeViewing(thisInfo.id);
+                        thisMarker.setAnimation(google.maps.Animation.DROP);
+                        self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+                        rankingHTML +
+                        '</div>');
+                        self.infoWindow().open(map, thisMarker);
+                        ko.applyBindings(self, document.getElementById('info-window'));
+                    }
+                })(d.marker, d));
+
+
                 return (typeof(filterRanking)!=='undefined');
         });
     });
@@ -157,27 +191,36 @@ var ViewModel = function(){
                 icon: self.iconStyles.red,
             });
 
-            marker.addListener('click', (function(thisMarker, thisInfo){
-                var rankingHTML = '';
-                if(thisInfo.rankings.length > 0){
-                    rankingHTML += '<hr/>';
-                    for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
-                        rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
-                    };
-                    if(thisInfo.rankings.length > 3){
-                        rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
-                    };
-                }
+            // marker.addListener('click', (function(thisMarker, thisInfo){
+            //     console.log(thisInfo);
+            //     var rankingHTML = '';
+            //     if(thisInfo.rankings.length > 0){
+            //         rankingHTML += '<hr/>';
+            //         for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
+            //             rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
+            //         };
+            //         if(thisInfo.rankings.length > 3){
+            //             rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
+            //         };
+            //     }
+            //     return function(){
+            //         self.changeViewing(thisInfo.id);
+            //         thisMarker.setAnimation(google.maps.Animation.DROP);
+            //         self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+            //         rankingHTML +
+            //         '</div>');
+            //         self.infoWindow().open(map, thisMarker);
+            //         ko.applyBindings(self, document.getElementById('info-window'));
+            //     }
+            // })(marker, data[key]));
+
+            marker.addListener('visible_changed', function(thisMarker){
                 return function(){
-                    self.changeViewing(thisInfo.id);
-                    thisMarker.setAnimation(google.maps.Animation.DROP);
-                    self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                    rankingHTML +
-                    '</div>');
-                    self.infoWindow().open(map, thisMarker);
-                    ko.applyBindings(self, document.getElementById('info-window'));
+                    if(thisMarker.getPosition()==self.infoWindow().getPosition() && !thisMarker.getVisible()){
+                        self.infoWindow().close();
+                    }
                 }
-            })(marker, data[key]));
+            }(marker));
 
             self.infoWindow().addListener('closeclick', function(){
                 self.clearViewing();
@@ -205,7 +248,7 @@ var ViewModel = function(){
             // (and cause we never fetch that center EVER);
             'url': 'http://andreacrawford.design/hawkerdb/centres',
             'success': function(data){
-                // self.makeCentresFromData(data);
+                self.makeCentresFromData(data);
 
                 // for(var key in data){
                 //     var item = data[key];
@@ -271,6 +314,8 @@ var ViewModel = function(){
                         self.favList(tempFavs);
                     }
                 })
+
+                $('#centres-loading-icon').hide();
             }
         })
     };
@@ -577,35 +622,41 @@ var ViewModel = function(){
         // return self.visibleMarkers();
     // });
 
-    this.changeRank = ko.computed(function(){
-        console.log('running changeRank function');
-        if(self.filterRanking() > 0){
-            $('#centres-loading-icon').show();
-            $('#rankingFilter').attr('disabled', true);
-            $.ajax({
-                // you need to fix this. if you limit the ranking,
-                // centres with no rank above the limit will not be fetched.
-                // this causes problems when the user has that in their favourites
-                // (and cause we never fetch that center EVER);
-                'url': 'http://andreacrawford.design/hawkerdb/centres?ranklimit=' + self.filterRanking(),
-                'success': function(data){
-                    // console.log('these are the centers we have:', self.centers());
-                    // self.init();
+    // this.changeRank = ko.computed(function(){
+    //     console.log('running changeRank function');
+    //     if(self.filterRanking() > 0){
+    //         $('#centres-loading-icon').show();
+    //         // $('#rankingFilter').attr('disabled', true);
+    //         self.centers().forEach(
+    //             function(d){
+    //                 d.filteredRankings = d.rankings.filter(function(e){return e.rank <= self.filterRanking();
+    //                 });
+    //             });
 
-                    // self.centers(tempArray);
-                    self.makeCentresFromData(data);
-                    // self.visibleMarkers(self.centers().filter(function(d){
-                    //     return d.rankings.length;
-                    // }));
-                    self.updateMap();
-                    $('#rankingFilter').attr('disabled', false);
-                    $('#rankingFilter').focus();
-                    // $('#centres-loading-icon').hide();
-                },
-            });
-
-        };
-    });
+            // $.ajax({
+            //     // you need to fix this. if you limit the ranking,
+            //     // centres with no rank above the limit will not be fetched.
+            //     // this causes problems when the user has that in their favourites
+            //     // (and cause we never fetch that center EVER);
+            //     'url': 'http://andreacrawford.design/hawkerdb/centres?ranklimit=' + self.filterRanking(),
+            //     'success': function(data){
+            //         // console.log('these are the centers we have:', self.centers());
+            //         // self.init();
+            //
+            //         // self.centers(tempArray);
+            //         self.makeCentresFromData(data);
+            //         // self.visibleMarkers(self.centers().filter(function(d){
+            //         //     return d.rankings.length;
+            //         // }));
+            //         self.updateMap();
+            //         $('#rankingFilter').attr('disabled', false);
+            //         $('#rankingFilter').focus();
+            //         // $('#centres-loading-icon').hide();
+            //     },
+            // });
+    //
+    //     };
+    // });
 
     // this.updateMarkers = ko.computed(function(){
     //     console.log(self.markers());
