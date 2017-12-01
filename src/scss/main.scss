@@ -122,6 +122,7 @@ main {
     padding: 1rem;
     width: 100%;
     position: fixed;
+    background-color: rgba(0,0,0,0.8);
 
     &__container {
         display: flex;
@@ -130,13 +131,20 @@ main {
     }
 
     &__search {
-        font-family: $primary-font-stack;
         flex: auto;
         margin-left: 3rem;
+    }
+
+    &__input {
+        font-family: $primary-font-stack;
         margin-right: 1rem;
+        padding: 0.5rem;
         background-color: rgba(255,255,255,1);
         border: 0.5px solid #bbb;
-        padding: 0.5rem;
+
+        &--small {
+            width: 5rem;
+        }
     }
 
     &__title {

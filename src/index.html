@@ -22,11 +22,11 @@
         <div class="c-top-bar">
             <div class="c-top-bar__container h-container">
                 <h1 class="c-top-bar__title">Hawker</h1>
-                <input placeholder="Search for your hawker favourites" class="c-top-bar__search" list="dish-search" type="text" data-bind="textInput: generalSearch" />
+                <input placeholder="Search for your hawker favourites" class="c-top-bar__input c-top-bar__search" list="dish-search" type="text" data-bind="textInput: generalSearch" />
                 <datalist id="dish-search" data-bind="foreach: $root.dishes">
                     <option data-bind="value: $data">
                 </datalist>
-                <input type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
+                <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
                 <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
             </div>
             <div class="c-top-bar__container h-container">
