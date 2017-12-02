@@ -56,7 +56,7 @@ var ViewModel = function(){
     }
 
     this.generalSearch = ko.observable();
-    this.dishExists = ko.computed(function(){
+    this.dishExists = ko.pureComputed(function(){
         var searchTerm = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
         return self.dishes()[$.inArray(searchTerm, self.dishes().map(function(d){return d.toLowerCase()}))];
     });
@@ -78,7 +78,7 @@ var ViewModel = function(){
             rankingHTML +
             '</div>';
         }
-        console.log('updating info window');
+
         if(item.marker.getPosition()==self.infoWindow().getPosition()){
             var content = makeInfoWindowContent(item);
             self.infoWindow().setContent(content);
@@ -130,6 +130,26 @@ var ViewModel = function(){
         //         self.setIcon(d.marker, 'red');
         //     }
         // });
+    });
+
+    this.dishRankings = ko.pureComputed(function(){
+        var dishRankings = [];
+        if(self.dishExists()){
+            var visibleMarkers = self.visibleMarkers().map(function(d){
+                return {'name': d.name, 'id': d.id,
+                        'rank': d.rankings.filter(function(e){
+                            return e.dish_name.toLowerCase()==self.dishExists().toLowerCase();
+                        })[0].rank}}).sort(function(a,b){return a.rank - b.rank});
+            visibleMarkers.forEach(function(d){
+                if(dishRankings[d.rank]){
+                    dishRankings[d.rank].push(d);
+                } else {
+                    dishRankings[d.rank] = [d];
+                }
+            });
+
+        }
+        return dishRankings;
     });
 
 
@@ -294,7 +314,7 @@ var ViewModel = function(){
             // create a new marker for it
             var marker = new google.maps.Marker({
                 position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
-                map: null,
+                map: map,
                 visible: true,
                 icon: self.iconStyles.red,
             });
@@ -339,12 +359,6 @@ var ViewModel = function(){
             self.markers.push(marker);
         }
         self.centers(tempArray);
-
-        self.centers().forEach(function(d){
-            if(d.marker.getMap()==null){
-                d.marker.setMap(map);
-            }
-        });
     }
 
     this.init = function(){

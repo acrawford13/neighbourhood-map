@@ -34,8 +34,8 @@
                     <ul class="c-message-list" data-bind="foreach: messages">
                         <li class="c-message-list__message" data-bind="html: message"></li>
                     </ul>
-                <h3 data-bind="text: generalSearch, visible: rankingList().length > 0"></h3>
-                <ul class="c-ranking-list" data-bind="foreach: rankingList">
+                <h3 data-bind="text: generalSearch, visible: dishRankings().length > 0"></h3>
+                <ul class="c-ranking-list" data-bind="foreach: dishRankings">
                     <li data-bind="if: $data">
                         <span class="c-ranking-list__group-title" data-bind="text: 'Ranking: ' + ($index())"></span>
                         <ul data-bind="foreach: $data">
