@@ -46,47 +46,13 @@ var ViewModel = function(){
         '3': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
     };
 
-    this.setMarkerColors = function(){
-        var searchTerm = new RegExp(self.generalSearch(), 'i');
-        self.visibleMarkers().forEach(function(d){
-            var rank = null;
-
-            // if(self.dishExists()){
-            //     // console.log('asdasd');
-            //     var index = $.inArray(searchString, d.rankings.map(function(e){
-            //         return e.dish_name.toLowerCase();
-            //     }));
-            //     rank = d.rankings[index];
-            // } else {
-            d.rankings.find(function(e, i){
-                if(e.dish_name.match(searchTerm)){
-                    rank = e.rank;
-                    return true;
-                }
-            });
-            // }
-
-            // console.log(index);
-
-            self.setIcon(d.marker, rank);
-
-            // get the marker style for each item based on its rank
-            // var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
-
-            // set the icon
-            // d.marker.setIcon(self.iconStyles[markerRank]);
-        });
-    }
-
-    this.setIcon = function(marker, rank){
-        var markerRank = rank <= 3 ? rank : 'red';
-        // console.log(markerRank);
+    this.setIcon = function(marker, rank, visible){
+        var rank = parseInt(rank);
+        var markerRank = (rank && rank <= 3) ? rank : 'red';
+        var zIndex = rank ? -rank : -100;
         marker.setIcon(self.iconStyles[markerRank]);
-        // console.log(marker);
-    }
-
-    this.setRanking = function(marker, rankings){
-
+        marker.setZIndex(zIndex);
+        marker.setVisible(visible);
     }
 
     this.generalSearch = ko.observable();
@@ -95,67 +61,153 @@ var ViewModel = function(){
         return self.dishes()[$.inArray(searchTerm, self.dishes().map(function(d){return d.toLowerCase()}))];
     });
 
+    this.updateInfoWindow = function(item){
+        var makeInfoWindowContent = function(item){
+            var rankingHTML = '';
+            var rankings = item.filteredRankings;
+            if(rankings.length > 0){
+                rankingHTML += '<hr/>';
+                for(var i = 0; i<rankings.length && i<3; i++){
+                    rankingHTML += '<i class="fa fa-certificate c-ranking--' + rankings[i].rank + '"></i> <strong>#' + rankings[i].rank + '</strong> for ' + rankings[i].dish_name + '</br>';
+                };
+                if(rankings.length > 3){
+                    rankingHTML += 'And '+ (rankings.length - 3) +' more&hellip;';
+                };
+            }
+            return '<div id="info-window" data-bind="click: function(){moreInfo(' + item.id + ')}" class="c-infowindow"><h4>' + item.name + '</h4>'+
+            rankingHTML +
+            '</div>';
+        }
+        console.log('updating info window');
+        if(item.marker.getPosition()==self.infoWindow().getPosition()){
+            var content = makeInfoWindowContent(item);
+            self.infoWindow().setContent(content);
+            self.infoWindow().open(map, item.marker);
+        };
+        item.marker.addListener('click', (function(thisItem){
+            var content = makeInfoWindowContent(thisItem);
+            return function(){
+                self.changeViewing(thisItem.id);
+                self.infoWindow().setContent(content);
+                self.infoWindow().open(map, thisItem.marker);
+                thisItem.marker.setAnimation(google.maps.Animation.DROP);
+                ko.applyBindings(self, document.getElementById('info-window'));
+            }
+        })(item));
+    }
+
     this.visibleMarkers = ko.computed(function(){
-        console.log('updating visible markers');
-        // general search bar
+        // if neither a search term nor a ranking filter is defined, return all centres
+        // if(!self.generalSearch() && !self.filterRanking()){
+        //     return self.centers();
+        // }
+
+        // make regular expression from the input in the search bar
+        console.log('making visible marker');
         var searchTerm = new RegExp(self.generalSearch(), 'i');
-        var markerIndex = 0;
-        // filter centers array
-        return self.centers().filter(
-            // for each center
-            function(d){
-                // filter its rankings
-                d.filteredRankings = d.rankings.filter(
-                    function(e){
-                        var dishMatch = e.dish_name.match(searchTerm) ? true : false;
-                        if(self.filterRanking()){
-                            var rankMatch = parseInt(e.rank) <= parseInt(self.filterRanking());
-                        } else {
-                            var rankMatch = true;
-                        };
-                        return dishMatch && rankMatch
-                    }
-                );
-                var filterRanking = d.filteredRankings.find(
-                    // for each ranking
-                    function(e, i){
-                        if(e['dish_name'].match(searchTerm)){
-                            d.marker.setZIndex(-e.rank);
-                            self.setIcon(d.marker, e.rank);
-                            return true;
-                        }
-                });
-                d.marker.setVisible(typeof(filterRanking)!=='undefined');
-
-                // console.log(d.marker);
-                google.maps.event.clearListeners(d.marker, 'click');
-
-                d.marker.addListener('click', (function(thisMarker, thisInfo){
-                    var rankingHTML = '';
-                    if(thisInfo.filteredRankings.length > 0){
-                        rankingHTML += '<hr/>';
-                        for(var i = 0; i<thisInfo.filteredRankings.length && i<3; i++){
-                            rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.filteredRankings[i].rank + '"></i> <strong>#' + thisInfo.filteredRankings[i].rank + '</strong> for ' + thisInfo.filteredRankings[i].dish_name + '</br>';
-                        };
-                        if(thisInfo.filteredRankings.length > 3){
-                            rankingHTML += 'And '+ (thisInfo.filteredRankings.length - 3) +' more&hellip;';
-                        };
-                    }
-                    return function(){
-                        self.changeViewing(thisInfo.id);
-                        thisMarker.setAnimation(google.maps.Animation.DROP);
-                        self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                        rankingHTML +
-                        '</div>');
-                        self.infoWindow().open(map, thisMarker);
-                        ko.applyBindings(self, document.getElementById('info-window'));
-                    }
-                })(d.marker, d));
+        var filterRanking = parseInt(self.filterRanking());
+        return self.centers().filter(function(d){
+            d.filteredRankings = d.rankings.filter(function(e){
+                var dishMatch = e.dish_name.match(searchTerm) ? true : false;
+                var rankMatch = filterRanking ? parseInt(e.rank) <= filterRanking : true;
+                return dishMatch && rankMatch;
+            });
 
 
-                return (typeof(filterRanking)!=='undefined');
+            if((!self.generalSearch() && !self.filterRanking()) || d.filteredRankings.length){
+                return true;
+            }
         });
+
+        // visibleMarkers.forEach(function(d){
+        //     if(d.rankings.length){
+        //         d.rankings.find(function(e){
+        //             d.marker.setZIndex(-e.rank);
+        //             self.setIcon(d.marker, e.rank);
+        //         });
+        //     } else {
+        //         d.marker.setZIndex(-100);
+        //         self.setIcon(d.marker, 'red');
+        //     }
+        // });
     });
+
+
+    //
+    // this.visibleMarkers = ko.computed(function(){
+    //     console.log('updating visible markers');
+    //     // general search bar
+    //     var searchTerm = new RegExp(self.generalSearch(), 'i');
+    //     var markerIndex = 0;
+    //     return self.centers().filter(
+    //         // for each center
+    //         function(d){
+    //             var visible = false;
+    //             // filter its rankings
+    //             // d.filteredRankings = d.rankings;
+    //             d.filteredRankings = d.rankings.filter(
+    //                 function(e){
+    //                     var dishMatch = e.dish_name.match(searchTerm) ? true : false;
+    //                     if(self.filterRanking()){
+    //                         var rankMatch = parseInt(e.rank) <= parseInt(self.filterRanking());
+    //                     } else {
+    //                         var rankMatch = true;
+    //                     };
+    //                     return dishMatch && rankMatch;
+    //                 }
+    //             );
+    //             var setMarker = d.filteredRankings.find(
+    //                 // for each ranking
+    //                 function(e, i){
+    //                     if(e['dish_name'] || self.generalSearch() || self.filterRanking()){
+    //                         if(e['dish_name'].match(searchTerm)){
+    //                             d.marker.setZIndex(-e.rank);
+    //                             self.setIcon(d.marker, e.rank);
+    //                             visible = true;
+    //                             return true;
+    //                         }
+    //                     }
+    //                 // if searchTerm, only show results that match.
+    //                 // if filterRank is undefined
+    //             });
+    //
+    //             if(!self.generalSearch() && !self.filterRanking() && d.filteredRankings.length == 0){
+    //                 d.marker.setZIndex(-100);
+    //                 self.setIcon(d.marker, 'red');
+    //                 visible = true;
+    //             }
+    //
+    //             d.marker.setVisible(visible);
+    //
+    //             // console.log(d.marker);
+    //             google.maps.event.clearListeners(d.marker, 'click');
+    //
+    //             d.marker.addListener('click', (function(thisMarker, thisInfo){
+    //                 var rankingHTML = '';
+    //                 if(thisInfo.filteredRankings.length > 0){
+    //                     rankingHTML += '<hr/>';
+    //                     for(var i = 0; i<thisInfo.filteredRankings.length && i<3; i++){
+    //                         rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.filteredRankings[i].rank + '"></i> <strong>#' + thisInfo.filteredRankings[i].rank + '</strong> for ' + thisInfo.filteredRankings[i].dish_name + '</br>';
+    //                     };
+    //                     if(thisInfo.filteredRankings.length > 3){
+    //                         rankingHTML += 'And '+ (thisInfo.filteredRankings.length - 3) +' more&hellip;';
+    //                     };
+    //                 }
+    //                 return function(){
+    //                     self.changeViewing(thisInfo.id);
+    //                     thisMarker.setAnimation(google.maps.Animation.DROP);
+    //                     self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
+    //                     rankingHTML +
+    //                     '</div>');
+    //                     self.infoWindow().open(map, thisMarker);
+    //                     ko.applyBindings(self, document.getElementById('info-window'));
+    //                 }
+    //             })(d.marker, d));
+    //
+    //             // return true;
+    //             return visible;
+    //     });
+    // });
 
     self.infoWindow = ko.observable(new google.maps.InfoWindow({}));
 
@@ -164,23 +216,63 @@ var ViewModel = function(){
     this.clearMap = function(){
         self.centers().forEach(function(d){
             d.marker.setVisible(false);
-            // d.marker.off('click');
         });
     }
 
-    this.updateMap = function(){
+    // this.updateMap = function(){
+    //     self.clearMap();
+    //
+    //     self.visibleMarkers().forEach(function(d){
+    //         if(d.marker.getVisible()==false){
+    //             d.marker.setVisible(true);
+    //         }
+    //     });
+    //
+    //     // self.setMarkerColors();
+    //
+    //     $('#centres-loading-icon').hide();
+    // }
+
+    this.setMarkers = ko.computed(function(){
         self.clearMap();
-
+        console.log('setting marker colors');
+        // var searchTerm = new RegExp('an', 'i');
+        // var searchTerm = new RegExp(self.generalSearch(), 'i');
         self.visibleMarkers().forEach(function(d){
-            if(d.marker.getVisible()==false){
-                d.marker.setVisible(true);
-            }
+            self.updateInfoWindow(d);
+            var rank = d.filteredRankings[0] ? d.filteredRankings[0].rank : null;
+            self.setIcon(d.marker, rank, true);
+            // d.marker.setVisible(true);
+            // var rank;
+            //
+            // // if(self.dishExists()){
+            // //     // console.log('asdasd');
+            // //     var index = $.inArray(searchString, d.rankings.map(function(e){
+            // //         return e.dish_name.toLowerCase();
+            // //     }));
+            // //     rank = d.rankings[index];
+            // // } else {
+            // d.rankings.find(function(e, i){
+            //     if(e.dish_name.match(new RegExp(self.generalSearch(), 'i'))){
+            //         rank = e.rank;
+            //         return true;
+            //     }
+            // });
+
+            // }
+
+            // console.log(index);
+
+            // if(rank){
+            // }
+
+            // get the marker style for each item based on its rank
+            // var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
+
+            // set the icon
+            // d.marker.setIcon(self.iconStyles[markerRank]);
         });
-
-        self.setMarkerColors();
-
-        $('#centres-loading-icon').hide();
-    }
+    });
 
     this.makeCentresFromData = function(data){
         self.clearMap();
@@ -197,6 +289,7 @@ var ViewModel = function(){
         for(var key in data){
             // store the item in a variable
             var item = data[key];
+            // console.log(data[key]);
 
             // create a new marker for it
             var marker = new google.maps.Marker({
