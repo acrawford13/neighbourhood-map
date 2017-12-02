@@ -33,7 +33,7 @@ var ViewModel = function(){
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
     this.dishes = ko.observableArray([]);
-    this.filterRanking = ko.observable(10);
+    this.filterRanking = ko.observable();
     this.iconHeight = 35;
     this.iconWidth = this.iconHeight/1.42857143;
     this.iconStyles = {
@@ -108,7 +108,11 @@ var ViewModel = function(){
                 d.filteredRankings = d.rankings.filter(
                     function(e){
                         var dishMatch = e.dish_name.match(searchTerm) ? true : false;
-                        var rankMatch = parseInt(e.rank) <= parseInt(self.filterRanking());
+                        if(self.filterRanking()){
+                            var rankMatch = parseInt(e.rank) <= parseInt(self.filterRanking());
+                        } else {
+                            var rankMatch = true;
+                        };
                         return dishMatch && rankMatch
                     }
                 );
@@ -457,7 +461,7 @@ var ViewModel = function(){
                     'user_id': 1,
                     'centre_id': favourite.centre().id,
                 },
-                'success':function(){console.log('success')}
+                'success':function(){console.log(favourite.dish_id, favourite.centre().id)}
             });
             // console.log(favourite);
             self.editing(!self.editing);
@@ -785,7 +789,7 @@ var ViewModel = function(){
     this.messages = ko.computed(function(){
         var plural = self.visibleMarkers().length == 1 ? '' : 's';
         var wording = self.filterRanking() == 1 ? '' : ' or higher';
-        var category;
+        var category, ranking;
         if(self.generalSearch()){
             if(self.dishExists()){
                 category = ' in the category <span class="c-message-list__emphasis">' + self.dishExists() + '</span>';
@@ -795,8 +799,15 @@ var ViewModel = function(){
         } else {
             category = ' in <span class="c-message-list__emphasis">any</span> category';
         }
+        if(self.filterRanking()){
+            ranking = "a ranking of <span class='c-message-list__emphasis'>" + self.filterRanking();
+            ranking += self.filterRanking() == 1 ? '' : ' or higher';
+            ranking += "</span>";
+        } else {
+            ranking = "<span class='c-message-list__emphasis'>any</span> ranking";
+        }
         // var category = self.generalSearch() ? ' in the category <span class="c-message-list__emphasis">' + self.generalSearch() + '</span>' : ' in <span class="c-message-list__emphasis">any</span> category';
-        return [{message: "Showing <span class='c-message-list__emphasis'>" +  self.visibleMarkers().length + "</span> result" + plural + " with a ranking of <span class='c-message-list__emphasis'>" + self.filterRanking() + wording + "</span>" + category}];
+        return [{message: "Showing <span class='c-message-list__emphasis'>" +  self.visibleMarkers().length + "</span> result" + plural + " with " + ranking + category}];
     });
 
 }
