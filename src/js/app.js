@@ -135,20 +135,20 @@ var ViewModel = function(){
     this.dishRankings = ko.pureComputed(function(){
         var dishRankings = [];
         if(self.dishExists()){
-            var visibleMarkers = self.visibleMarkers().map(function(d){
-                return {'name': d.name, 'id': d.id,
-                        'rank': d.rankings.filter(function(e){
-                            return e.dish_name.toLowerCase()==self.dishExists().toLowerCase();
-                        })[0].rank}}).sort(function(a,b){return a.rank - b.rank});
-            visibleMarkers.forEach(function(d){
-                if(dishRankings[d.rank]){
-                    dishRankings[d.rank].push(d);
+            self.visibleMarkers().forEach(function(d){
+                var rank = d.filteredRankings[0].rank;
+                if(dishRankings[rank]){
+                    dishRankings[rank].push(d);
                 } else {
-                    dishRankings[d.rank] = [d];
+                    dishRankings[rank] = [d]
                 }
-            });
-
+            })
         }
+        dishRankings.forEach(function(d){
+            d.sort(function(a, b){
+                return a.name.localeCompare(b.name);
+            })
+        });
         return dishRankings;
     });
 
