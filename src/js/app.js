@@ -21,7 +21,7 @@ var ViewModel = function(){
 
     var self = this;
 
-
+    this.inMoreInfoLimit = ko.observable(5);
     this.editing = ko.observable();
     this.adding = ko.observable();
     this.viewing = ko.observable();
@@ -32,7 +32,13 @@ var ViewModel = function(){
     this.centers = ko.observableArray([]);
     this.categories = ko.observableArray([]);
     this.markers = ko.observableArray([]);
-    this.dishes = ko.observableArray([]);
+    this.dishes = ko.pureComputed(function(){
+        var tempDishes = [].concat.apply([],self.centers().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
+        tempDishes = $.grep(tempDishes, function(d, i){
+            return $.inArray(d, tempDishes) === i;
+        }).sort();
+        return tempDishes;
+    });
     this.filterRanking = ko.observable();
     this.iconHeight = 35;
     this.iconWidth = this.iconHeight/1.42857143;
@@ -152,86 +158,7 @@ var ViewModel = function(){
         return dishRankings;
     });
 
-
-    //
-    // this.visibleMarkers = ko.computed(function(){
-    //     console.log('updating visible markers');
-    //     // general search bar
-    //     var searchTerm = new RegExp(self.generalSearch(), 'i');
-    //     var markerIndex = 0;
-    //     return self.centers().filter(
-    //         // for each center
-    //         function(d){
-    //             var visible = false;
-    //             // filter its rankings
-    //             // d.filteredRankings = d.rankings;
-    //             d.filteredRankings = d.rankings.filter(
-    //                 function(e){
-    //                     var dishMatch = e.dish_name.match(searchTerm) ? true : false;
-    //                     if(self.filterRanking()){
-    //                         var rankMatch = parseInt(e.rank) <= parseInt(self.filterRanking());
-    //                     } else {
-    //                         var rankMatch = true;
-    //                     };
-    //                     return dishMatch && rankMatch;
-    //                 }
-    //             );
-    //             var setMarker = d.filteredRankings.find(
-    //                 // for each ranking
-    //                 function(e, i){
-    //                     if(e['dish_name'] || self.generalSearch() || self.filterRanking()){
-    //                         if(e['dish_name'].match(searchTerm)){
-    //                             d.marker.setZIndex(-e.rank);
-    //                             self.setIcon(d.marker, e.rank);
-    //                             visible = true;
-    //                             return true;
-    //                         }
-    //                     }
-    //                 // if searchTerm, only show results that match.
-    //                 // if filterRank is undefined
-    //             });
-    //
-    //             if(!self.generalSearch() && !self.filterRanking() && d.filteredRankings.length == 0){
-    //                 d.marker.setZIndex(-100);
-    //                 self.setIcon(d.marker, 'red');
-    //                 visible = true;
-    //             }
-    //
-    //             d.marker.setVisible(visible);
-    //
-    //             // console.log(d.marker);
-    //             google.maps.event.clearListeners(d.marker, 'click');
-    //
-    //             d.marker.addListener('click', (function(thisMarker, thisInfo){
-    //                 var rankingHTML = '';
-    //                 if(thisInfo.filteredRankings.length > 0){
-    //                     rankingHTML += '<hr/>';
-    //                     for(var i = 0; i<thisInfo.filteredRankings.length && i<3; i++){
-    //                         rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.filteredRankings[i].rank + '"></i> <strong>#' + thisInfo.filteredRankings[i].rank + '</strong> for ' + thisInfo.filteredRankings[i].dish_name + '</br>';
-    //                     };
-    //                     if(thisInfo.filteredRankings.length > 3){
-    //                         rankingHTML += 'And '+ (thisInfo.filteredRankings.length - 3) +' more&hellip;';
-    //                     };
-    //                 }
-    //                 return function(){
-    //                     self.changeViewing(thisInfo.id);
-    //                     thisMarker.setAnimation(google.maps.Animation.DROP);
-    //                     self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-    //                     rankingHTML +
-    //                     '</div>');
-    //                     self.infoWindow().open(map, thisMarker);
-    //                     ko.applyBindings(self, document.getElementById('info-window'));
-    //                 }
-    //             })(d.marker, d));
-    //
-    //             // return true;
-    //             return visible;
-    //     });
-    // });
-
     self.infoWindow = ko.observable(new google.maps.InfoWindow({}));
-
-    var userFaves = [];
 
     this.clearMap = function(){
         self.centers().forEach(function(d){
@@ -239,58 +166,13 @@ var ViewModel = function(){
         });
     }
 
-    // this.updateMap = function(){
-    //     self.clearMap();
-    //
-    //     self.visibleMarkers().forEach(function(d){
-    //         if(d.marker.getVisible()==false){
-    //             d.marker.setVisible(true);
-    //         }
-    //     });
-    //
-    //     // self.setMarkerColors();
-    //
-    //     $('#centres-loading-icon').hide();
-    // }
-
     this.setMarkers = ko.computed(function(){
         self.clearMap();
         console.log('setting marker colors');
-        // var searchTerm = new RegExp('an', 'i');
-        // var searchTerm = new RegExp(self.generalSearch(), 'i');
         self.visibleMarkers().forEach(function(d){
             self.updateInfoWindow(d);
             var rank = d.filteredRankings[0] ? d.filteredRankings[0].rank : null;
             self.setIcon(d.marker, rank, true);
-            // d.marker.setVisible(true);
-            // var rank;
-            //
-            // // if(self.dishExists()){
-            // //     // console.log('asdasd');
-            // //     var index = $.inArray(searchString, d.rankings.map(function(e){
-            // //         return e.dish_name.toLowerCase();
-            // //     }));
-            // //     rank = d.rankings[index];
-            // // } else {
-            // d.rankings.find(function(e, i){
-            //     if(e.dish_name.match(new RegExp(self.generalSearch(), 'i'))){
-            //         rank = e.rank;
-            //         return true;
-            //     }
-            // });
-
-            // }
-
-            // console.log(index);
-
-            // if(rank){
-            // }
-
-            // get the marker style for each item based on its rank
-            // var markerRank = d.rankings[index].rank <= 3 ? d.rankings[index].rank : 'red';
-
-            // set the icon
-            // d.marker.setIcon(self.iconStyles[markerRank]);
         });
     });
 
@@ -302,14 +184,10 @@ var ViewModel = function(){
         // make a temporary array to store the centres in so we can update the whole array in one shot
         var tempArray = [];
 
-        // create a new infoWindow
-
-
         // loop through each item in the results
         for(var key in data){
             // store the item in a variable
             var item = data[key];
-            // console.log(data[key]);
 
             // create a new marker for it
             var marker = new google.maps.Marker({
@@ -318,29 +196,6 @@ var ViewModel = function(){
                 visible: true,
                 icon: self.iconStyles.red,
             });
-
-            // marker.addListener('click', (function(thisMarker, thisInfo){
-            //     console.log(thisInfo);
-            //     var rankingHTML = '';
-            //     if(thisInfo.rankings.length > 0){
-            //         rankingHTML += '<hr/>';
-            //         for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
-            //             rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
-            //         };
-            //         if(thisInfo.rankings.length > 3){
-            //             rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
-            //         };
-            //     }
-            //     return function(){
-            //         self.changeViewing(thisInfo.id);
-            //         thisMarker.setAnimation(google.maps.Animation.DROP);
-            //         self.infoWindow().setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-            //         rankingHTML +
-            //         '</div>');
-            //         self.infoWindow().open(map, thisMarker);
-            //         ko.applyBindings(self, document.getElementById('info-window'));
-            //     }
-            // })(marker, data[key]));
 
             marker.addListener('visible_changed', function(thisMarker){
                 return function(){
@@ -364,75 +219,21 @@ var ViewModel = function(){
     this.init = function(){
         console.log('running init function');
         $.ajax({
-            // you need to fix this. if you limit the ranking,
-            // centres with no rank above the limit will not be fetched.
-            // this causes problems when the user has that in their favourites
-            // (and cause we never fetch that center EVER);
             'url': 'http://andreacrawford.design/hawkerdb/centres',
             'success': function(data){
                 self.makeCentresFromData(data);
-
-                // for(var key in data){
-                //     var item = data[key];
-                //
-                    // var marker = new google.maps.Marker({
-                    //     position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
-                    //     map: map,
-                    //     icon: self.iconStyles.red,
-                    // });
-                //
-                //     marker.addListener('click', (function(thisMarker, thisInfo){
-                //         var rankingHTML = '';
-                //         if(thisInfo.rankings.length > 0){
-                //             rankingHTML += '<hr/>';
-                //             for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
-                //                 rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
-                //             };
-                //             if(thisInfo.rankings.length > 3){
-                //                 rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
-                //             };
-                //         }
-                //         return function(){
-                //             self.changeViewing(thisInfo.id);
-                //             thisMarker.setAnimation(google.maps.Animation.DROP);
-                //             infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                //             rankingHTML +
-                //             '</div>');
-                //             infoWindow.open(map, thisMarker);
-                //             ko.applyBindings(self, document.getElementById('info-window'));
-                //         }
-                //     })(marker, data[key]));
-                //
-                //     infoWindow.addListener('closeclick', function(){
-                //         self.clearViewing();
-                //     });
-                //
-                    // item['marker'] = marker;
-                //
-                    // tempArray.push(new Center(item));
-                // }
-                //
-                // self.centers(tempArray);
-                // what is this doing again?
-                var tempDishes = [].concat.apply([],self.centers().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
-                tempDishes = $.grep(tempDishes, function(d, i){
-                    return $.inArray(d, tempDishes) === i;
-                }).sort();
-                self.dishes(tempDishes);
-                // $('#centres-loading-icon').hide();
-
-                var tempFavs = [];
-
                 $.ajax({
                     'url': 'http://andreacrawford.design/hawkerdb/user/1',
                     'success': function(data){
+                        var tempFavs = [];
                         for(var i = 0; i<data.favourites.length; i++){
                             var item = data.favourites[i];
-                            tempFavs.push(new Favourite({'centre': $.grep(self.centers(), function(e){return e.id == item.centre_id})[0],
-                                                      'dish_id': item.dish_id,
-                                                      'dish_name': item.dish_name}));
+                            tempFavs.push(new Favourite({
+                                'centre': $.grep(self.centers(), function(e){return e.id == item.centre_id})[0],
+                                'dish_id': item.dish_id,
+                                'dish_name': item.dish_name})
+                            );
                         }
-
                         self.favList(tempFavs);
                     }
                 })
@@ -893,9 +694,10 @@ var ViewModel = function(){
             return 0;
         });
     });
-    this.messages = ko.computed(function(){
+    this.messages = ko.observableArray([]);
+
+    this.filterMessage = ko.computed(function(){
         var plural = self.visibleMarkers().length == 1 ? '' : 's';
-        var wording = self.filterRanking() == 1 ? '' : ' or higher';
         var category, ranking;
         if(self.generalSearch()){
             if(self.dishExists()){
@@ -914,9 +716,10 @@ var ViewModel = function(){
             ranking = "<span class='c-message-list__emphasis'>any</span> ranking";
         }
         // var category = self.generalSearch() ? ' in the category <span class="c-message-list__emphasis">' + self.generalSearch() + '</span>' : ' in <span class="c-message-list__emphasis">any</span> category';
-        return [{message: "Showing <span class='c-message-list__emphasis'>" +  self.visibleMarkers().length + "</span> result" + plural + " with " + ranking + category}];
+        if(self.generalSearch() || self.filterRanking()){
+            return "Showing <span class='c-message-list__emphasis'>" +  self.visibleMarkers().length + "</span> result" + plural + " with " + ranking + category;
+        }
     });
-
 }
 
 $(document).ready(function(){

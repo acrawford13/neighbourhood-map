@@ -7,55 +7,61 @@
         <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
-        <div id="map" class="c-map"></div>
-        <div class="c-sidebar" data-bind="visible: viewing, with: viewing">
-            <h2 class="c-sidebar__title" data-bind="text: name"></h2>
-            <h3 data-bind="visible: rankings.length">Rankings</h3>
-            <ul data-bind="foreach: rankings">
-                <li><i data-bind="attr: { class: 'fa fa-certificate c-ranking--' + rank }"></i> Ranked #<span data-bind="text: rank"></span> for <span data-bind="text: dish_name"></span></li>
-            </ul>
-            <span data-bind="text: streetno"></span>
-            <span data-bind="text: streetname"></span>
-            <span data-bind="text: postalcode"></span>
-        </div>
-        <main class="c-main h-container">
-        <div class="c-top-bar">
-            <div class="c-top-bar__container h-container">
-                <h1 class="c-top-bar__title">Hawker</h1>
-                <input placeholder="Search for your hawker favourites" class="c-top-bar__input c-top-bar__search" list="dish-search" type="text" data-bind="textInput: generalSearch" />
-                <datalist id="dish-search" data-bind="foreach: $root.dishes">
-                    <option data-bind="value: $data">
-                </datalist>
-                <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
-                <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
-            </div>
-            <div class="c-top-bar__container h-container">
-                <div>
-                    <ul class="c-message-list" data-bind="foreach: messages">
-                        <li class="c-message-list__message" data-bind="html: message"></li>
+        <section class="c-section">
+            <div id="map" class="c-map"></div>
+            <main class="c-main h-container">
+            <div class="c-top-bar">
+                <div class="c-top-bar__container h-container">
+                    <h1 class="c-top-bar__title">Hawker</h1>
+                    <input placeholder="Search for your hawker favourites" class="c-top-bar__input c-top-bar__search" list="dish-search" type="text" data-bind="textInput: generalSearch" />
+                    <datalist id="dish-search" data-bind="foreach: $root.dishes">
+                        <option data-bind="value: $data">
+                    </datalist>
+                    <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
+                    <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
+                </div>
+                <div class="c-top-bar__container h-container">
+                    <span class="c-message-list__message" data-bind="visible: filterMessage, html: filterMessage"></span>
+                    <h3 data-bind="text: generalSearch, visible: dishRankings().length > 0"></h3>
+                    <ul class="c-ranking-list" data-bind="foreach: dishRankings">
+                        <li data-bind="if: $data">
+                            <span class="c-ranking-list__group-title" data-bind="text: 'Ranking: ' + ($index())"></span>
+                            <ul data-bind="foreach: $data">
+                                <li data-bind="text: name, click: function(){$root.moreInfo(id)}"></li>
+                            </ul>
+                        </li>
                     </ul>
-                <h3 data-bind="text: generalSearch, visible: dishRankings().length > 0"></h3>
-                <ul class="c-ranking-list" data-bind="foreach: dishRankings">
-                    <li data-bind="if: $data">
-                        <span class="c-ranking-list__group-title" data-bind="text: 'Ranking: ' + ($index())"></span>
-                        <ul data-bind="foreach: $data">
-                            <li data-bind="text: name, click: function(){$root.moreInfo(id)}"></li>
-                        </ul>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+            <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
+            </main>
+        </section>
+        <div class="c-modal-container c-modal-container--overlay" data-bind="visible: viewing, with: viewing">
+            <div class="c-modal">
+                <div class="c-modal__above">
+                    <i class="fa fa-times c-modal__close-btn" data-bind="click: "></i>
+                </div>
+                <div class="c-modal__main c-hawker-details">
+                    <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
+                    <h3 data-bind="visible: rankings.length">Rankings</h3>
+                    <input data-bind="textInput: $root.inMoreInfoLimit" type="number">
+                    <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
+                        <li data-bind="visible: parseInt(rank) <= $root.inMoreInfoLimit(), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }"><span class="c-hawker-details__item-rank" data-bind="text: rank"></span><span class="c-hawker-details__item-name" data-bind="text: dish_name"></span></li>
+                    </ul>
+                    <span data-bind="text: streetno"></span>
+                    <span data-bind="text: streetname"></span>
+                    <span data-bind="text: postalcode"></span>
                 </div>
             </div>
         </div>
-        <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
-        </main>
         <div class="c-modal-container c-modal-container--overlay" data-bind="visible: route() == 'favourites'">
             <div class="c-modal">
                 <div class="c-modal__above">
                     <i class="fa fa-times c-modal__close-btn" data-bind="click: exitFavourites"></i>
                 </div>
-                <div class="c-modal__main">
-                    <div class="c-list c-favourites" data-bind="visible: !adding(), template: 'favourite-template'"></div>
-                    <div class="c-list c-favourites" data-bind="visible: adding(), template: 'adding-new-template'"></div>
+                <div class="c-modal__main c-favourites">
+                    <div class="c-list" data-bind="visible: !adding(), template: 'favourite-template'"></div>
+                    <div class="c-list" data-bind="visible: adding(), template: 'adding-new-template'"></div>
                 </div>
                 <div class="c-modal__below">
                     <a data-bind="click: addNew, visible: !adding()" href="#" class="c-button c-button--dark">Add a new favourite</a>

@@ -20,7 +20,11 @@ body {
     margin: 0;
     padding: 0;
     font-family: $primary-font-stack;
-    overflow: hidden;
+    // overflow: hidden;
+}
+
+.c-section {
+    min-height: 100vh;
 }
 
 h1, h2, h3 {
@@ -166,16 +170,56 @@ main {
     background-color: $background-color;
 }
 
-.c-sidebar {
-    position: fixed;
-    height: 100%;
-    background-color: rgba(0,0,0,0.9);
-    color: white;
+[class*="c-hawker-details__ranking-item--"] {
+    background-color: #eee;
+}
+
+.c-hawker-details {
     padding: 1rem;
-    padding-top: 5rem;
+    overflow-y: scroll;
 
     &__title {
         font-family: $primary-font-stack;
+    }
+
+    &__ranking-list {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    &__ranking-item {
+        border-radius: 0.25rem;
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        font-size: 0.9rem;
+
+        &--1 {
+            background-color: #CFB53B;
+            background: linear-gradient(lighten(#CFB53B, 10), #CFB53B);
+        }
+
+        &--2 {
+            background-color: silver;
+            background: linear-gradient(lighten(silver, 10), silver);
+        }
+
+        &--3 {
+            background-color: #A57164;
+            background: linear-gradient(lighten(#A57164, 10), #A57164);
+        }
+    }
+
+    &__item-name {
+        display: inline-block;
+        padding: 0.25rem;
+        border-left: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    &__item-rank {
+        display: inline-block;
+        padding: 0.25rem;
+        border-right: 1px solid rgba(255, 255, 255, 0.5);
     }
 }
 
@@ -193,9 +237,8 @@ main {
     }
 
     &__main {
+        max-height: 100%;
         background-color: $background-color;
-        display: flex;
-        flex-direction: column;
     }
 
     &__above {
@@ -243,6 +286,8 @@ main {
 }
 
 .c-favourites {
+    display: flex;
+    flex-direction: column;
 
     &__heading {
         margin-top: 0;
