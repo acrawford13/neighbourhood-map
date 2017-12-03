@@ -13,6 +13,7 @@ var Center = function(data){
     this.lat = data.lat;
     this.lng = data.lng;
     this.rankings = data.rankings;
+    this.foursquare_id = data.foursquare_id;
     this.filteredRankings = [];
     this.marker = data.marker;
 }
@@ -333,9 +334,40 @@ var ViewModel = function(){
         self.adding().dishId(category.id);
     };
 
+    this.foursquareTips = ko.observableArray([]);
+    this.foursquareImages = ko.observableArray([]);
+    this.foursquareUrl = ko.observableArray();
+
+    this.foursquare = function(){
+        var item = self.viewing();
+        if(item.foursquare_id){
+            $.ajax({
+                'url': 'https://api.foursquare.com/v2/venues/' + item.foursquare_id,
+                'data': {
+                    client_id:"2MC5VARD1M4I2N1ODQ0TFPLR1UNG2OSZPXGG5FVJK1P4NCGT",
+                    client_secret:"RTYLP5PAYEWFBWS02LM2U4MMUARWJLIPA3LAGQBUFMPHGMB5",
+                    v:"20170801"
+                },
+                'success':function(d){
+                    // itemInfo = JSON.parse(d.response.venue);
+                    console.log(d.response.venue);
+                    self.foursquareTips(d.response.venue.tips.groups[0].items);
+                    var prefix = d.response.venue.bestPhoto.prefix;
+                    var size = '300x300';
+                    var suffix = d.response.venue.bestPhoto.suffix;
+                    self.foursquareImages(d.response.venue.photos.groups[0].items);
+                    self.foursquareUrl(d.response.venue.canonicalUrl);
+                    // self.foursquareHours(d.response.venue);
+                    // return d.response.venue.tips.groups[0].items[0].text;
+                }
+            })
+        }
+    }
+
     this.moreInfo = function(id){
         var item = $.grep(self.centers(), function(e){return e.id == id})[0]
         self.viewing(item);
+        self.foursquare();
     };
 
     this.changeViewing = function(id){
@@ -347,6 +379,8 @@ var ViewModel = function(){
 
     this.clearViewing = function(){
         self.viewing(null);
+        self.foursquareTips([]);
+        self.foursquareImages([]);
     };
 
     this.categoryTemplate = function(category){
