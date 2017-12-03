@@ -39,18 +39,20 @@
         <div class="c-modal-container c-modal-container--overlay" data-bind="visible: viewing, with: viewing">
             <div class="c-modal">
                 <div class="c-modal__above">
-                    <i class="fa fa-times c-modal__close-btn" data-bind="click: "></i>
+                    <i class="fa fa-times c-modal__close-btn" data-bind="click: $root.clearViewing"></i>
                 </div>
                 <div class="c-modal__main c-hawker-details">
                     <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
-                    <h3 data-bind="visible: rankings.length">Rankings</h3>
-                    <input data-bind="textInput: $root.inMoreInfoLimit" type="number">
-                    <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
-                        <li data-bind="visible: parseInt(rank) <= $root.inMoreInfoLimit(), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }"><span class="c-hawker-details__item-rank" data-bind="text: rank"></span><span class="c-hawker-details__item-name" data-bind="text: dish_name"></span></li>
-                    </ul>
-                    <span data-bind="text: streetno"></span>
-                    <span data-bind="text: streetname"></span>
-                    <span data-bind="text: postalcode"></span>
+                    <div class="c-hawker-details__main">
+                        <h3 data-bind="visible: rankings.length">Rankings</h3>
+                        <input min="1" data-bind="textInput: $root.inMoreInfoLimit" type="number">
+                        <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
+                            <li data-bind="visible: parseInt(rank) <= ($root.inMoreInfoLimit() || 5), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }"><span class="c-hawker-details__item-rank" data-bind="text: rank"></span><span class="c-hawker-details__item-name" data-bind="text: dish_name"></span></li>
+                        </ul>
+                        <span data-bind="text: streetno"></span>
+                        <span data-bind="text: streetname"></span>
+                        <span data-bind="text: postalcode"></span>
+                    </div>
                 </div>
             </div>
         </div>

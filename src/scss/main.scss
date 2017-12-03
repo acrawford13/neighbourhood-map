@@ -175,11 +175,23 @@ main {
 }
 
 .c-hawker-details {
-    padding: 1rem;
-    overflow-y: scroll;
+    h3 {
+        margin: 0;
+    }
+
+    &__main {
+        padding: 1rem;
+        overflow-y: auto;
+    }
 
     &__title {
-        font-family: $primary-font-stack;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        padding: 1rem;
+        margin: 0;
+        color: darken($primary-color, 10);
+        background-color: #eee;
+        border-bottom: 1px solid #ddd;
     }
 
     &__ranking-list {
@@ -237,6 +249,8 @@ main {
     }
 
     &__main {
+        display: flex;
+        flex-direction: column;
         max-height: 100%;
         background-color: $background-color;
     }
@@ -286,8 +300,6 @@ main {
 }
 
 .c-favourites {
-    display: flex;
-    flex-direction: column;
 
     &__heading {
         margin-top: 0;
