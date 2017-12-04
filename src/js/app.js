@@ -58,6 +58,11 @@ var ViewModel = function(){
         '3': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
     };
 
+    this.centreListVisible = ko.observable(false);
+    this.toggleCentreList = function(){
+        self.centreListVisible(!self.centreListVisible());
+    }
+
     this.setIcon = function(marker, rank, visible){
         var rank = parseInt(rank);
         var markerRank = (rank && rank <= 3) ? rank : 'red';

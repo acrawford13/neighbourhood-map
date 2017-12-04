@@ -25,25 +25,32 @@
                         </div>
                         <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
                     </div>
-                    <div data-bind="visible: dishRankings().length > 0">
-                        <h3 data-bind="text: generalSearch"></h3>
-                        <ul class="c-ranking-list" data-bind="foreach: dishRankings">
-                            <li data-bind="if: $data">
-                                <span class="c-ranking-list__group-title" data-bind="text: 'Ranking: ' + ($index())"></span>
-                                <ul data-bind="foreach: $data">
-                                    <li data-bind="text: name, click: function(){$root.moreInfo(id)}"></li>
+                </div>
+            </main>
+            <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
+            <div style="flex: auto; position: relative">
+                <div class="c-floating-elements" style="display: flex; flex-direction: column">
+                    <div data-bind="visible: filterMessage" class="c-top-bar__container c-top-bar__message">
+                        <span class="h-container c-message-list__message" data-bind="html: filterMessage"></span>
+                    </div>
+                    <div style="flex: auto; position: relative">
+                        <div class="c-centre-list">
+                            <div class="c-centre-list__content" data-bind="visible: centreListVisible() && (visibleMarkers().length > 0)">
+                                <h3 data-bind="text: generalSearch"></h3>
+                                <ul class="c-centre-list__list" data-bind="foreach: visibleMarkers">
+                                    <li class="c-centre-list__list-item">
+                                        <span data-bind="text: name"></span>
+                                        <div data-bind="foreach: filteredRankings">
+                                        <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-certificate"></i>
+                                    </div>
+                                    </li>
                                 </ul>
-                            </li>
-                        </ul>
+                            </div>
+                            <span data-bind="click: $root.toggleCentreList" class="c-centre-list__button c-button">View list</span>
+                        </div>
                     </div>
                 </div>
-                <div data-bind="visible: filterMessage" class="c-top-bar__container c-top-bar__message">
-                    <span class="h-container c-message-list__message" data-bind="html: filterMessage"></span>
-                </div>
-                <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
-            </main>
-            <div style="flex: auto; position: relative">
-                &nbsp;<div id="map" class="c-map"></div>
+                <div id="map" class="c-map"></div>
             </div>
         </section>
         <div class="c-modal-container c-modal-container--overlay" data-bind="visible: viewing, with: viewing">
