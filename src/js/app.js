@@ -25,10 +25,15 @@ var ViewModel = function(){
     this.inMoreInfoLimit = ko.observable(5);
     this.editing = ko.observable();
     this.adding = ko.observable();
-    this.viewing = ko.observable(null);
+    this.viewing = ko.observable();
     this.topRanked = ko.observableArray([]);
     this.rankingList = ko.observableArray([]);
     this.favList = ko.observableArray([]);
+    this.dishFavList = ko.pureComputed(function(){
+        return self.favList().filter(function(d){
+            return d.centre() && (d.centre().id == self.viewing().id);
+        });
+    })
     this.testCenters = ko.observableArray([]);
     this.centers = ko.observableArray([]);
     this.categories = ko.observableArray([]);

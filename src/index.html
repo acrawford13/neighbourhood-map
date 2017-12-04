@@ -59,6 +59,12 @@
                                 <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
                             </li>
                         </ul>
+                        <h3 class="c-hawker-details__subtitle" data-bind="visible: $root.dishFavList().length">My favourite for:</h3>
+                        <ul class="c-hawker-details__ranking-list" data-bind="foreach: $root.dishFavList">
+                            <li class="c-hawker-details__ranking-item">
+                                <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
+                            </li>
+                        </ul>
                         <p data-bind="html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></p>
                     </div>
                     <div class="c-hawker-details__right">
