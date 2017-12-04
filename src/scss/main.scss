@@ -63,6 +63,14 @@ main {
         border-radius: 3rem;
     }
 
+    &--grey {
+        background-color: #444;
+
+        &:hover {
+            background-color: darken(#444, 5);
+        }
+    }
+
     &--dark {
         background-color: darken($primary-color, 10);
 
@@ -156,6 +164,10 @@ main {
     justify-content: flex-end;
     padding: 0.5rem;
 
+    > .c-centre-list__content {
+        box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+
     &__title {
         padding-left: 0.5rem;
     }
@@ -209,7 +221,6 @@ main {
 
 .c-top-bar {
     width: 100%;
-    // position: fixed;
     background-color: rgba(0,0,0,0.8);
 
     &__container {
@@ -232,8 +243,6 @@ main {
     &__search {
         position: relative;
         flex: auto;
-        margin-left: 3rem;
-        margin-right: 1rem;
     }
 
     ::placeholder {
@@ -251,6 +260,7 @@ main {
         border-bottom: 0.5px solid #bbb;
         color: white;
         background: transparent;
+        margin-right: 1rem;
 
         &--small {
             width: 5rem;
@@ -262,6 +272,11 @@ main {
         font-family: $display-font-stack;
         text-transform: uppercase;
         margin: 0;
+        margin-right: 2rem;
+    }
+
+    &__edit-favourites {
+        margin-left: 1rem;
     }
 }
 
@@ -274,6 +289,11 @@ main {
     width: 100%;
     z-index: 102;
     background-color: $background-color;
+    padding: 2rem;
+
+    &--overlay {
+        background-color: rgba(0,0,0,.6);
+    }
 }
 
 [class*="c-hawker-details__ranking-item--"] {
@@ -281,8 +301,8 @@ main {
 }
 
 .c-foursquare {
-    &__list {
-
+    &__heading {
+        margin: 0;
     }
 
     &__tip {
@@ -523,10 +543,7 @@ main {
 
     &--editing {
         box-shadow: 0 0 20px rgba(0,0,0,0.2);
-        // margin-left: -2%;
-        // margin-right: -2%;
         background-color: white;
-        // border: 1px solid darkred;
     }
 
     &__select {
@@ -575,12 +592,6 @@ main {
 
         }
     }
-
-    &:hover {
-        .c-favourite__action {
-            // display: inline;
-        }
-    }
 }
 
 .c-map {
@@ -591,35 +602,116 @@ main {
     width: 100%;
 }
 
-@media screen and (min-width: 360px) {
-
-    .c-favourite {
-        &__actions {
-            flex-basis: 8rem;
-        }
+@media screen and (max-width: 360px){
+    .c-button {
+        font-size: 0.9rem;
     }
 }
 
-@media screen and (min-width: 540px) {
+@media screen and (max-width: 540px){
     .c-modal-container {
-        padding: 2rem;
-
-        &--overlay {
-            background-color: rgba(0,0,0,.6);
-        }
+        padding: 0;
     }
-
     .c-modal {
+        &__above {
+            background-color: darken($primary-color, 10);
+            margin-bottom: 0;
+        }
+
         &__main {
-            border-radius: $container-radius;
+            overflow-y: scroll;
         }
     }
 
-}
-
-@media screen and (min-width: 950px) {
     .c-top-bar {
-        padding-left: 0;
-        padding-right: 0;
+        &__title {
+            order: -2;
+            margin-bottom: 1rem;
+        }
+
+        #tb-edit-favourites {
+            order: -1;
+        }
+    }
+
+    .c-hawker-details {
+        flex-direction: column;
+        padding: 1rem;
+
+        &__left, &__right {
+            width: 100%;
+            overflow: visible !important;
+            margin: 0;
+        }
+    }
+
+    .c-foursquare {
+        &__heading {
+            margin-top: 1rem;
+        }
     }
 }
+
+@media screen and (max-width: 950px){
+    .c-top-bar {
+        &__container {
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+    }
+}
+
+// @media screen and (min-width: 360px) {
+//
+//     .c-favourite {
+//         &__actions {
+//             flex-basis: 8rem;
+//         }
+//     }
+//
+//     .c-top-bar {
+//         &__container {
+//         }
+//     }
+// }
+//
+//
+// @media screen and (min-width: 540px) {
+//     .c-modal-container {
+//         padding: 2rem;
+//
+//         &--overlay {
+//             background-color: rgba(0,0,0,.6);
+//         }
+//     }
+//
+//     .c-modal {
+//         &__main {
+//             border-radius: $container-radius;
+//         }
+//     }
+//
+//     .c-top-bar {
+//
+//         #tb-edit-favourites {
+//             order: 1;
+//         }
+//
+//         &__search {
+//             margin-left: 3rem;
+//         }
+//
+//         &__title {
+//             align-items: center;
+//             margin-bottom: 0;
+//         }
+//     }
+//
+// }
+//
+// @media screen and (min-width: 950px) {
+//     .c-top-bar {
+//         padding-left: 0;
+//         padding-right: 0;
+//     }
+// }

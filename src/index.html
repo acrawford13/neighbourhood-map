@@ -13,21 +13,21 @@
                     <div class="c-top-bar__container h-container">
                         <h1 class="c-top-bar__title">Hawker</h1>
                         <div class="c-input-group c-top-bar__search">
-                            <input id="dish-search" placeholder="Search for your hawker favourites" list="dish-search-list" class="c-top-bar__input" type="text" data-bind="textInput: generalSearch" />
+                            <input id="dish-search" placeholder="Search for your favourite dishes" list="dish-search-list" class="c-top-bar__input" type="text" data-bind="textInput: generalSearch" />
                             <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
                                 <option data-bind="value: $data">
                             </datalist>
                             <label class="c-input-group__label c-top-bar__label" for="dish-search">Dish Search</label>
                         </div>
-                        <div class="c-input-group">
-                            <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" placeholder="∞" id="rankingFilter" data-bind="textInput: filterRanking"></input>
+                        <div class="c-top-bar__filter c-input-group">
+                            <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" placeholder="∞" id="rankingFilter" data-bind="textInput: filterRanking" />
                             <label class="c-input-group__label c-top-bar__label" for="rankingFilter">Ranking Filter</label>
                         </div>
-                        <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
+                        <span id="tb-edit-favourites" data-bind="click: editFavourites" class="c-top-bar__edit-favourites c-button--grey c-button">View/edit favourites</span>
                     </div>
                 </div>
             </main>
-            <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
+            <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" alt="loading..."/>
             <div style="flex: auto; position: relative">
                 <div class="c-floating-elements" style="display: flex; flex-direction: column">
                     <div data-bind="visible: filterMessage" class="c-top-bar__container c-top-bar__message">
@@ -67,7 +67,7 @@
                         <span data-bind="text: streetname"></span>
                         <span data-bind="text: postalcode"></span>
                         <div data-bind="foreach: $root.foursquareImages().slice(0,5)">
-                            <img data-bind="attr: {src: prefix + '300x300' + suffix}" class="c-hawker-details__image"/>
+                            <img data-bind="attr: {src: prefix + '300x300' + suffix}" alt="Image of hawker centre" class="c-hawker-details__image"/>
                         </div>
                         <h3 class="c-hawker-details__subtitle" data-bind="visible: rankings.length">Rankings</h3>
                         <input min="1" data-bind="visible: rankings.length, textInput: $root.inMoreInfoLimit" type="number">
@@ -87,7 +87,7 @@
                         <p data-bind="html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></p>
                     </div>
                     <div class="c-hawker-details__right scrollbar-outer">
-                        <h3>Tips from Foursquare:</h3>
+                        <h3 class="c-foursquare__heading">Tips from Foursquare:</h3>
                         <ul class="c-foursquare__list c-list" data-bind="foreach: $root.foursquareTips">
                             <li class="c-foursquare__tip">
                                 <span class="c-foursquare__tip-body" data-bind="text: text"></span>
