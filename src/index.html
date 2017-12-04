@@ -52,6 +52,7 @@
                         </div>
                         <h3 class="c-hawker-details__subtitle" data-bind="visible: rankings.length">Rankings</h3>
                         <input min="1" data-bind="visible: rankings.length, textInput: $root.inMoreInfoLimit" type="number">
+                        <select data-bind="options: $root.rankFilterOptions, value: $root.inMoreInfoLimit"></select>
                         <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
                             <li data-bind="visible: parseInt(rank) <= ($root.inMoreInfoLimit() || 5), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }">
                                 <span class="c-hawker-details__item-rank" data-bind="text: rank"></span>

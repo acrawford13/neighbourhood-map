@@ -196,6 +196,9 @@ var ViewModel = function(){
             tempArray.push(new Center(item));
             self.markers.push(marker);
         }
+        tempArray.sort(function(a, b){
+            return a.name.localeCompare(b.name);
+        });
         self.centers(tempArray);
     }
 
@@ -292,6 +295,7 @@ var ViewModel = function(){
     this.foursquareTips = ko.observableArray([]);
     this.foursquareImages = ko.observableArray([]);
     this.foursquareUrl = ko.observable();
+    this.rankFilterOptions = [3, 5, 10, 20];
 
     this.foursquare = function(){
         var item = self.viewing();
