@@ -371,7 +371,9 @@ var ViewModel = function(){
         console.log('running searchResults function');
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
         var list = self.favList().filter(function(d){
-            return d.dish_name.match(searchTerm);
+            var centreMatch = d.centre() ? d.centre().name.match(searchTerm) : false;
+            var dishMatch = d.dish_name.match(searchTerm) ;
+            return dishMatch || centreMatch;
         }).sort(function(a, b){
             if(typeof(a.centre()) == typeof(b.centre())){
                 return a.dish_name.localeCompare(b.dish_name);
