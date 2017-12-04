@@ -43,6 +43,7 @@ var ViewModel = function(){
     this.foursquareTips = ko.observableArray([]);
     this.foursquareImages = ko.observableArray([]);
     this.foursquareUrl = ko.observable();
+    this.foursquareErrorMsg = ko.observable();
     this.rankFilterOptions = [3, 5, 10, 20];
 
     this.dishFavList = ko.pureComputed(function(){
@@ -289,6 +290,9 @@ var ViewModel = function(){
                     self.foursquareTips(d.response.venue.tips.groups[0].items);
                     self.foursquareImages(d.response.venue.photos.groups[0].items);
                     self.foursquareUrl(d.response.venue.canonicalUrl);
+                },
+                'error':function(){
+                    self.foursquareErrorMsg('Couldn\'t retrieve data from Foursquare');
                 }
             })
         }

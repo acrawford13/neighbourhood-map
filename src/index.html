@@ -84,10 +84,11 @@
                                 <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
                             </li>
                         </ul>
-                        <p data-bind="html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></p>
+                        <div data-bind="visible: !$root.foursquareErrorMsg(), html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></div>
                     </div>
                     <div class="c-hawker-details__right scrollbar-outer">
-                        <h3 class="c-foursquare__heading">Tips from Foursquare:</h3>
+                        <span class="c-foursquare__error" data-bind="text: $root.foursquareErrorMsg, visible: $root.foursquareErrorMsg"></span>
+                        <h3 data-bind="visible: !$root.foursquareErrorMsg()" class="c-foursquare__heading">Tips from Foursquare:</h3>
                         <ul class="c-foursquare__list c-list" data-bind="foreach: $root.foursquareTips">
                             <li class="c-foursquare__tip">
                                 <span class="c-foursquare__tip-body" data-bind="text: text"></span>

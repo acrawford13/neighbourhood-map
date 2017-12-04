@@ -305,6 +305,15 @@ main {
         margin: 0;
     }
 
+    &__error {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        color: grey;
+    }
+
     &__tip {
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
@@ -623,7 +632,7 @@ main {
     }
 
     .c-hawker-details {
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
     .c-top-bar {
@@ -640,6 +649,7 @@ main {
     .c-hawker-details {
         flex-direction: column;
         padding: 1rem;
+        flex: 1 0 auto;
 
         &__left, &__right {
             width: 100%;
@@ -651,6 +661,12 @@ main {
     .c-foursquare {
         &__heading {
             margin-top: 1rem;
+        }
+
+        &__error {
+            position: relative;
+            left: 0;
+            top: 0;
         }
     }
 }
