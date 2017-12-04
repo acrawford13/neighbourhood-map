@@ -13,15 +13,15 @@
                     <div class="c-top-bar__container h-container">
                         <h1 class="c-top-bar__title">Hawker</h1>
                         <div class="c-input-group c-top-bar__search">
-                            <input id="dish-search" placeholder="Search for your hawker favourites" class="c-top-bar__input" list="dish-search-list" type="text" data-bind="textInput: generalSearch" />
+                            <input id="dish-search" placeholder="Search for your hawker favourites" list="dish-search-list" class="c-top-bar__input" type="text" data-bind="textInput: generalSearch" />
                             <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
                                 <option data-bind="value: $data">
                             </datalist>
                             <label class="c-input-group__label c-top-bar__label" for="dish-search">Dish Search</label>
                         </div>
                         <div class="c-input-group">
-                            <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
-                            <label class="c-input-group__label c-top-bar__label" for="dish-search">Ranking Filter</label>
+                            <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" placeholder="∞" id="rankingFilter" data-bind="textInput: filterRanking"></input>
+                            <label class="c-input-group__label c-top-bar__label" for="rankingFilter">Ranking Filter</label>
                         </div>
                         <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
                     </div>
@@ -35,17 +35,20 @@
                     </div>
                     <div style="flex: auto; position: relative">
                         <div class="c-centre-list">
-                            <div class="c-centre-list__content scrollbar-outer" data-bind="visible: centreListVisible() && (visibleMarkers().length > 0)">
+                            <!-- ko if: centreListVisible() && (visibleMarkers().length > 0) -->
+                            <div class="c-centre-list__content scrollbar-outer">
+                                <h3 class="c-centre-list__title">Hawker Centres</h3>
                                 <ul class="c-centre-list__list" data-bind="foreach: visibleMarkers">
                                     <li data-bind="click: function(){return $root.moreInfo(id)}" class="c-centre-list__list-item">
                                         <span class="c-centre-list__name" data-bind="text: name"></span>
                                         <div class="c-centre-list__ranks" data-bind="foreach: filteredRankings().filter(function(d){return d.rank <= 3})">
-                                            <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-certificate"></i>
+                                            <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-circle"></i>
                                         </div>
                                     </li>
                                 </ul>
                             </div>
-                            <span data-bind="click: $root.toggleCentreList" class="c-centre-list__button c-button">View list</span>
+                            <!-- /ko -->
+                            <span data-bind="click: $root.toggleCentreList" class="c-centre-list__button c-button">Open list view</span>
                         </div>
                     </div>
                 </div>
@@ -368,60 +371,13 @@
 
             var markers = [];
 
-            // to do: add data layer so that vm can update markers
-
             function initMap(){
                 map = new google.maps.Map(document.getElementById('map'), {
-                    center: {lat: 1.3521, lng: 103.8198},
+                    center: {lat: 1.363, lng: 103.8198},
                     zoom: 12,
                     mapTypeControl: false,
                     styles: mapStyles,
                 });
-
-                // var infoWindow = new google.maps.InfoWindow({});
-                //
-                // infoWindow.addListener('closeclick', function(){
-                //     vm.clearViewing();
-                // });
-                //
-                // $.ajax({
-                //     'url': 'http://andreacrawford.design/hawkerdb/centres/',
-                //     'success': function(data){
-                //         for(var key in data){
-                //             var marker = new google.maps.Marker({
-                //                 position: {lng:parseFloat(data[key]['lng']), lat:parseFloat(data[key]['lat'])},
-                //                 map: map,
-                //             });
-                //
-                //             marker.addListener('click', (function(thisMarker, thisInfo){
-                //                 var rankingHTML = '';
-                //                 if(thisInfo.rankings.length > 0){
-                //                     rankingHTML += '<hr/>';
-                //                     for(var i = 0; i<thisInfo.rankings.length && i<3; i++){
-                //                         rankingHTML += '<i class="fa fa-certificate c-ranking--' + thisInfo.rankings[i].rank + '"></i> <strong>#' + thisInfo.rankings[i].rank + '</strong> for ' + thisInfo.rankings[i].dish_name + '</br>';
-                //                     };
-                //                     if(thisInfo.rankings.length > 3){
-                //                         rankingHTML += 'And '+ (thisInfo.rankings.length - 3) +' more&hellip;';
-                //                     };
-                //                 }
-                //                 return function(){
-                //                     // console.log(vm.editing());
-                //                     // console.log('asdasdasd');
-                //                     vm.changeViewing(thisInfo.id);
-                //                     thisMarker.setAnimation(google.maps.Animation.DROP);
-                //                     infoWindow.setContent('<div id="info-window" data-bind="click: function(){moreInfo(' + thisInfo.id + ')}" class="c-infowindow"><h4>' + thisInfo.name + '</h4>'+
-                //                         rankingHTML +
-                //                         '</div>');
-                //                     infoWindow.open(map, thisMarker);
-                //                     ko.applyBindings(vm, document.getElementById('info-window'));
-                //                 }
-                //             })(marker, data[key]))
-                //         }
-                //         $('#centres-loading-icon').hide();
-                //     },
-                // })
-
-
             }
         </script>
         <script src="js/app.js"></script>

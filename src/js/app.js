@@ -105,10 +105,10 @@ var ViewModel = function(){
         item.marker.addListener('click', (function(thisItem){
             var content = makeInfoWindowContent(thisItem);
             return function(){
+                thisItem.marker.setAnimation(google.maps.Animation.DROP);
                 self.changeViewing(thisItem.id);
                 self.infoWindow().setContent(content);
                 self.infoWindow().open(map, thisItem.marker);
-                thisItem.marker.setAnimation(google.maps.Animation.DROP);
                 ko.applyBindings(self, document.getElementById('info-window'));
             }
         })(item));
@@ -164,6 +164,7 @@ var ViewModel = function(){
     this.setMarkers = ko.computed(function(){
         self.clearMap();
         console.log('setting marker colors');
+
         self.visibleMarkers().forEach(function(d){
             self.updateInfoWindow(d);
             var rank = d.filteredRankings.peek()[0] ? d.filteredRankings.peek()[0].rank : null;
@@ -190,7 +191,7 @@ var ViewModel = function(){
                 map: map,
                 visible: true,
                 icon: self.iconStyles.red,
-            });
+            });;
 
             marker.addListener('visible_changed', function(thisMarker){
                 return function(){

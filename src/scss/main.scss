@@ -43,7 +43,7 @@ ul {
 }
 
 main {
-    z-index: 1000;
+    z-index: 100;
 }
 
 .c-button {
@@ -78,6 +78,7 @@ main {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    z-index: 100;
 }
 
 .c-infowindow {
@@ -139,7 +140,7 @@ main {
 .c-floating-elements {
     height: 100%;
     width: 100%;
-    z-index: 1001;
+    z-index: 101;
     position: absolute;
     pointer-events: none;
 }
@@ -155,6 +156,26 @@ main {
     justify-content: flex-end;
     padding: 0.5rem;
 
+    &__title {
+        padding-left: 0.5rem;
+    }
+
+    &__list-item {
+        padding: 0.5rem;
+        border-bottom: 0.5px solid #ddd;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    }
+
     &__list {
         margin: 0;
     }
@@ -162,22 +183,13 @@ main {
     &__ranks {
         flex: 1 0 auto;
         text-align: right;
+        font-size: 0.7rem;
+        line-height: 1rem;
         margin-left: 0.5rem;
     }
 
     &__name {
-        flex: 1 1 auto;
-    }
-
-    &__list-item {
-        padding: 0.5rem;
-        border-bottom: 0.5px solid #ddd;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        &:last-child {
-            border-bottom: none;
-        }
+        flex: 0 1 auto;
     }
 
     &__button {
@@ -191,6 +203,7 @@ main {
         max-width: 360px;
         margin-bottom: 1rem;
         border-radius: 0.5rem;
+        border: 0.5rem solid white;
     }
 }
 
@@ -217,8 +230,10 @@ main {
     }
 
     &__search {
+        position: relative;
         flex: auto;
         margin-left: 3rem;
+        margin-right: 1rem;
     }
 
     ::placeholder {
@@ -231,7 +246,6 @@ main {
 
     &__input {
         font-family: $primary-font-stack;
-        margin-right: 1rem;
         padding: 0.5rem;
         border: none;
         border-bottom: 0.5px solid #bbb;
@@ -258,7 +272,7 @@ main {
     top: 0;
     position: fixed;
     width: 100%;
-    z-index: 100;
+    z-index: 102;
     background-color: $background-color;
 }
 
