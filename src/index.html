@@ -131,7 +131,7 @@
                 <div class="c-favourite__details">
                     <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
-                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
+                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
                         <span data-bind="click: function(){console.log($data.centre().id); $root.moreInfo($data.centre().id)}, text: $data.centre().name, visible: $data != $parent.editing()" class="c-favourite__centre-name"></span>
                     </span>
                 </div>
@@ -146,12 +146,12 @@
                 <div class="c-favourite__details">
                     <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
-                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
+                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
                         <span data-bind="visible: $data != $parent.editing()" class="c-favourite__placeholder">Add a favourite</span>
                     </span>
                 </div>
                 <div class="c-favourite__actions">
-                    <a class="c-favourite__action c-favourite__action--edit" href="#"><i class="fa fa-plus"></i></a>
+                    <a class="c-favourite__action c-favourite__action--edit" href="#"><i data-bind="css: {'fa-plus': $data != $parent.editing(), 'fa-check': $data == $parent.editing()}"class="fa"></i></a>
                 </div>
             </div>
         </script>

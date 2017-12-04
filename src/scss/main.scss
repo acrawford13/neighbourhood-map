@@ -411,11 +411,19 @@ main {
     }
 
     &--editing {
-        // box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
         // margin-left: -2%;
         // margin-right: -2%;
-        background-color: red;
+        background-color: white;
         // border: 1px solid darkred;
+    }
+
+    &__select {
+        width: 100%;
+        margin-top: 0.25rem;
+        padding: 0.25rem;
+        border: none;
+        border-bottom: 1px solid $primary-color;
     }
 
     &__details {
