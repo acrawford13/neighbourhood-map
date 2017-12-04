@@ -131,7 +131,7 @@
                     <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
                         <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
-                        <span data-bind="text: $data.centre().name, visible: $data != $parent.editing()" class="c-favourite__center-name"></span>
+                        <span data-bind="click: function(){console.log($data.centre().id); $root.moreInfo($data.centre().id)}, text: $data.centre().name, visible: $data != $parent.editing()" class="c-favourite__centre-name"></span>
                     </span>
                 </div>
                 <div class="c-favourite__actions">
@@ -146,7 +146,7 @@
                     <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
                         <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
-                        <em data-bind="visible: $data != $parent.editing()" class="c-favourite__center-name">Add a favourite</em>
+                        <span data-bind="visible: $data != $parent.editing()" class="c-favourite__placeholder">Add a favourite</span>
                     </span>
                 </div>
                 <div class="c-favourite__actions">

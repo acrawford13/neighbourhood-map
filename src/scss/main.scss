@@ -390,6 +390,16 @@ main {
         }
     }
 
+    &__centre-name {
+        cursor: pointer;
+        color: darken($primary-color, 10);
+    }
+
+    &__placeholder {
+        font-style: italic;
+        color: #444;
+    }
+
     &--existing {
         background-color: red;
     }

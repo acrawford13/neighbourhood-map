@@ -104,12 +104,6 @@ var ViewModel = function(){
     }
 
     this.visibleMarkers = ko.computed(function(){
-        // if neither a search term nor a ranking filter is defined, return all centres
-        // if(!self.generalSearch() && !self.filterRanking()){
-        //     return self.centers();
-        // }
-
-        // make regular expression from the input in the search bar
         console.log('making visible marker');
         var searchTerm = new RegExp(self.generalSearch(), 'i');
         var filterRanking = parseInt(self.filterRanking());
@@ -125,18 +119,6 @@ var ViewModel = function(){
                 return true;
             }
         });
-
-        // visibleMarkers.forEach(function(d){
-        //     if(d.rankings.length){
-        //         d.rankings.find(function(e){
-        //             d.marker.setZIndex(-e.rank);
-        //             self.setIcon(d.marker, e.rank);
-        //         });
-        //     } else {
-        //         d.marker.setZIndex(-100);
-        //         self.setIcon(d.marker, 'red');
-        //     }
-        // });
     });
 
     this.dishRankings = ko.pureComputed(function(){
@@ -243,39 +225,11 @@ var ViewModel = function(){
             }
         })
     };
+
     // track which view model should be shown on screen
     this.route = ko.observable();
     this.favouriteSearch = ko.observable();
     this.categorySearch = ko.observable();
-    // this.updateFavourites = function(){
-    //     return db.collection('users').doc('acrawford').collection('favourites').get().then(function(d){
-    //         self.favList([]);
-    //         d.docs.forEach(function(e){
-    //             var data = {
-    //                 centerId: e.data().centreId,
-    //                 dishId: e.data().dishId,
-    //                 center: e.data().centreName,
-    //                 category: e.data().dishName,
-    //             };
-    //             // console.log(data);
-    //             self.favList.push(new Favourite(data));
-    //             // console.log('updating favourites');
-    //         })
-    //     });
-    // };
-
-    // favourites.forEach(function(favourite){
-    //     self.favList.push(new Favourite({category: favourite.dish.name, center: favourite.location.center.name, stall: favourite.location.stall.name}));
-    // });
-
-    // centers.forEach(function(center){
-    //     self.centers.push(new Center(center));
-    // });
-    // self.centers(centers.sort(function(a,b){if(a.name < b.name){return -1}else if(a.name > b.name){return 1} else {return 0}}));
-
-
-    // this.init();
-
 
     this.exitFavourites = function(){
         this.route(null);
@@ -367,6 +321,7 @@ var ViewModel = function(){
     this.moreInfo = function(id){
         var item = $.grep(self.centers(), function(e){return e.id == id})[0]
         self.viewing(item);
+        self.route(null);
         self.foursquare();
     };
 
