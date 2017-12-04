@@ -23,11 +23,11 @@ var ViewModel = function(){
     var self = this;
 
     this.inMoreInfoLimit = ko.observable(5);
-    this.editing = ko.observable();
+    this.editing = ko.observable(null);
     this.adding = ko.observable();
-    this.viewing = ko.observable();
-    this.topRanked = ko.observableArray();
-    this.rankingList = ko.observableArray();
+    this.viewing = ko.observable(null);
+    this.topRanked = ko.observableArray([]);
+    this.rankingList = ko.observableArray([]);
     this.favList = ko.observableArray([]);
     this.testCenters = ko.observableArray([]);
     this.centers = ko.observableArray([]);
@@ -227,12 +227,13 @@ var ViewModel = function(){
     };
 
     // track which view model should be shown on screen
-    this.route = ko.observable();
+    this.route = ko.observable(null);
     this.favouriteSearch = ko.observable();
     this.categorySearch = ko.observable();
 
     this.exitFavourites = function(){
-        this.route(null);
+        self.route(null);
+        self.favouriteSearch('');
     };
 
     this.editFavourites = function(){
@@ -290,7 +291,7 @@ var ViewModel = function(){
 
     this.foursquareTips = ko.observableArray([]);
     this.foursquareImages = ko.observableArray([]);
-    this.foursquareUrl = ko.observableArray();
+    this.foursquareUrl = ko.observable();
 
     this.foursquare = function(){
         var item = self.viewing();
@@ -303,16 +304,9 @@ var ViewModel = function(){
                     v:"20170801"
                 },
                 'success':function(d){
-                    // itemInfo = JSON.parse(d.response.venue);
-                    console.log(d.response.venue);
                     self.foursquareTips(d.response.venue.tips.groups[0].items);
-                    var prefix = d.response.venue.bestPhoto.prefix;
-                    var size = '300x300';
-                    var suffix = d.response.venue.bestPhoto.suffix;
                     self.foursquareImages(d.response.venue.photos.groups[0].items);
                     self.foursquareUrl(d.response.venue.canonicalUrl);
-                    // self.foursquareHours(d.response.venue);
-                    // return d.response.venue.tips.groups[0].items[0].text;
                 }
             })
         }

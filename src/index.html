@@ -44,20 +44,20 @@
                 <div class="c-modal__main c-hawker-details">
                     <div class="c-hawker-details__left">
                         <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
+                        <span data-bind="text: streetno"></span>
+                        <span data-bind="text: streetname"></span>
+                        <span data-bind="text: postalcode"></span>
                         <div data-bind="foreach: $root.foursquareImages().slice(0,5)">
                             <img data-bind="attr: {src: prefix + '300x300' + suffix}" class="c-hawker-details__image"/>
                         </div>
                         <h3 class="c-hawker-details__subtitle" data-bind="visible: rankings.length">Rankings</h3>
-                        <input min="1" data-bind="textInput: $root.inMoreInfoLimit" type="number">
+                        <input min="1" data-bind="visible: rankings.length, textInput: $root.inMoreInfoLimit" type="number">
                         <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
                             <li data-bind="visible: parseInt(rank) <= ($root.inMoreInfoLimit() || 5), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }">
                                 <span class="c-hawker-details__item-rank" data-bind="text: rank"></span>
                                 <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
                             </li>
                         </ul>
-                        <span data-bind="text: streetno"></span>
-                        <span data-bind="text: streetname"></span>
-                        <span data-bind="text: postalcode"></span>
                         <p data-bind="html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></p>
                     </div>
                     <div class="c-hawker-details__right">
