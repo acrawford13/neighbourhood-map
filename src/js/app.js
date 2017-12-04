@@ -232,7 +232,8 @@ var ViewModel = function(){
     this.categorySearch = ko.observable();
 
     this.exitFavourites = function(){
-        this.route(null);
+        self.route(null);
+        self.favouriteSearch('');
     };
 
     this.editFavourites = function(){
