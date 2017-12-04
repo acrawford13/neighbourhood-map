@@ -8,33 +8,43 @@
     </head>
     <body>
         <section class="c-section">
-            <div id="map" class="c-map"></div>
-            <main class="c-main h-container">
-            <div class="c-top-bar">
-                <div class="c-top-bar__container h-container">
-                    <h1 class="c-top-bar__title">Hawker</h1>
-                    <input placeholder="Search for your hawker favourites" class="c-top-bar__input c-top-bar__search" list="dish-search" type="text" data-bind="textInput: generalSearch" />
-                    <datalist id="dish-search" data-bind="foreach: $root.dishes">
-                        <option data-bind="value: $data">
-                    </datalist>
-                    <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
-                    <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
-                </div>
-                <div class="c-top-bar__container h-container">
-                    <span class="c-message-list__message" data-bind="visible: filterMessage, html: filterMessage"></span>
-                    <h3 data-bind="text: generalSearch, visible: dishRankings().length > 0"></h3>
-                    <ul class="c-ranking-list" data-bind="foreach: dishRankings">
-                        <li data-bind="if: $data">
-                            <span class="c-ranking-list__group-title" data-bind="text: 'Ranking: ' + ($index())"></span>
-                            <ul data-bind="foreach: $data">
-                                <li data-bind="text: name, click: function(){$root.moreInfo(id)}"></li>
-                            </ul>
-                        </li>
-                    </ul>
+            <main class="c-main">
+                <div class="c-top-bar">
+                    <div class="c-top-bar__container h-container">
+                        <h1 class="c-top-bar__title">Hawker</h1>
+                        <div class="c-input-group c-top-bar__search">
+                            <input id="dish-search" placeholder="Search for your hawker favourites" class="c-top-bar__input" list="dish-search-list" type="text" data-bind="textInput: generalSearch" />
+                            <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
+                                <option data-bind="value: $data">
+                            </datalist>
+                            <label class="c-input-group__label c-top-bar__label" for="dish-search">Dish Search</label>
+                        </div>
+                        <div class="c-input-group">
+                            <input min="1" class="c-top-bar__input c-top-bar__input--small" type="number" id="rankingFilter" data-bind="textInput: filterRanking"></input>
+                            <label class="c-input-group__label c-top-bar__label" for="dish-search">Ranking Filter</label>
+                        </div>
+                        <span data-bind="click: editFavourites" class="c-button">View/edit favourites</span>
+                    </div>
+                    <div data-bind="visible: dishRankings().length > 0">
+                        <h3 data-bind="text: generalSearch"></h3>
+                        <ul class="c-ranking-list" data-bind="foreach: dishRankings">
+                            <li data-bind="if: $data">
+                                <span class="c-ranking-list__group-title" data-bind="text: 'Ranking: ' + ($index())"></span>
+                                <ul data-bind="foreach: $data">
+                                    <li data-bind="text: name, click: function(){$root.moreInfo(id)}"></li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
+                <div data-bind="visible: filterMessage" class="c-top-bar__container c-top-bar__message">
+                    <span class="h-container c-message-list__message" data-bind="html: filterMessage"></span>
+                </div>
+                <img class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" />
             </main>
+            <div style="flex: auto; position: relative">
+                &nbsp;<div id="map" class="c-map"></div>
+            </div>
         </section>
         <div class="c-modal-container c-modal-container--overlay" data-bind="visible: viewing, with: viewing">
             <div class="c-modal c-modal--wide">

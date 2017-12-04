@@ -25,6 +25,8 @@ body {
 
 .c-section {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 ul {
@@ -33,7 +35,7 @@ ul {
 }
 
 main {
-    position: fixed;
+    z-index: 1000;
 }
 
 .c-button {
@@ -108,9 +110,6 @@ main {
 
 .c-message-list {
     &__message {
-        background-color: rgba(255, 255, 255, 0.9);
-        padding: 0.5rem;
-        border-radius: 0.25rem;
     }
 
     &__emphasis {
@@ -118,16 +117,37 @@ main {
     }
 }
 
+.c-input-group {
+    display: flex;
+    flex-direction: column;
+
+    &__label {
+        font-size:0.6rem;
+        padding: 0.25rem 0.5rem;
+        text-transform: uppercase;
+    }
+}
+
 .c-top-bar {
-    padding: 1rem;
     width: 100%;
-    position: fixed;
+    // position: fixed;
     background-color: rgba(0,0,0,0.8);
 
     &__container {
+        padding: 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+    &__message {
+        font-weight: 300;
+        letter-spacing: 0.1px;
+        background-color: rgba(0,0,0,0.7);
+        color: white;
+        padding: 0.5rem 1rem;
+        position: absolute;
+        width: 100%;
     }
 
     &__search {
@@ -135,12 +155,22 @@ main {
         margin-left: 3rem;
     }
 
+    ::placeholder {
+        color: white;
+    }
+
+    &__label {
+        color: white;
+    }
+
     &__input {
         font-family: $primary-font-stack;
         margin-right: 1rem;
         padding: 0.5rem;
-        background-color: rgba(255,255,255,1);
-        border: 0.5px solid #bbb;
+        border: none;
+        border-bottom: 0.5px solid #bbb;
+        color: white;
+        background: transparent;
 
         &--small {
             width: 5rem;
