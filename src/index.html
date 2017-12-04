@@ -104,8 +104,7 @@
                     <i class="fa fa-times c-modal__close-btn" data-bind="click: exitFavourites"></i>
                 </div>
                 <div class="c-modal__main c-favourites">
-                    <div class="c-list" data-bind="visible: !adding(), template: 'favourite-template'"></div>
-                    <div class="c-list" data-bind="visible: adding(), template: 'adding-new-template'"></div>
+                    <div class="c-list" data-bind="template: 'favourite-template'"></div>
                 </div>
             </div>
         </div>
@@ -121,33 +120,10 @@
                 <div data-bind="template: {if: !centre(), name: 'favourite-item-undefined'}"></div>
             </div>
         </script>
-        <script type="text/html" id="adding-new-template">
-            <div class="c-list__header">
-                <h2 class="c-favourites__heading">Add a New Favourite</h2>
-                <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: categorySearch, event: {keyup: $root.clearSelected}" />
-            </div>
-            <span data-bind="visible: categorySearchResults().length == 0">HELLO</span>
-            <div class="c-list__main" data-bind="template: {name: categoryTemplate, foreach: categorySearchResults}"></div>
-        </script>
         <script type="text/html" id="category-item">
             <div data-bind="click: $parent.addCategory" class="c-list__item c-category__item">
                 <div class="c-favourite__details">
                     <span class="c-favourite__category" data-bind="text: name"></span>
-                </div>
-            </div>
-        </script>
-        <script type="text/html" id="adding-item">
-            <div class="c-list__item c-favourite" data-bind="with: $root.adding()">
-                <div class="c-favourite__details">
-                    <span class="c-favourite__category" data-bind="text: dish_name, visible: !dish_name()"></span>
-                    <h4>Which hawker centre has the best <span data-bind="text: dish_name"></span>?</h4>
-                    <span class="c-favourite__choice">
-                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', optionsValue: 'id', value: centerId"></select>
-                    </span>
-                </div>
-                <div class="c-favourite__actions">
-                    <a data-bind="click: $root.addItem" class="c-favourite__action c-favourite__action--add" href="#"><i class="fa fa-check"></i></a>
-                    <a data-bind="click: $root.cancelAdd" class="c-favourite__action c-favourite__action--delete" href="#"><i class="fa fa-times"></i></a>
                 </div>
             </div>
         </script>
@@ -156,7 +132,7 @@
                 <div class="c-favourite__details">
                     <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
-                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
+                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centres, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
                         <span data-bind="click: function(){console.log($data.centre().id); $root.moreInfo($data.centre().id)}, text: $data.centre().name, visible: $data != $parent.editing()" class="c-favourite__centre-name"></span>
                     </span>
                 </div>
@@ -171,7 +147,7 @@
                 <div class="c-favourite__details">
                     <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
-                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
+                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centres, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
                         <span data-bind="visible: $data != $parent.editing()" class="c-favourite__placeholder">Add a favourite</span>
                     </span>
                 </div>
@@ -182,14 +158,12 @@
         </script>
         <script src="js/vendor/jquery.min.js"></script>
         <script src="js/vendor/jquery.scrollbar.min.js"></script>
-        <!-- <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase-firestore.js"></script>
-        <script src="js/vendor/sammy-latest.min.js"></script> -->
         <script src="js/vendor/knockout.js"></script>
-        <script>var vm; var test;</script>
+        <script>var vm;</script>
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHBvf6-JlN0Svg5kpADRsuo7bFPWj1wt0&callback=initMap&v=3">
         </script>
+        <script src="js/app.js"></script>
         <script>
             var map;
             var mapStyles = [
@@ -378,9 +352,11 @@
                     mapTypeControl: false,
                     styles: mapStyles,
                 });
+
+                vm = new ViewModel();
+                ko.applyBindings(vm);
+                vm.init();
             }
         </script>
-        <script src="js/app.js"></script>
-        <!-- <script src="js/data.js"></script> -->
     </body>
 </html>

@@ -4,7 +4,7 @@ var Favourite = function(data){
     this.centre = ko.observable(data.centre).extend({notify: 'always'})
 }
 
-var Center = function(data){
+var Centre = function(data){
     this.name = data.name;
     this.id = data.id;
     this.streetname = data.streetname;
@@ -19,51 +19,68 @@ var Center = function(data){
 }
 
 var ViewModel = function(){
-
     var self = this;
 
-    this.inMoreInfoLimit = ko.observable(5);
-    this.editing = ko.observable();
-    this.adding = ko.observable();
-    this.viewing = ko.observable();
-    this.topRanked = ko.observableArray([]);
-    this.rankingList = ko.observableArray([]);
-    this.favList = ko.observableArray([]);
-    this.dishFavList = ko.pureComputed(function(){
-        return self.favList().filter(function(d){
-            return d.centre() && (d.centre().id == self.viewing().id);
-        });
-    })
-    this.testCenters = ko.observableArray([]);
-    this.centers = ko.observableArray([]);
-    this.categories = ko.observableArray([]);
-    this.markers = ko.observableArray([]);
-    this.dishes = ko.pureComputed(function(){
-        var tempDishes = [].concat.apply([],self.centers().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
-        tempDishes = $.grep(tempDishes, function(d, i){
-            return $.inArray(d, tempDishes) === i;
-        }).sort();
-        return tempDishes;
-    });
-    this.filterRanking = ko.observable();
+    // user favourite variables
+    this.favouriteSearch = ko.observable();
+    this.userFavourites = ko.observableArray([]);
+    this.favouritesList = ko.observableArray([]);
+
+    // map variables
+    this.infoWindow = ko.observable(new google.maps.InfoWindow({}));
     this.iconHeight = 35;
     this.iconWidth = this.iconHeight/1.42857143;
     this.iconStyles = {
-        gold: {url: './img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
-        silver: {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
-        bronze: {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
         red: {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 3, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
         '1': {url: './img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
         '2': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
         '3': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
     };
 
+
+    // single hawker centre view
+    this.inMoreInfoLimit = ko.observable(5);
+    this.foursquareTips = ko.observableArray([]);
+    this.foursquareImages = ko.observableArray([]);
+    this.foursquareUrl = ko.observable();
+    this.rankFilterOptions = [3, 5, 10, 20];
+
+    this.dishFavList = ko.pureComputed(function(){
+        return self.userFavourites().filter(function(d){
+            return d.centre() && (d.centre().id == self.viewing().id);
+        });
+    })
+
+    // top bar
+    this.generalSearch = ko.observable();
+    this.filterRanking = ko.observable();
+    this.dishExists = ko.pureComputed(function(){
+        var searchTerm = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
+        return self.dishes()[$.inArray(searchTerm, self.dishes().map(function(d){return d.toLowerCase()}))];
+    });
+
+    // list view
     this.centreListVisible = ko.observable(false);
     this.toggleCentreList = function(){
         self.centreListVisible(!self.centreListVisible());
         $('.scrollbar-outer').scrollbar();
     }
 
+    // app variables
+    this.route = ko.observable(null);
+    this.viewing = ko.observable();
+    this.editing = ko.observable();
+    this.adding = ko.observable();
+    this.centres = ko.observableArray([]);
+    this.dishes = ko.pureComputed(function(){
+        var tempDishes = [].concat.apply([],self.centres().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
+        tempDishes = $.grep(tempDishes, function(d, i){
+            return $.inArray(d, tempDishes) === i;
+        }).sort();
+        return tempDishes;
+    });
+
+    // map functions
     this.setIcon = function(marker, rank, visible){
         var rank = parseInt(rank);
         var markerRank = (rank && rank <= 3) ? rank : 'red';
@@ -73,13 +90,8 @@ var ViewModel = function(){
         marker.setVisible(visible);
     }
 
-    this.generalSearch = ko.observable();
-    this.dishExists = ko.pureComputed(function(){
-        var searchTerm = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
-        return self.dishes()[$.inArray(searchTerm, self.dishes().map(function(d){return d.toLowerCase()}))];
-    });
-
     this.updateInfoWindow = function(item){
+        // construct HTML content for the info window
         var makeInfoWindowContent = function(item){
             var rankingHTML = '';
             var rankings = item.filteredRankings.peek();
@@ -97,11 +109,15 @@ var ViewModel = function(){
             '</div>';
         }
 
+        // if the selected marker already has an infoWindow open,
+        // update the information in the infoWindow
         if(item.marker.getPosition()==self.infoWindow().getPosition()){
             var content = makeInfoWindowContent(item);
             self.infoWindow().setContent(content);
             self.infoWindow().open(map, item.marker);
         };
+
+        // update the marker's click event listener with new infoWindow content
         item.marker.addListener('click', (function(thisItem){
             var content = makeInfoWindowContent(thisItem);
             return function(){
@@ -115,18 +131,15 @@ var ViewModel = function(){
     }
 
     this.visibleMarkers = ko.computed(function(){
-        console.log('making visible marker');
         var searchTerm = new RegExp(self.generalSearch(), 'i');
         var filterRanking = parseInt(self.filterRanking());
-        return self.centers().filter(function(d){
+        return self.centres().filter(function(d){
             var rank = d.rankings.filter(function(e){
                 var dishMatch = e.dish_name.match(searchTerm) ? true : false;
                 var rankMatch = filterRanking ? parseInt(e.rank) <= filterRanking : true;
                 return dishMatch && rankMatch;
             });
             d.filteredRankings(rank);
-
-
             if((!self.generalSearch() && !self.filterRanking()) || d.filteredRankings.peek().length){
                 return true;
             }
@@ -153,18 +166,14 @@ var ViewModel = function(){
         return dishRankings;
     });
 
-    self.infoWindow = ko.observable(new google.maps.InfoWindow({}));
-
     this.clearMap = function(){
-        self.centers().forEach(function(d){
+        self.centres().forEach(function(d){
             d.marker.setVisible(false);
         });
     }
 
     this.setMarkers = ko.computed(function(){
         self.clearMap();
-        console.log('setting marker colors');
-
         self.visibleMarkers().forEach(function(d){
             self.updateInfoWindow(d);
             var rank = d.filteredRankings.peek()[0] ? d.filteredRankings.peek()[0].rank : null;
@@ -174,8 +183,6 @@ var ViewModel = function(){
 
     this.makeCentresFromData = function(data){
         self.clearMap();
-
-        console.log('running makeCentresFromData function');
 
         // make a temporary array to store the centres in so we can update the whole array in one shot
         var tempArray = [];
@@ -206,17 +213,15 @@ var ViewModel = function(){
             });
 
             item['marker'] = marker;
-            tempArray.push(new Center(item));
-            self.markers.push(marker);
+            tempArray.push(new Centre(item));
         }
         tempArray.sort(function(a, b){
             return a.name.localeCompare(b.name);
         });
-        self.centers(tempArray);
+        self.centres(tempArray);
     }
 
     this.init = function(){
-        console.log('running init function');
         $.ajax({
             'url': 'http://andreacrawford.design/hawkerdb/centres',
             'success': function(data){
@@ -228,24 +233,20 @@ var ViewModel = function(){
                         for(var i = 0; i<data.favourites.length; i++){
                             var item = data.favourites[i];
                             tempFavs.push(new Favourite({
-                                'centre': $.grep(self.centers(), function(e){return e.id == item.centre_id})[0],
+                                'centre': $.grep(self.centres(), function(e){return e.id == item.centre_id})[0],
                                 'dish_id': item.dish_id,
                                 'dish_name': item.dish_name})
                             );
                         }
-                        self.favList(tempFavs);
+                        self.userFavourites(tempFavs);
                     }
                 })
-
                 $('#centres-loading-icon').hide();
             }
         })
     };
 
-    // track which view model should be shown on screen
-    this.route = ko.observable(null);
-    this.favouriteSearch = ko.observable();
-    this.categorySearch = ko.observable();
+
 
     this.exitFavourites = function(){
         self.route(null);
@@ -257,31 +258,8 @@ var ViewModel = function(){
         $('.scrollbar-outer').scrollbar();
     };
 
-    this.stopPropagation = function(data, event){
-        event.stopPropagation();
-    };
-
     this.cancelAdd = function(){
         self.adding(null);
-    };
-
-    this.addItem = function(item){
-        console.log('does this run?');
-        self.adding(null);
-        var selectedName = centers2[parseInt(item.centerId())].name;
-        item.center(selectedName);
-        self.favList.push(item);
-        $.ajax({
-            'url': 'http://andreacrawford.design/hawkerdb/votes/',
-            'data' : self.editing(),
-            'success': function(data){
-                console.log(self.editing());
-            }
-        })
-        // db.collection('users').doc('acrawford').collection('favourites').doc(item.dishId())
-        //     .set({centreId: item.centerId(), centreName: item.center(), dishName: item.category(), dishId: item.dishId()})
-        //     .then(function(){self.updateFavourites();});
-
     };
 
     this.deleteItem = function(item){
@@ -296,21 +274,6 @@ var ViewModel = function(){
             }
         })
     };
-
-    this.addNew = function(){
-        self.adding(new Favourite({category: null, center: null, centerId: null, dishId: null}));
-    };
-
-    this.addCategory = function(category){
-        self.adding(new Favourite({category: null, center: null, centerId: null, dishId: null}));
-        self.adding().category(category.name);
-        self.adding().dishId(category.id);
-    };
-
-    this.foursquareTips = ko.observableArray([]);
-    this.foursquareImages = ko.observableArray([]);
-    this.foursquareUrl = ko.observable();
-    this.rankFilterOptions = [3, 5, 10, 20];
 
     this.foursquare = function(){
         var item = self.viewing();
@@ -332,7 +295,7 @@ var ViewModel = function(){
     }
 
     this.moreInfo = function(id){
-        var item = $.grep(self.centers(), function(e){return e.id == id})[0]
+        var item = $.grep(self.centres(), function(e){return e.id == id})[0]
         self.viewing(item);
         self.route(null);
         self.centreListVisible(false);
@@ -341,7 +304,7 @@ var ViewModel = function(){
     };
 
     this.changeViewing = function(id){
-        var item = $.grep(self.centers(), function(e){return e.id == id})[0]
+        var item = $.grep(self.centres(), function(e){return e.id == id})[0]
         if(self.viewing()){
             self.viewing(item);
         }
@@ -375,17 +338,15 @@ var ViewModel = function(){
                 },
                 'success':function(){console.log(favourite.centre())}
             });
-            console.log(self.favList());
+            console.log(self.userFavourites());
             self.editing(!self.editing);
         }
     };
 
-    this.favouritesList = ko.observableArray([]);
 
     this.searchResults = ko.computed(function(){
-        console.log('running searchResults function');
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
-        var list = self.favList().filter(function(d){
+        var list = self.userFavourites().filter(function(d){
             var centreMatch = d.centre() ? d.centre().name.match(searchTerm) : false;
             var dishMatch = d.dish_name.match(searchTerm) ;
             return dishMatch || centreMatch;
@@ -398,31 +359,10 @@ var ViewModel = function(){
                 return 1;
             }
         });
-        // self.favouritesList(list);
         if(!self.editing()){
             self.favouritesList(list);
         }
     });
-
-    this.clearSelected = function(){
-        if(self.adding()){
-            self.adding().category(null);
-        }
-    };
-
-    this.categorySearchResults = ko.computed(function(){
-        if(self.adding()){
-            // self.adding().category(null);
-        };
-        var existing = self.favList().map(function(d){return d.dish_name});
-        var searchTerm = new RegExp(self.categorySearch(), 'ig');
-        return self.categories().filter(function(d){
-            return d.name.match(searchTerm) && $.inArray(d.name, existing)==-1;
-        }).sort(function(a, b){
-            return a.name.localeCompare(b.name);
-        });
-    });
-    this.messages = ko.observableArray([]);
 
     this.filterMessage = ko.computed(function(){
         var plural = self.visibleMarkers().length == 1 ? '' : 's';
@@ -443,7 +383,6 @@ var ViewModel = function(){
         } else {
             ranking = "<span class='c-message-list__emphasis'>any</span> ranking";
         }
-        // var category = self.generalSearch() ? ' in the category <span class="c-message-list__emphasis">' + self.generalSearch() + '</span>' : ' in <span class="c-message-list__emphasis">any</span> category';
         if(self.generalSearch() || self.filterRanking()){
             return "Showing <span class='c-message-list__emphasis'>" +  self.visibleMarkers().length + "</span> result" + plural + " with " + ranking + category;
         }
@@ -453,7 +392,5 @@ var ViewModel = function(){
 $(document).ready(function(){
     // ko.options.deferUpdates = true;
 
-    vm = new ViewModel();
-    ko.applyBindings(vm);
-    vm.init();
+
 })

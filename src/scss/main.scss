@@ -436,11 +436,11 @@ main {
     &__main {
         max-height: 100%;
         background-color: $background-color;
+        border-radius: $container-radius;
     }
 
     &__above {
         color: white;
-        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -559,6 +559,7 @@ main {
         flex-direction: column;
         align-items: stretch;
         padding: 1rem;
+        flex: 1 1 auto;
     }
 
     &__category {
@@ -566,9 +567,8 @@ main {
     }
 
     &__actions {
-        padding-right: 1rem;
         text-align: right;
-        flex-basis: 0;
+        flex: 0 0 auto;
     }
 
     &__action {
@@ -608,19 +608,22 @@ main {
     }
 }
 
-@media screen and (max-width: 540px){
+@media screen and (max-width: 640px){
     .c-modal-container {
         padding: 0;
     }
     .c-modal {
         &__above {
             background-color: darken($primary-color, 10);
-            margin-bottom: 0;
         }
 
         &__main {
-            overflow-y: scroll;
+            border-radius: 0;
         }
+    }
+
+    .c-hawker-details {
+        overflow-y: scroll;
     }
 
     .c-top-bar {
