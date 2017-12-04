@@ -81,9 +81,6 @@
                     <div class="c-list" data-bind="visible: !adding(), template: 'favourite-template'"></div>
                     <div class="c-list" data-bind="visible: adding(), template: 'adding-new-template'"></div>
                 </div>
-                <div class="c-modal__below">
-                    <a data-bind="click: addNew, visible: !adding()" href="#" class="c-button c-button--dark">Add a new favourite</a>
-                </div>
             </div>
         </div>
 
@@ -92,7 +89,11 @@
                 <h2 class="c-favourites__heading">My Favourites</h2>
                 <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
             </div>
-            <div class="c-list__main" data-bind="template: {name: 'favourite-item', foreach: searchResults}"></div>
+            <!-- <div class="c-list__main" data-bind="template: {name: 'favourite-item', foreach: searchResults}"></div> -->
+            <div class="c-list__main" data-bind="foreach: favouritesList">
+                <div data-bind="template: {if: centre(), name: 'favourite-item-defined'}"></div>
+                <div data-bind="template: {if: !centre(), name: 'favourite-item-undefined'}"></div>
+            </div>
         </script>
         <script type="text/html" id="adding-new-template">
             <div class="c-list__header">
@@ -124,8 +125,8 @@
                 </div>
             </div>
         </script>
-        <script type="text/html" id="favourite-item">
-            <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--editing': $data == $parent.editing()}">
+        <script type="text/html" id="favourite-item-defined">
+            <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--defined': $data.centre(), 'c-favourite--editing': $data == $parent.editing()}">
                 <div class="c-favourite__details">
                     <span data-bind="text: dish_name" class="c-favourite__category"></span>
                     <span class="c-favourite__choice">
@@ -134,8 +135,22 @@
                     </span>
                 </div>
                 <div class="c-favourite__actions">
-                    <a data-bind="click: $parent.toggleEditing" class="c-favourite__action c-favourite__action--edit" href="#"><i class="fa fa-pencil"></i></a>
+                    <a data-bind="click: $parent.toggleEditing" class="c-favourite__action c-favourite__action--edit" href="#"><i data-bind="css: {'fa-pencil': $data != $parent.editing(), 'fa-check': $data == $parent.editing()}"class="fa"></i></a>
                     <a data-bind="click: $parent.deleteItem" class="c-favourite__action c-favourite__action--delete" href="#"><i class="fa fa-trash-o"></i></a>
+                </div>
+            </div>
+        </script>
+        <script type="text/html" id="favourite-item-undefined">
+            <div class="c-list__item c-favourite" data-bind="click: $parent.toggleEditing, css: {'c-favourite--editing': $data == $parent.editing()}">
+                <div class="c-favourite__details">
+                    <span data-bind="text: dish_name" class="c-favourite__category"></span>
+                    <span class="c-favourite__choice">
+                        <select data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centers, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
+                        <em data-bind="visible: $data != $parent.editing()" class="c-favourite__center-name">Add a favourite</em>
+                    </span>
+                </div>
+                <div class="c-favourite__actions">
+                    <a class="c-favourite__action c-favourite__action--edit" href="#"><i class="fa fa-plus"></i></a>
                 </div>
             </div>
         </script>

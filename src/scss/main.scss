@@ -394,6 +394,12 @@ main {
         background-color: red;
     }
 
+    &--defined {
+        .c-favourite__choice {
+            color: red;
+        }
+    }
+
     &--editing {
         // box-shadow: 0 0 20px rgba(0,0,0,0.4);
         // margin-left: -2%;

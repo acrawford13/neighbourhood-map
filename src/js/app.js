@@ -310,18 +310,18 @@ var ViewModel = function(){
         //     .then(function(){self.updateFavourites();});
 
     };
-//
-//     for(var i=0; i<30; i++){
-// 	var centreId = Math.round(Math.random()*116);
-// db.collection('users').doc('ccrawford').collection('favourites').doc(''+i)
-//             .set({centreId: centreId, centers2[centreId]['name'], dishName: item.category(), dishId: i})
-// }
 
     this.deleteItem = function(item){
         self.adding(null);
-        self.favList.remove(item);
-        // db.collection('users').doc('acrawford').collection('favourites').doc(''+item.dishId())
-        //     .delete().then(function(){self.updateFavourites();});
+        item.centre(null);
+        $.ajax({
+            'url': 'http://andreacrawford.design/hawkerdb/deletevote',
+            'method': 'post',
+            'data' : {dish_id: item.dish_id, user_id: 1},
+            'success': function(data){
+                console.log('ducc');
+            }
+        })
     };
 
     this.addNew = function(){
@@ -394,7 +394,7 @@ var ViewModel = function(){
             } else {
                 self.editing(favourite);
             }
-        } else {
+        } else if (favourite.centre()){
             $.ajax({
                 'url':'http://andreacrawford.design/hawkerdb/votes',
                 'method':'post',
@@ -403,27 +403,32 @@ var ViewModel = function(){
                     'user_id': 1,
                     'centre_id': favourite.centre().id,
                 },
-                'success':function(){console.log(favourite.dish_id, favourite.centre().id)}
+                'success':function(){console.log(favourite.centre())}
             });
             // console.log(favourite);
             self.editing(!self.editing);
         }
     };
 
+    this.favouritesList = ko.observableArray([]);
+
     this.searchResults = ko.computed(function(){
         console.log('running searchResults function');
         var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
-        return self.favList().filter(function(d){
+        var list = self.favList().filter(function(d){
             return d.dish_name.match(searchTerm);
         }).sort(function(a, b){
-            if(a.dish_name < b.dish_name){
+            if(typeof(a.centre()) == typeof(b.centre())){
+                return a.dish_name.localeCompare(b.dish_name);
+            } else if(a.centre()) {
                 return -1;
-            }
-            if(a.dish_name > b.dish_name){
+            } else {
                 return 1;
             }
-            return 0;
         });
+        if(!self.editing()){
+            self.favouritesList(list);
+        }
     });
 
     // this probably shouldn't be computed - what should be computed is visibleMarkers
@@ -719,13 +724,7 @@ var ViewModel = function(){
         return self.categories().filter(function(d){
             return d.name.match(searchTerm) && $.inArray(d.name, existing)==-1;
         }).sort(function(a, b){
-            if(a.name < b.name){
-                return -1;
-            }
-            if(a.name > b.name){
-                return 1;
-            }
-            return 0;
+            return a.name.localeCompare(b.name);
         });
     });
     this.messages = ko.observableArray([]);
