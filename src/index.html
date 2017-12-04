@@ -35,14 +35,13 @@
                     </div>
                     <div style="flex: auto; position: relative">
                         <div class="c-centre-list">
-                            <div class="c-centre-list__content" data-bind="visible: centreListVisible() && (visibleMarkers().length > 0)">
-                                <h3 data-bind="text: generalSearch"></h3>
+                            <div class="c-centre-list__content scrollbar-outer" data-bind="visible: centreListVisible() && (visibleMarkers().length > 0)">
                                 <ul class="c-centre-list__list" data-bind="foreach: visibleMarkers">
-                                    <li class="c-centre-list__list-item">
-                                        <span data-bind="text: name"></span>
-                                        <div data-bind="foreach: filteredRankings">
-                                        <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-certificate"></i>
-                                    </div>
+                                    <li data-bind="click: function(){return $root.moreInfo(id)}" class="c-centre-list__list-item">
+                                        <span class="c-centre-list__name" data-bind="text: name"></span>
+                                        <div class="c-centre-list__ranks" data-bind="foreach: filteredRankings().filter(function(d){return d.rank <= 3})">
+                                            <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-certificate"></i>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -59,7 +58,7 @@
                     <i class="fa fa-times c-modal__close-btn" data-bind="click: $root.clearViewing"></i>
                 </div>
                 <div class="c-modal__main c-hawker-details">
-                    <div class="c-hawker-details__left">
+                    <div class="c-hawker-details__left scrollbar-outer">
                         <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
                         <span data-bind="text: streetno"></span>
                         <span data-bind="text: streetname"></span>
@@ -84,7 +83,7 @@
                         </ul>
                         <p data-bind="html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></p>
                     </div>
-                    <div class="c-hawker-details__right">
+                    <div class="c-hawker-details__right scrollbar-outer">
                         <h3>Tips from Foursquare:</h3>
                         <ul class="c-foursquare__list c-list" data-bind="foreach: $root.foursquareTips">
                             <li class="c-foursquare__tip">
@@ -114,7 +113,7 @@
                 <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
             </div>
             <!-- <div class="c-list__main" data-bind="template: {name: 'favourite-item', foreach: searchResults}"></div> -->
-            <div class="c-list__main" data-bind="foreach: favouritesList">
+            <div class="c-list__main scrollbar-outer" data-bind="foreach: favouritesList">
                 <div data-bind="template: {if: centre(), name: 'favourite-item-defined'}"></div>
                 <div data-bind="template: {if: !centre(), name: 'favourite-item-undefined'}"></div>
             </div>
@@ -179,6 +178,7 @@
             </div>
         </script>
         <script src="js/vendor/jquery.min.js"></script>
+        <script src="js/vendor/jquery.scrollbar.min.js"></script>
         <!-- <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
         <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase-firestore.js"></script>
         <script src="js/vendor/sammy-latest.min.js"></script> -->

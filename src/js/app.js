@@ -1,7 +1,7 @@
 var Favourite = function(data){
     this.dish_id = data.dish_id,
     this.dish_name = data.dish_name;
-    this.centre = ko.observable(data.centre)
+    this.centre = ko.observable(data.centre).extend({notify: 'always'})
 }
 
 var Center = function(data){
@@ -14,7 +14,7 @@ var Center = function(data){
     this.lng = data.lng;
     this.rankings = data.rankings;
     this.foursquare_id = data.foursquare_id;
-    this.filteredRankings = [];
+    this.filteredRankings = ko.observableArray([]);
     this.marker = data.marker;
 }
 
@@ -61,6 +61,7 @@ var ViewModel = function(){
     this.centreListVisible = ko.observable(false);
     this.toggleCentreList = function(){
         self.centreListVisible(!self.centreListVisible());
+        $('.scrollbar-outer').scrollbar();
     }
 
     this.setIcon = function(marker, rank, visible){
@@ -81,7 +82,7 @@ var ViewModel = function(){
     this.updateInfoWindow = function(item){
         var makeInfoWindowContent = function(item){
             var rankingHTML = '';
-            var rankings = item.filteredRankings;
+            var rankings = item.filteredRankings.peek();
             if(rankings.length > 0){
                 rankingHTML += '<hr/>';
                 for(var i = 0; i<rankings.length && i<3; i++){
@@ -118,14 +119,15 @@ var ViewModel = function(){
         var searchTerm = new RegExp(self.generalSearch(), 'i');
         var filterRanking = parseInt(self.filterRanking());
         return self.centers().filter(function(d){
-            d.filteredRankings = d.rankings.filter(function(e){
+            var rank = d.rankings.filter(function(e){
                 var dishMatch = e.dish_name.match(searchTerm) ? true : false;
                 var rankMatch = filterRanking ? parseInt(e.rank) <= filterRanking : true;
                 return dishMatch && rankMatch;
             });
+            d.filteredRankings(rank);
 
 
-            if((!self.generalSearch() && !self.filterRanking()) || d.filteredRankings.length){
+            if((!self.generalSearch() && !self.filterRanking()) || d.filteredRankings.peek().length){
                 return true;
             }
         });
@@ -135,7 +137,7 @@ var ViewModel = function(){
         var dishRankings = [];
         if(self.dishExists()){
             self.visibleMarkers().forEach(function(d){
-                var rank = d.filteredRankings[0].rank;
+                var rank = d.filteredRankings.peek()[0].rank;
                 if(dishRankings[rank]){
                     dishRankings[rank].push(d);
                 } else {
@@ -164,7 +166,7 @@ var ViewModel = function(){
         console.log('setting marker colors');
         self.visibleMarkers().forEach(function(d){
             self.updateInfoWindow(d);
-            var rank = d.filteredRankings[0] ? d.filteredRankings[0].rank : null;
+            var rank = d.filteredRankings.peek()[0] ? d.filteredRankings.peek()[0].rank : null;
             self.setIcon(d.marker, rank, true);
         });
     });
@@ -251,6 +253,7 @@ var ViewModel = function(){
 
     this.editFavourites = function(){
         this.route('favourites');
+        $('.scrollbar-outer').scrollbar();
     };
 
     this.stopPropagation = function(data, event){
@@ -331,7 +334,9 @@ var ViewModel = function(){
         var item = $.grep(self.centers(), function(e){return e.id == id})[0]
         self.viewing(item);
         self.route(null);
+        self.centreListVisible(false);
         self.foursquare();
+        $('.scrollbar-outer').scrollbar();
     };
 
     this.changeViewing = function(id){

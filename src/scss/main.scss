@@ -1,6 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Bungee');
 @import 'modules/helpers';
 @import 'node_modules/font-awesome/scss/font-awesome.scss';
+@import 'node_modules/jquery.scrollbar/sass/jquery.scrollbar.scss';
+.scrollbar-outer > .scroll-element {
+    background: transparent;
+}
+.scrollbar-outer > .scroll-content.scroll-scrolly_visible {
+    left: -20px;
+    margin-left: 20px;
+}
 @fa-font-path: "/fonts/";
 
 $primary-color: #ff2333;
@@ -145,10 +153,31 @@ main {
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-end;
+    padding: 0.5rem;
+
+    &__list {
+        margin: 0;
+    }
+
+    &__ranks {
+        flex: 1 0 auto;
+        text-align: right;
+        margin-left: 0.5rem;
+    }
+
+    &__name {
+        flex: 1 1 auto;
+    }
 
     &__list-item {
         padding: 0.5rem;
         border-bottom: 0.5px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        &:last-child {
+            border-bottom: none;
+        }
     }
 
     &__button {
@@ -270,17 +299,17 @@ main {
     }
 
     &__left {
-        padding: 1rem;
-        margin-right: 1rem;
+        margin: 1rem;
+        margin-right: 0.5rem;
         width: 50%;
         overflow-y: auto;
     }
 
     &__right {
-        padding: 1rem;
-        padding-left: 0;
+        margin: 1rem;
+        margin-right: 0.5rem;
         width: 50%;
-        overflow-y: auto;
+        // overflow-y: auto;
     }
 
     &__title {
