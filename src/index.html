@@ -63,9 +63,7 @@
                 <div class="c-modal__main c-hawker-details">
                     <div class="c-hawker-details__left scrollbar-outer">
                         <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
-                        <span data-bind="text: streetno"></span>
-                        <span data-bind="text: streetname"></span>
-                        <span data-bind="text: postalcode"></span>
+                        <span data-bind="text: streetno"></span> <span data-bind="text: streetname"></span> <span data-bind="text: postalcode"></span>
                         <div data-bind="foreach: $root.foursquareImages().slice(0,5)">
                             <img data-bind="attr: {src: prefix + '300x300' + suffix}" alt="Image of hawker centre" class="c-hawker-details__image"/>
                         </div>
@@ -115,17 +113,9 @@
                 <h2 class="c-favourites__heading">My Favourites</h2>
                 <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
             </div>
-            <!-- <div class="c-list__main" data-bind="template: {name: 'favourite-item', foreach: searchResults}"></div> -->
             <div class="c-list__main scrollbar-outer" data-bind="foreach: favouritesList">
                 <div data-bind="template: {if: centre(), name: 'favourite-item-defined'}"></div>
                 <div data-bind="template: {if: !centre(), name: 'favourite-item-undefined'}"></div>
-            </div>
-        </script>
-        <script type="text/html" id="category-item">
-            <div data-bind="click: $parent.addCategory" class="c-list__item c-category__item">
-                <div class="c-favourite__details">
-                    <span class="c-favourite__category" data-bind="text: name"></span>
-                </div>
             </div>
         </script>
         <script type="text/html" id="favourite-item-defined">
@@ -166,6 +156,7 @@
         </script>
         <script src="js/app.js"></script>
         <script>
+
             var map;
             var mapStyles = [
                 {

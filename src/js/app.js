@@ -28,15 +28,19 @@ var ViewModel = function(){
 
     // map variables
     this.infoWindow = ko.observable(new google.maps.InfoWindow({}));
-    this.iconHeight = 35;
-    this.iconWidth = this.iconHeight/1.42857143;
-    this.iconStyles = {
-        red: {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 3, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
-        '1': {url: './img/markers-full.png', origin: new google.maps.Point(0, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
-        '2': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
-        '3': {url: './img/markers-full.png', origin: new google.maps.Point(this.iconWidth * 2, 0), size: new google.maps.Size(this.iconWidth, this.iconHeight), scaledSize: new google.maps.Size(this.iconWidth * 4, this.iconHeight)},
+
+    this.baseIcon = {
+        url: './img/markers-full.png',
+        size: new google.maps.Size(24, 32),
+        scaledSize: new google.maps.Size(96, 32)
     };
 
+    this.iconStyles = {
+        '1': $.extend({origin: new google.maps.Point(0, 0)}, this.baseIcon),
+        '2': $.extend({origin: new google.maps.Point(24, 0)}, this.baseIcon),
+        '3': $.extend({origin: new google.maps.Point(48, 0)}, this.baseIcon),
+        'red': $.extend({origin: new google.maps.Point(72, 0)}, this.baseIcon),
+    };
 
     // single hawker centre view
     this.inMoreInfoLimit = ko.observable(5);
