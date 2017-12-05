@@ -32,8 +32,9 @@
                 </div>
             </div>
         </header>
-        <img data-bind="visible: loading()" class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" alt="loading..."/>
+        <img id="loading-icon" data-bind="visible: loading()" class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" alt="loading..."/>
         <!-- ko template: {name: 'app-error', if: appError} --><!-- /ko -->
+        <div id="gmaps-error" class="c-error--app" style="display: none;">Google Maps couldn't be loaded.<br>Please try again later.</div>
         <main>
             <div class="c-floating-elements" style="display: flex; flex-direction: column">
                 <!-- ko template: {name: 'filter-message', if: filterMessage} --><!-- /ko -->
@@ -209,9 +210,14 @@
                 ko.applyBindings(vm);
                 vm.init();
             }
+
+            function mapError(){
+                $('#gmaps-error').show();
+                $('#loading-icon').hide();
+            }
         </script>
         <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHBvf6-JlN0Svg5kpADRsuo7bFPWj1wt0&callback=initMap&v=3">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHBvf6-JlN0Svg5kpADRsuo7bFPWj1wt0&callback=initMap&v=3" onerror="mapError()">
         </script>
     </body>
 </html>
