@@ -9,45 +9,45 @@
         <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
-            <header class="c-header">
-                <div class="c-top-bar">
-                    <div class="c-top-bar__container h-container">
-                        <h1 class="c-top-bar__title">Hawker</h1>
-                        <!-- top bar search/filters -->
-                        <div class="c-top-bar__search-container">
-                            <div class="c-input-group c-top-bar__search">
-                                <input id="dish-search" placeholder="Search for your favourite dishes" list="dish-search-list" class="c-input c-top-bar__input" type="text" data-bind="textInput: dishSearch" />
-                                <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
-                                    <option data-bind="value: $data"/>
-                                </datalist>
-                                <label class="c-input-group__label c-top-bar__label" for="dish-search">Dish Search</label>
-                            </div>
-                            <div class="c-top-bar__filter c-input-group">
-                                <input min="1" class="c-input c-top-bar__input c-top-bar__input--small" type="number" placeholder="∞" id="rankingFilter" data-bind="textInput: filterRanking" />
-                                <label class="c-input-group__label c-top-bar__label" for="rankingFilter">Ranking Filter</label>
-                            </div>
+        <header class="c-header">
+            <div class="c-top-bar">
+                <div class="c-top-bar__container h-container">
+                    <h1 class="c-top-bar__title">Hawker</h1>
+                    <!-- top bar search/filters -->
+                    <div class="c-top-bar__search-container">
+                        <div class="c-input-group c-top-bar__search">
+                            <input id="dish-search" placeholder="Search for your favourite dishes" list="dish-search-list" class="c-input c-top-bar__input" type="text" data-bind="textInput: dishSearch" />
+                            <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
+                                <option data-bind="value: $data"/>
+                            </datalist>
+                            <label class="c-input-group__label c-top-bar__label" for="dish-search">Dish Search</label>
                         </div>
-                        <!-- view/edit favourites button -->
-                        <span id="tb-edit-favourites" data-bind="click: openFavourites" class="c-top-bar__edit-favourites c-button--grey c-button">View/edit favourites</span>
-                    </div>
-                </div>
-            </header>
-            <img data-bind="visible: loading()" class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" alt="loading..."/>
-            <!-- ko template: {name: 'app-error', if: appError} --><!-- /ko -->
-            <main>
-                <div class="c-floating-elements" style="display: flex; flex-direction: column">
-                    <!-- ko template: {name: 'filter-message', if: filterMessage} --><!-- /ko -->
-                    <div style="flex: auto; position: relative">
-                        <div class="c-centre-list">
-                            <!-- centre list -->
-                            <!-- ko template: {name: 'centre-list', if: showCentreList() && (visibleMarkers().length > 0)} --><!-- /ko -->
-                            <!-- centre list open/close button -->
-                            <span data-bind="click: $root.toggleCentreList, text: $root.showCentreList() ? 'Close' : 'Open list view'" class="c-centre-list__button c-button">Open list view</span>
+                        <div class="c-top-bar__filter c-input-group">
+                            <input min="1" class="c-input c-top-bar__input c-top-bar__input--small" type="number" placeholder="∞" id="rankingFilter" data-bind="textInput: filterRanking" />
+                            <label class="c-input-group__label c-top-bar__label" for="rankingFilter">Ranking Filter</label>
                         </div>
                     </div>
+                    <!-- view/edit favourites button -->
+                    <span id="tb-edit-favourites" data-bind="click: openFavourites" class="c-top-bar__edit-favourites c-button--grey c-button">View/edit favourites</span>
                 </div>
-                <div id="map" class="c-map"></div>
-            </main>
+            </div>
+        </header>
+        <img data-bind="visible: loading()" class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" alt="loading..."/>
+        <!-- ko template: {name: 'app-error', if: appError} --><!-- /ko -->
+        <main>
+            <div class="c-floating-elements" style="display: flex; flex-direction: column">
+                <!-- ko template: {name: 'filter-message', if: filterMessage} --><!-- /ko -->
+                <div style="flex: auto; position: relative">
+                    <div class="c-centre-list">
+                        <!-- centre list -->
+                        <!-- ko template: {name: 'centre-list', if: showCentreList() && (visibleMarkers().length > 0)} --><!-- /ko -->
+                        <!-- centre list open/close button -->
+                        <span data-bind="click: $root.toggleCentreList, text: $root.showCentreList() ? 'Close' : 'Open list view'" class="c-centre-list__button c-button">Open list view</span>
+                    </div>
+                </div>
+            </div>
+            <div id="map" class="c-map"></div>
+        </main>
         <!-- ko template: {name: 'single-centre-modal', if: viewing} --><!-- /ko -->
         <!-- ko template: {name: 'favourites-modal', if: showFavourites} --><!-- /ko -->
 
@@ -195,7 +195,7 @@
         <script src="js/app.js"></script>
         <script src="js/map-style.js"></script>
         <script>
-            let map;
+            var map;
 
             function initMap(){
                 map = new google.maps.Map(document.getElementById('map'), {
