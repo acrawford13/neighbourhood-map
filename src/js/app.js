@@ -44,7 +44,7 @@ var ViewModel = function(){
     };
 
     // single hawker centre view
-    this.inMoreInfoLimit = ko.observable(5);
+    this.rankFilter = ko.observable(5);
     this.foursquareTips = ko.observableArray([]);
     this.foursquareImages = ko.observableArray([]);
     this.foursquareUrl = ko.observable();

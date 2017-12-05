@@ -12,23 +12,26 @@
                 <div class="c-top-bar">
                     <div class="c-top-bar__container h-container">
                         <h1 class="c-top-bar__title">Hawker</h1>
-                        <div class="c-input-group c-top-bar__search">
-                            <input id="dish-search" placeholder="Search for your favourite dishes" list="dish-search-list" class="c-input c-top-bar__input" type="text" data-bind="textInput: generalSearch" />
-                            <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
-                                <option data-bind="value: $data"/>
-                            </datalist>
-                            <label class="c-input-group__label c-top-bar__label" for="dish-search">Dish Search</label>
-                        </div>
-                        <div class="c-top-bar__filter c-input-group">
-                            <input min="1" class="c-input c-top-bar__input c-top-bar__input--small" type="number" placeholder="∞" id="rankingFilter" data-bind="textInput: filterRanking" />
-                            <label class="c-input-group__label c-top-bar__label" for="rankingFilter">Ranking Filter</label>
+                        <div class="c-top-bar__search-container">
+                            <div class="c-input-group c-top-bar__search">
+                                <input id="dish-search" placeholder="Search for your favourite dishes" list="dish-search-list" class="c-input c-top-bar__input" type="text" data-bind="textInput: generalSearch" />
+                                <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
+                                    <option data-bind="value: $data"/>
+                                </datalist>
+                                <label class="c-input-group__label c-top-bar__label" for="dish-search">Dish Search</label>
+                            </div>
+                            <div class="c-top-bar__filter c-input-group">
+                                <input min="1" class="c-input c-top-bar__input c-top-bar__input--small" type="number" placeholder="∞" id="rankingFilter" data-bind="textInput: filterRanking" />
+                                <label class="c-input-group__label c-top-bar__label" for="rankingFilter">Ranking Filter</label>
+                            </div>
                         </div>
                         <span id="tb-edit-favourites" data-bind="click: editFavourites" class="c-top-bar__edit-favourites c-button--grey c-button">View/edit favourites</span>
                     </div>
                 </div>
             </main>
             <img data-bind="visible: loading()" class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" alt="loading..."/>
-            <div class="c-error--app" data-bind="html: appError(), visible: appError()"></div>
+
+            <!-- ko template: {name: 'app-error', if: appError} --><!-- /ko -->
             <div style="flex: auto; position: relative">
                 <div class="c-floating-elements" style="display: flex; flex-direction: column">
                     <div data-bind="visible: filterMessage" class="c-top-bar__container c-top-bar__message">
@@ -36,78 +39,87 @@
                     </div>
                     <div style="flex: auto; position: relative">
                         <div class="c-centre-list">
-                            <!-- ko if: centreListVisible() && (visibleMarkers().length > 0) -->
-                            <div class="c-centre-list__content scrollbar-outer">
-                                <h3 class="c-centre-list__title">Hawker Centres</h3>
-                                <ul class="c-centre-list__list" data-bind="foreach: visibleMarkers">
-                                    <li data-bind="click: function(){return $root.moreInfo(id)}" class="c-centre-list__list-item">
-                                        <span class="c-centre-list__name" data-bind="text: name"></span>
-                                        <div class="c-centre-list__ranks" data-bind="foreach: filteredRankings().filter(function(d){return d.rank <= 3})">
-                                            <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-circle"></i>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- /ko -->
-                            <span data-bind="click: $root.toggleCentreList, text: $root.centreListVisible() ? 'Close' : 'Open list view'" class="c-centre-list__button c-button"></span>
+                            <!-- ko template: {name: 'centre-list', if: centreListVisible() && (visibleMarkers().length > 0)} --><!-- /ko -->
+                            <span data-bind="click: $root.toggleCentreList, text: $root.centreListVisible() ? 'Close' : 'Open list view'" class="c-centre-list__button c-button">Open list view</span>
                         </div>
                     </div>
                 </div>
                 <div id="map" class="c-map"></div>
             </div>
         </section>
-        <div class="c-modal-container c-modal-container--overlay" data-bind="visible: viewing, with: viewing">
-            <div class="c-modal c-modal--wide">
-                <div class="c-modal__above">
-                    <i class="fa fa-times c-modal__close-btn" data-bind="click: $root.clearViewing"></i>
-                </div>
-                <div class="c-modal__main c-hawker-details">
-                    <div class="c-hawker-details__left scrollbar-outer">
-                        <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
-                        <span data-bind="text: streetno"></span> <span data-bind="text: streetname"></span> <span data-bind="text: postalcode"></span>
-                        <div data-bind="foreach: $root.foursquareImages().slice(0,5)">
-                            <img data-bind="attr: {src: prefix + '300x300' + suffix}" alt="Image of hawker centre" class="c-hawker-details__image"/>
+        <!-- ko template: {name: 'single-centre-modal', if: viewing} --><!-- /ko -->
+        <!-- ko template: {name: 'favourites-modal', if: route() == 'favourites'} --><!-- /ko -->
+        <script type="text/html" id="centre-list">
+            <div class="c-centre-list__content scrollbar-outer">
+                <h3 class="c-centre-list__title">Hawker Centres</h3>
+                <ul class="c-centre-list__list" data-bind="foreach: visibleMarkers">
+                    <li data-bind="click: function(){return $root.moreInfo(id)}" class="c-centre-list__list-item">
+                        <span class="c-centre-list__name" data-bind="text: name"></span>
+                        <div class="c-centre-list__ranks" data-bind="foreach: filteredRankings().filter(function(d){return d.rank <= 3})">
+                            <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-circle"></i>
                         </div>
-                        <h3 class="c-hawker-details__subtitle" data-bind="visible: rankings.length">Rankings</h3>
-                        <p class="c-hawker-details__ranking-filter">Showing dishes ranked <select data-bind="options: $root.rankFilterOptions, value: $root.inMoreInfoLimit, visible: rankings.length" class="c-input"></select> and higher</p>
-                        <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
-                            <li data-bind="visible: parseInt(rank) <= ($root.inMoreInfoLimit() || 5), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }">
-                                <span class="c-hawker-details__item-rank" data-bind="text: rank"></span>
-                                <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
-                            </li>
-                        </ul>
-                        <h3 class="c-hawker-details__subtitle" data-bind="visible: $root.dishFavList().length">My favourite for:</h3>
-                        <ul class="c-hawker-details__ranking-list" data-bind="foreach: $root.dishFavList">
-                            <li class="c-hawker-details__ranking-item">
-                                <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
-                            </li>
-                        </ul>
-                        <div data-bind="visible: !$root.foursquareErrorMsg(), html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></div>
+                    </li>
+                </ul>
+            </div>
+        </script>
+        <script type="text/html" id="app-error">
+            <div class="c-error--app" data-bind="html: appError(), visible: appError()"></div>
+        </script>
+        <script type="text/html" id="favourites-modal">
+            <div class="c-modal-container c-modal-container--overlay">
+                <div class="c-modal">
+                    <div class="c-modal__above">
+                        <i class="fa fa-times c-modal__close-btn" data-bind="click: exitFavourites"></i>
                     </div>
-                    <div class="c-hawker-details__right scrollbar-outer">
-                        <span class="c-foursquare__error" data-bind="text: $root.foursquareErrorMsg, visible: $root.foursquareErrorMsg"></span>
-                        <h3 data-bind="visible: !$root.foursquareErrorMsg()" class="c-foursquare__heading">Tips from Foursquare:</h3>
-                        <ul class="c-foursquare__list c-list" data-bind="foreach: $root.foursquareTips">
-                            <li class="c-foursquare__tip">
-                                <span class="c-foursquare__tip-body" data-bind="text: text"></span>
-                                <span class="c-foursquare__tip-likes" data-bind="html: '<i class=\'fa fa-thumbs-up\'></i> ' + likes.count"></span>
-                            </li>
-                        </ul>
+                    <div class="c-modal__main c-favourites">
+                        <div class="c-list" data-bind="template: 'favourite-template'"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="c-modal-container c-modal-container--overlay" data-bind="visible: route() == 'favourites'">
-            <div class="c-modal">
-                <div class="c-modal__above">
-                    <i class="fa fa-times c-modal__close-btn" data-bind="click: exitFavourites"></i>
-                </div>
-                <div class="c-modal__main c-favourites">
-                    <div class="c-list" data-bind="template: 'favourite-template'"></div>
+        </script>
+        <script type="text/html" id="single-centre-modal">
+            <div class="c-modal-container c-modal-container--overlay" data-bind="with: viewing">
+                <div class="c-modal c-modal--wide">
+                    <div class="c-modal__above">
+                        <i class="fa fa-times c-modal__close-btn" data-bind="click: $root.clearViewing"></i>
+                    </div>
+                    <div class="c-modal__main c-hawker-details">
+                        <div class="c-hawker-details__left scrollbar-outer">
+                            <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
+                            <span data-bind="text: streetno"></span> <span data-bind="text: streetname"></span> <span data-bind="text: postalcode"></span>
+                            <div data-bind="foreach: $root.foursquareImages().slice(0,5)">
+                                <img data-bind="attr: {src: prefix + '300x300' + suffix}" alt="Image of hawker centre" class="c-hawker-details__image"/>
+                            </div>
+                            <h3 class="c-hawker-details__subtitle" data-bind="visible: rankings.length">Rankings</h3>
+                            <p class="c-hawker-details__ranking-filter">Showing dishes ranked <select data-bind="options: $root.rankFilterOptions, value: $root.rankFilter, visible: rankings.length" class="c-input"></select> and higher</p>
+                            <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
+                                <li data-bind="visible: parseInt(rank) <= ($root.rankFilter() || 5), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }">
+                                    <span class="c-hawker-details__item-rank" data-bind="text: rank"></span>
+                                    <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
+                                </li>
+                            </ul>
+                            <h3 class="c-hawker-details__subtitle" data-bind="visible: $root.dishFavList().length">My favourite for:</h3>
+                            <ul class="c-hawker-details__ranking-list" data-bind="foreach: $root.dishFavList">
+                                <li class="c-hawker-details__ranking-item">
+                                    <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
+                                </li>
+                            </ul>
+                            <div data-bind="visible: !$root.foursquareErrorMsg(), html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></div>
+                        </div>
+                        <div class="c-hawker-details__right scrollbar-outer">
+                            <span class="c-foursquare__error" data-bind="text: $root.foursquareErrorMsg, visible: $root.foursquareErrorMsg"></span>
+                            <h3 data-bind="visible: !$root.foursquareErrorMsg()" class="c-foursquare__heading">Tips from Foursquare:</h3>
+                            <ul class="c-foursquare__list c-list" data-bind="foreach: $root.foursquareTips">
+                                <li class="c-foursquare__tip">
+                                    <span class="c-foursquare__tip-body" data-bind="text: text"></span>
+                                    <span class="c-foursquare__tip-likes" data-bind="html: '<i class=\'fa fa-thumbs-up\'></i> ' + likes.count"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-
+        </script>
         <script type="text/html" id="favourite-template">
             <div class="c-list__header">
                 <h2 class="c-favourites__heading">My Favourites</h2>
