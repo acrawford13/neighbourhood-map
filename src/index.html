@@ -48,7 +48,7 @@
                                 </ul>
                             </div>
                             <!-- /ko -->
-                            <span data-bind="click: $root.toggleCentreList" class="c-centre-list__button c-button">Open list view</span>
+                            <span data-bind="click: $root.toggleCentreList, text: $root.centreListVisible() ? 'Close' : 'Open list view'" class="c-centre-list__button c-button"></span>
                         </div>
                     </div>
                 </div>
