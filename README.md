@@ -1,5 +1,7 @@
 # Hawker
 
+[View the demo](http://andreacrawford.design/hawker)
+
 ## About this app
 This app displays information about hawker centres in Singapore, using data from [data.gov.sg](https://data.gov.sg/dataset/hawker-centres) and the [Foursquare API](https://developer.foursquare.com/docs).
 
@@ -10,8 +12,6 @@ Clicking on a marker opens up an information window with a short summary of the 
 There is also a list view of the visible markers in the bottom left of the screen.
 
 Note: There's currently no provision for users to log in and out, the app will run as though a user is already logged in and has selected some favourites.
-
-[View the demo](http://andreacrawford.design/hawker)
 
 ## Downloading & Running the app
 

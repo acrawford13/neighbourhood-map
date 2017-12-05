@@ -374,27 +374,27 @@ const ViewModel = function(){
 
         // message section: ranking
         if(self.filterRanking()){
-            ranking = 'a ranking of <span class="c-message-list__emphasis">' + self.filterRanking();
+            ranking = 'a ranking of <strong>' + self.filterRanking();
             ranking += self.filterRanking() == 1 ? '' : ' or higher';
-            ranking += '</span>';
+            ranking += '</strong>';
         } else {
-            ranking = '<span class="c-message-list__emphasis">any</span> ranking';
+            ranking = '<strong>any</strong> ranking';
         }
 
         // message section: dish
         if(self.dishSearch()){
             if(self.dishExists()){
-                category = ' in the category <span class="c-message-list__emphasis">' + self.dishExists() + '</span>';
+                category = ' in the category <strong>' + self.dishExists() + '</strong>';
             } else {
-                category = ' in categories containing <span class="c-message-list__emphasis">\'' + self.dishSearch() + '\'</span>';
+                category = ' in categories containing <strong>\'' + self.dishSearch() + '\'</strong>';
             }
         } else {
-            category = ' in <span class="c-message-list__emphasis">any</span> category';
+            category = ' in <strong>any</strong> category';
         }
 
         // construct message
         if(self.dishSearch() || self.filterRanking()){
-            return 'Showing <span class="c-message-list__emphasis">' +  self.visibleMarkers().length + '</span> result' + plural + ' with ' + ranking + category;
+            return 'Showing <strong>' +  self.visibleMarkers().length + '</strong> result' + plural + ' with ' + ranking + category;
         }
     });
 }
