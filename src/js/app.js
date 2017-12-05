@@ -267,6 +267,7 @@ var ViewModel = function(){
     this.exitFavourites = function(){
         self.route(null);
         self.favouriteSearch('');
+        self.favError('');
     };
 
     this.editFavourites = function(){
@@ -285,8 +286,8 @@ var ViewModel = function(){
             'url': 'http://andreacrawford.design/hawkerdb/deletevote',
             'method': 'post',
             'data' : {dish_id: item.dish_id, user_id: 1},
-            'success': function(data){
-                console.log('ducc');
+            'error':function(){
+                self.favError("Couldn't update your favourites. Please try again later.");
             }
         })
     };
@@ -348,16 +349,17 @@ var ViewModel = function(){
             }
         } else if (favourite.centre()){
             $.ajax({
-                'url':'http://andreacrawford.design/hawkerdb/votes',
+                'url':'http://andreadcrawford.design/hawkerdb/votes',
                 'method':'post',
                 'data':{
                     'dish_id': favourite.dish_id,
                     'user_id': 1,
                     'centre_id': favourite.centre().id,
                 },
-                'success':function(){console.log(favourite.centre())}
+                'error':function(){
+                    self.favError("Couldn't update your favourites. Please try again later.");
+                }
             });
-            console.log(self.userFavourites());
             self.editing(!self.editing);
         }
     };
