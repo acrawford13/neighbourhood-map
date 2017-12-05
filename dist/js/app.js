@@ -183,9 +183,10 @@ const ViewModel = function(){
     // select a marker on the map and close the centre list if it's open
     this.selectMarker = function(item){
         const content = self.makeInfoWindowContent(item);
+        self.showCentreList(false);
         self.infoWindow().setContent(content);
         self.infoWindow().open(map, item.marker);
-        self.showCentreList(false);
+        item.marker.setAnimation(google.maps.Animation.DROP);
     }
 
     // construct the content of the info window
