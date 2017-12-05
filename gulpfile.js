@@ -15,6 +15,8 @@ gulp.task('serve', ['css','html','js','img'], function() {
 gulp.task('css', function(){
     gulp.src('node_modules/jquery.scrollbar/jquery.scrollbar.css')
         .pipe(gulp.dest('dist/css/vendor/'));
+    gulp.src('node_modules/normalize.css/normalize.css')
+        .pipe(gulp.dest('dist/css/vendor/'));
     gulp.src('src/scss/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('dist/css'))
