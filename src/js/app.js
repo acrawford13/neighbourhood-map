@@ -73,6 +73,7 @@ var ViewModel = function(){
     }
 
     // app variables
+    this.loggedInUser = ko.observable(2);
     this.appError = ko.observable();
     this.loading = ko.observable(true);
     this.route = ko.observable();
@@ -235,7 +236,7 @@ var ViewModel = function(){
             'success': function(data){
                 self.makeCentresFromData(data);
                 $.ajax({
-                    'url': 'http://andreacrawford.design/hawkerdb/user/1',
+                    'url': 'http://andreacrawford.design/hawkerdb/user/' + self.loggedInUser(),
                     'success': function(data){
                         var tempFavs = [];
                         for(var i = 0; i<data.favourites.length; i++){
@@ -285,7 +286,7 @@ var ViewModel = function(){
         $.ajax({
             'url': 'http://andreacrawford.design/hawkerdb/deletevote',
             'method': 'post',
-            'data' : {dish_id: item.dish_id, user_id: 1},
+            'data' : {dish_id: item.dish_id, user_id: self.loggedInUser()},
             'error':function(){
                 self.favError("Couldn't update your favourites. Please try again later.");
             }
@@ -349,11 +350,11 @@ var ViewModel = function(){
             }
         } else if (favourite.centre()){
             $.ajax({
-                'url':'http://andreadcrawford.design/hawkerdb/votes',
+                'url':'http://andreacrawford.design/hawkerdb/votes',
                 'method':'post',
                 'data':{
                     'dish_id': favourite.dish_id,
-                    'user_id': 1,
+                    'user_id': self.loggedInUser(),
                     'centre_id': favourite.centre().id,
                 },
                 'error':function(){
