@@ -27,7 +27,6 @@
     "jquery": "^3.2.1",
     "jquery.scrollbar": "^0.2.11",
     "knockout": "^3.4.2",
-    "normalize.css": "^7.0.0",
-    "sammy": "^0.7.6"
+    "normalize.css": "^7.0.0"
   }
 }

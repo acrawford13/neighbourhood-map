@@ -36,8 +36,6 @@ gulp.task('js', function(){
         .pipe(gulp.dest('dist/js/vendor/'));
     gulp.src('node_modules/jquery.scrollbar/jquery.scrollbar.min.js')
         .pipe(gulp.dest('dist/js/vendor/'));
-    gulp.src('node_modules/sammy/lib/min/sammy-latest.min.js')
-        .pipe(gulp.dest('dist/js/vendor/'));
     gulp.src('src/js/**')
         .pipe(gulp.dest('dist/js/'))
 });
@@ -47,13 +45,13 @@ gulp.task('fonts', function(){
         .pipe(gulp.dest('dist/fonts/'))
 });
 
-gulp.task('build', ['html','js','css','fonts'], function(){
+gulp.task('build', ['html','img','js','css','fonts'], function(){
     gulp.src('node_modules/knockout/build/output/knockout-latest.js')
         .pipe(rename('knockout.js'))
         .pipe(gulp.dest('dist/js/vendor/'));
 });
 
-gulp.task('build:dev', ['html','js','css','fonts'], function(){
+gulp.task('build:dev', ['html','img','js','css','fonts'], function(){
     gulp.src('node_modules/knockout/build/output/knockout-latest.debug.js')
         .pipe(rename('knockout.js'))
         .pipe(gulp.dest('dist/js/vendor/'));
