@@ -453,6 +453,7 @@ main {
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        flex: 0 0 auto;
     }
 
     &__below {
