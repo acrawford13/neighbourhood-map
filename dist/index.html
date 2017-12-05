@@ -52,18 +52,20 @@
         <!-- ko template: {name: 'favourites-modal', if: showFavourites} --><!-- /ko -->
 
         <!-- TEMPLATES -->
+
         <!-- filter message -->
         <script type="text/html" id="filter-message">
             <div class="c-top-bar__container c-top-bar__message">
                 <span class="h-container c-message-list__message" data-bind="html: filterMessage"></span>
             </div>
         </script>
+
         <!-- list view of visible centres -->
         <script type="text/html" id="centre-list">
             <div class="c-centre-list__content scrollbar-outer">
                 <h3 class="c-centre-list__title">Hawker Centres</h3>
                 <ul class="c-centre-list__list" data-bind="foreach: visibleMarkers">
-                    <li data-bind="click: function(){return $root.showCentre(id)}" class="c-centre-list__list-item">
+                    <li data-bind="click: $root.selectMarker" class="c-centre-list__list-item">
                         <span class="c-centre-list__name" data-bind="text: name"></span>
                         <div class="c-centre-list__ranks" data-bind="foreach: filteredRankings().filter(function(d){return d.rank <= 3})">
                             <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-circle"></i>

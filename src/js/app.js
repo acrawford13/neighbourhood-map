@@ -180,40 +180,48 @@ const ViewModel = function(){
         marker.setVisible(visible);
     }
 
+    // select a marker on the map and close the centre list if it's open
+    this.selectMarker = function(item){
+        const content = self.makeInfoWindowContent(item);
+        self.infoWindow().setContent(content);
+        self.infoWindow().open(map, item.marker);
+        self.showCentreList(false);
+    }
+
+    // construct the content of the info window
+    this.makeInfoWindowContent = function(item){
+        let rankingHTML = '';
+        const rankings = item.filteredRankings.peek();
+        if(rankings.length > 0){
+            rankingHTML += '<hr/><p class="c-infowindow__text">';
+            for(let i = 0; i<rankings.length && i<3; i++){
+                rankingHTML += '<i class="fa fa-certificate c-ranking--' + rankings[i].rank + '"></i> <strong>#' + rankings[i].rank + '</strong> for ' + rankings[i].dish_name + '</br>';
+            };
+            if(rankings.length > 3){
+                rankingHTML += 'and '+ (rankings.length - 3) +' more&hellip;';
+            };
+            rankingHTML += '</p>';
+        }
+        return '<div id="info-window" data-bind="click: function(){showCentre(' + item.id + ')}" class="c-infowindow">' +
+                '<h4>' + item.name + '</h4>'+
+                rankingHTML +
+                '<span class="c-button c-button--small c-infowindow__button">See more</span>' +
+        '</div>';
+    }
+
     // update the contents of the info window based on the search filters
     this.updateInfoWindow = function(item){
-        // construct HTML content for the info window
-        const makeInfoWindowContent = function(item){
-            let rankingHTML = '';
-            const rankings = item.filteredRankings.peek();
-            if(rankings.length > 0){
-                rankingHTML += '<hr/><p class="c-infowindow__text">';
-                for(let i = 0; i<rankings.length && i<3; i++){
-                    rankingHTML += '<i class="fa fa-certificate c-ranking--' + rankings[i].rank + '"></i> <strong>#' + rankings[i].rank + '</strong> for ' + rankings[i].dish_name + '</br>';
-                };
-                if(rankings.length > 3){
-                    rankingHTML += 'and '+ (rankings.length - 3) +' more&hellip;';
-                };
-                rankingHTML += '</p>';
-            }
-            return '<div id="info-window" data-bind="click: function(){showCentre(' + item.id + ')}" class="c-infowindow">' +
-                    '<h4>' + item.name + '</h4>'+
-                    rankingHTML +
-                    '<span class="c-button c-button--small c-infowindow__button">See more</span>' +
-            '</div>';
-        }
+        const content = self.makeInfoWindowContent(item);
 
         // if the selected marker already has an infoWindow open,
         // update the information in the infoWindow
         if(item.marker.getPosition()==self.infoWindow().getPosition()){
-            const content = makeInfoWindowContent(item);
             self.infoWindow().setContent(content);
             self.infoWindow().open(map, item.marker);
         };
 
         // update the marker's click event listener with new infoWindow content
         item.marker.addListener('click', (function(thisItem){
-            const content = makeInfoWindowContent(thisItem);
             return function(){
                 thisItem.marker.setAnimation(google.maps.Animation.DROP);
                 self.infoWindow().setContent(content);
