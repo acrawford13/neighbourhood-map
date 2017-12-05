@@ -122,16 +122,19 @@ var ViewModel = function(){
             var rankingHTML = '';
             var rankings = item.filteredRankings.peek();
             if(rankings.length > 0){
-                rankingHTML += '<hr/>';
+                rankingHTML += '<hr/><p>';
                 for(var i = 0; i<rankings.length && i<3; i++){
                     rankingHTML += '<i class="fa fa-certificate c-ranking--' + rankings[i].rank + '"></i> <strong>#' + rankings[i].rank + '</strong> for ' + rankings[i].dish_name + '</br>';
                 };
                 if(rankings.length > 3){
-                    rankingHTML += 'And '+ (rankings.length - 3) +' more&hellip;';
+                    rankingHTML += 'and '+ (rankings.length - 3) +' more&hellip;';
                 };
+                rankingHTML += '</p>';
             }
-            return '<div id="info-window" data-bind="click: function(){showCentre(' + item.id + ')}" class="c-infowindow"><h4>' + item.name + '</h4>'+
-            rankingHTML +
+            return '<div id="info-window" data-bind="click: function(){showCentre(' + item.id + ')}" class="c-infowindow">' +
+                    '<h4>' + item.name + '</h4>'+
+                    rankingHTML +
+                    '<span class="c-button c-button--small c-infowindow__button">See more</span>' +
             '</div>';
         }
 
