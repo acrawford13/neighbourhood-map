@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Bungee');
 @import 'node_modules/font-awesome/scss/font-awesome.scss';
 @import 'node_modules/jquery.scrollbar/sass/jquery.scrollbar.scss';
+@fa-font-path: "/fonts/";
+
+// jquery.scrollbar overrides
 
 .scrollbar-outer > .scroll-element {
     background: transparent;
@@ -11,7 +14,43 @@
     margin-left: 20px;
 }
 
-@fa-font-path: "/fonts/";
+/*
+ *  desktop styles
+ *  ==================================
+ *  1: global variables
+ *  2: general styles
+ *  small components
+ *   - 3: buttons
+ *   - 4: errors
+ *   - 5: form fields
+ *   - 6: loading icon
+ *   - 7: rankings
+ *
+ *  bigger components
+ *   - 8: centre list
+ *   - 9: floating elements container
+ *   - 10: lists
+ *   - 11: map
+ *   - 12: modals
+ *   - 13: single centre view
+ *   - 14: top bar
+ *   - 15: user favourites
+ *
+ *  mobile styles
+ *  ==================================
+ *  1: buttons
+ *  2: modals
+ *  3: single centre view
+ *  4: top bar
+ *
+ *  tablet styles
+ *  ==================================
+ *  1: top bar
+ *
+ *
+ */
+
+// 1: global variables
 
 $primary-color: #ff2333;
 $title-color: #ff2333;
@@ -19,6 +58,18 @@ $display-font-stack: Bungee, Helvetica, Arial, sans-serif;
 $primary-font-stack: Roboto, Helvetica, Arial, sans-serif;
 $background-color: #f5f5f5;
 $container-radius: 3px;
+
+$top-bar-color: #333;
+
+$button-text: #fff;
+$button-color: $primary-color;
+$button-padding: .75rem 1rem;
+
+$gold: #cfb53b;
+$silver: #c0c0c0;
+$bronze: #a57164;
+
+// 2:general styles
 
 * {
     box-sizing: border-box;
@@ -37,10 +88,6 @@ ul {
     list-style-type: none;
 }
 
-header {
-    z-index: 100;
-}
-
 main {
      flex: auto;
      position: relative;
@@ -57,17 +104,21 @@ body {
     max-width: 950px;
 }
 
+// SMALL COMPONENTS
+
+// 3: buttons
+
 .c-button {
-    background-color: $primary-color;
-    color: white;
+    color: $button-text;
+    background-color: $button-color;
     text-decoration: none;
-    padding: 0.75rem 1rem;
+    padding: $button-padding;
     display: inline-block;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color .2s;
 
     &:hover {
-        background-color: darken($primary-color, 10);
+        background-color: darken($button-color, 10);
     }
 
     &--rounded {
@@ -91,59 +142,28 @@ body {
     }
 }
 
-.c-loading-icon {
-    width: 100px;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 100;
-}
+// 4: errors
 
-.c-infowindow {
-    hr {
-        border: none;
-        border-bottom: 0.5px solid #444;
-        height: 1px;
+.c-error {
+    &--favs {
+        text-align: center;
+        padding: 1rem;
     }
-    h4 {
-        margin: 0;
-    }
-}
 
-.c-ranking-list {
-    &__group-title {
-        color: $title-color;
-        display: block;
-        border-bottom: 0.5px solid $title-color;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
-        margin-top: 0.5rem;
+    &--app {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 105;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0,0,0,0.9);
+        padding: 1rem;
+        color: white;
     }
 }
 
-.c-ranking--1 {
-    color: #CFB53B;
-}
-
-.c-ranking--2 {
-    color: silver;
-}
-
-.c-ranking--3 {
-    color: #A57164;
-}
-
-.c-message-list {
-    &__message {
-    }
-
-    &__emphasis {
-        font-weight: bold;
-    }
-}
+// 5: form fields
 
 .c-input-group {
     display: flex;
@@ -163,13 +183,39 @@ body {
     background: transparent;
 }
 
-.c-floating-elements {
-    height: 100%;
-    width: 100%;
-    z-index: 101;
-    position: absolute;
-    pointer-events: none;
+// 6: loading icon
+
+.c-loading-icon {
+    width: 100px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
 }
+
+// 7: rankings
+
+[class*="c-ranking--"] {
+    color: darken($primary-color, 15);
+}
+
+.c-ranking {
+    &--1 {
+        color: $gold;
+    }
+    &--2 {
+        color: $silver;
+    }
+    &--3 {
+        color: $bronze;
+    }
+}
+
+
+// BIGGER COMPONENTS
+
+// 8: centre list
 
 .c-centre-list {
     position: absolute;
@@ -187,12 +233,12 @@ body {
     }
 
     &__title {
-        padding-left: 0.5rem;
+        padding-left: .5rem;
     }
 
     &__list-item {
-        padding: 0.5rem;
-        border-bottom: 0.5px solid #ddd;
+        padding: .5rem;
+        border-bottom: .5px solid #ddd;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
@@ -202,7 +248,7 @@ body {
         }
 
         &:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(0, 0, 0, .05);
         }
     }
 
@@ -237,76 +283,96 @@ body {
     }
 }
 
-.c-loading-screen {
+// 9: floating elements container
+
+.c-floating-elements {
+    height: 100%;
+    width: 100%;
+    z-index: 101;
     position: absolute;
-    z-index: 110;
-    background: yellow;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    pointer-events: none;
 }
 
-.c-top-bar {
-    width: 100%;
-    background-color: rgba(0,0,0,0.8);
+// 10: list
 
-    &__container {
+.c-list {
+    display: flex;
+    flex-direction: column;
+
+    &__header {
+        border-top-left-radius: $container-radius;
+        border-top-right-radius: $container-radius;
+        background-color: #eee;
         padding: 1rem;
+    }
+
+    &__main {
+        overflow-y: auto;
+    }
+
+    &__item {
+        border-top: 1px solid #ddd;
+    }
+}
+
+// 11: map
+
+.c-map {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.c-infowindow {
+    hr {
+        border: none;
+        border-bottom: 0.5px solid #444;
+        height: 1px;
+    }
+    h4 {
+        margin: 0;
+    }
+}
+
+// 12: modals
+
+.c-modal {
+    max-width: 600px;
+    min-width: 60%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &--wide {
+        max-width: 800px;
+    }
+
+    &__close-btn {
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+
+    &__main {
+        max-height: 100%;
+        background-color: $background-color;
+        border-radius: $container-radius;
+        flex: 1 1 auto;
+    }
+
+    &__above {
+        color: white;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-    }
-
-    &__search-container {
-        display: flex;
-        flex: 1 1 560px;
-    }
-
-    &__message {
-        font-weight: 300;
-        letter-spacing: 0.1px;
-        background-color: rgba(0,0,0,0.7);
-        color: white;
-        padding: 0.5rem 1rem;
-        width: 100%;
+        justify-content: flex-end;
         flex: 0 0 auto;
     }
 
-    &__search {
-        position: relative;
-        flex: auto;
-    }
-
-    ::placeholder {
+    &__below {
         color: white;
-    }
-
-    &__label {
-        color: white;
-    }
-
-    &__input {
-        padding: 0.5rem;
-        color: white;
-        margin-right: 1rem;
-
-        &--small {
-            width: 5rem;
-        }
-    }
-
-    &__title {
-        color: $title-color;
-        font-family: $display-font-stack;
-        text-transform: uppercase;
-        margin: 0;
-        margin-right: 2rem;
-    }
-
-    &__edit-favourites {
-        margin-left: 1rem;
-        flex: 0 0 auto;
+        margin-top: 1rem;
     }
 }
 
@@ -326,60 +392,7 @@ body {
     }
 }
 
-[class*="c-hawker-details__ranking-item--"] {
-    background-color: #eee;
-}
-
-.c-foursquare {
-    &__heading {
-        margin: 0;
-    }
-
-    &__error {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        text-align: center;
-        transform: translate(-50%, -50%);
-        color: grey;
-    }
-
-    &__tip {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 0.5px solid #ddd;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    &__tip-body {
-        flex: 1;
-    }
-
-    &__tip-likes {
-        color: blue;
-        margin-left: 1rem;
-    }
-}
-
-.c-error {
-
-    &--favs {
-        text-align: center;
-        padding: 1rem;
-    }
-    &--app {
-        text-align: center;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        z-index: 105;
-        transform: translate(-50%, -50%);
-        background-color: rgba(0,0,0,0.9);
-        padding: 1rem;
-        color: white;
-    }
-}
+// 13: single centre view
 
 .c-hawker-details {
     display: flex;
@@ -401,7 +414,6 @@ body {
         margin: 1rem;
         margin-right: 0.5rem;
         width: 50%;
-        // overflow-y: auto;
     }
 
     &__title {
@@ -432,6 +444,10 @@ body {
     &__ranking-list {
         display: flex;
         flex-wrap: wrap;
+    }
+
+    [class*="c-hawker-details__ranking-item--"] {
+        background-color: #eee;
     }
 
     &__ranking-item {
@@ -474,73 +490,110 @@ body {
     }
 }
 
-.c-modal {
-    max-width: 600px;
-    min-width: 60%;
+// 13: single centre view: foursquare tips
+
+.c-foursquare {
+    &__heading {
+        margin: 0;
+    }
+
+    &__error {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        color: grey;
+    }
+
+    &__tip {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 0.5px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__tip-body {
+        flex: 1;
+    }
+
+    &__tip-likes {
+        color: blue;
+        margin-left: 1rem;
+    }
+}
+
+// 14: top bar
+
+header {
+    z-index: 100;
+}
+
+.c-top-bar {
     width: 100%;
-    display: flex;
-    flex-direction: column;
+    background-color: $top-bar-color;
 
-    &--wide {
-        max-width: 800px;
+    &__title {
+        color: $title-color;
+        font-family: $display-font-stack;
+        text-transform: uppercase;
+        margin: 0;
+        margin-right: 2rem;
     }
 
-    &__close-btn {
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0.5rem;
-    }
-
-    &__main {
-        max-height: 100%;
-        background-color: $background-color;
-        border-radius: $container-radius;
-        flex: 1 1 auto;
-    }
-
-    &__above {
-        color: white;
+    &__container {
+        padding: 1rem;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-between;
+    }
+
+    &__search-container {
+        display: flex;
+        flex: 1 1 560px;
+    }
+
+    &__message {
+        font-weight: 300;
+        letter-spacing: 0.1px;
+        background-color: rgba($top-bar-color, 0.9);
+        color: #fff;
+        padding: 0.5rem 1rem;
+        width: 100%;
         flex: 0 0 auto;
     }
 
-    &__below {
+    &__search {
+        position: relative;
+        flex: auto;
+    }
+
+    ::placeholder {
         color: white;
-        margin-top: 1rem;
     }
 
-}
-
-.c-list {
-    display: flex;
-    flex-direction: column;
-
-    &__header {
-        border-top-left-radius: $container-radius;
-        border-top-right-radius: $container-radius;
-        background-color: #eee;
-        padding: 1rem;
+    &__label {
+        color: white;
     }
 
-    &__main {
-        overflow-y: auto;
+    &__input {
+        padding: 0.5rem;
+        color: white;
+        margin-right: 1rem;
+
+        &--small {
+            width: 5rem;
+        }
     }
 
-    &__item {
-        border-top: 1px solid #ddd;
-    }
-
-}
-
-.c-category__item {
-    cursor: pointer;
-
-    &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+    &__edit-favourites {
+        margin-left: 1rem;
+        flex: 0 0 auto;
     }
 }
+
+// 15: user favourites
 
 .c-favourites {
     display: flex;
@@ -654,35 +707,18 @@ body {
     }
 }
 
-.c-map {
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-}
-
-@media screen and (max-width: 360px){
-}
-
 @media screen and (max-width: 640px){
+
+    // 1: buttons
     .c-button {
         font-size: 0.9rem;
     }
 
+    // 2: modals
     .c-modal-container {
         padding: 0;
     }
 
-    .c-top-bar {
-        &__title {
-            margin-right: 0;
-        }
-
-        &__edit-favourites {
-            margin-left: 0;
-        }
-    }
     .c-modal {
         &__above {
             background-color: darken($primary-color, 10);
@@ -693,11 +729,9 @@ body {
         }
     }
 
+    // 3: single centre view
     .c-hawker-details {
         overflow-y: auto;
-    }
-
-    .c-hawker-details {
         flex-direction: column;
         padding: 1rem;
         flex: 1 0 auto;
@@ -720,6 +754,17 @@ body {
             top: 0;
         }
     }
+
+    // 4: top bar
+    .c-top-bar {
+        &__title {
+            margin-right: 0;
+        }
+
+        &__edit-favourites {
+            margin-left: 0;
+        }
+    }
 }
 
 @media screen and (max-width: 950px){
@@ -728,9 +773,7 @@ body {
             flex-wrap: wrap;
             align-items: flex-start;
         }
-    }
 
-    .c-top-bar {
         &__title {
             order: -2;
             margin-bottom: 1rem;
@@ -741,58 +784,3 @@ body {
         }
     }
 }
-
-// @media screen and (min-width: 360px) {
-//
-//     .c-favourite {
-//         &__actions {
-//             flex-basis: 8rem;
-//         }
-//     }
-//
-//     .c-top-bar {
-//         &__container {
-//         }
-//     }
-// }
-//
-//
-// @media screen and (min-width: 540px) {
-//     .c-modal-container {
-//         padding: 2rem;
-//
-//         &--overlay {
-//             background-color: rgba(0,0,0,.6);
-//         }
-//     }
-//
-//     .c-modal {
-//         &__main {
-//             border-radius: $container-radius;
-//         }
-//     }
-//
-//     .c-top-bar {
-//
-//         #tb-edit-favourites {
-//             order: 1;
-//         }
-//
-//         &__search {
-//             margin-left: 3rem;
-//         }
-//
-//         &__title {
-//             align-items: center;
-//             margin-bottom: 0;
-//         }
-//     }
-//
-// }
-//
-// @media screen and (min-width: 950px) {
-//     .c-top-bar {
-//         padding-left: 0;
-//         padding-right: 0;
-//     }
-// }
