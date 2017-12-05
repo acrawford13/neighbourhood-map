@@ -7,14 +7,14 @@
         <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
-        <section class="c-section">
-            <main class="c-main">
+            <header class="c-header">
                 <div class="c-top-bar">
                     <div class="c-top-bar__container h-container">
                         <h1 class="c-top-bar__title">Hawker</h1>
+                        <!-- top bar search/filters -->
                         <div class="c-top-bar__search-container">
                             <div class="c-input-group c-top-bar__search">
-                                <input id="dish-search" placeholder="Search for your favourite dishes" list="dish-search-list" class="c-input c-top-bar__input" type="text" data-bind="textInput: generalSearch" />
+                                <input id="dish-search" placeholder="Search for your favourite dishes" list="dish-search-list" class="c-input c-top-bar__input" type="text" data-bind="textInput: dishSearch" />
                                 <datalist id="dish-search-list" data-bind="foreach: $root.dishes">
                                     <option data-bind="value: $data"/>
                                 </datalist>
@@ -25,35 +25,43 @@
                                 <label class="c-input-group__label c-top-bar__label" for="rankingFilter">Ranking Filter</label>
                             </div>
                         </div>
-                        <span id="tb-edit-favourites" data-bind="click: editFavourites" class="c-top-bar__edit-favourites c-button--grey c-button">View/edit favourites</span>
+                        <!-- view/edit favourites button -->
+                        <span id="tb-edit-favourites" data-bind="click: openFavourites" class="c-top-bar__edit-favourites c-button--grey c-button">View/edit favourites</span>
                     </div>
                 </div>
-            </main>
+            </header>
             <img data-bind="visible: loading()" class="c-loading-icon" id="centres-loading-icon" src="img/Ripple.svg" alt="loading..."/>
-
             <!-- ko template: {name: 'app-error', if: appError} --><!-- /ko -->
-            <div style="flex: auto; position: relative">
+            <main>
                 <div class="c-floating-elements" style="display: flex; flex-direction: column">
-                    <div data-bind="visible: filterMessage" class="c-top-bar__container c-top-bar__message">
-                        <span class="h-container c-message-list__message" data-bind="html: filterMessage"></span>
-                    </div>
+                    <!-- ko template: {name: 'filter-message', if: filterMessage} --><!-- /ko -->
                     <div style="flex: auto; position: relative">
                         <div class="c-centre-list">
-                            <!-- ko template: {name: 'centre-list', if: centreListVisible() && (visibleMarkers().length > 0)} --><!-- /ko -->
-                            <span data-bind="click: $root.toggleCentreList, text: $root.centreListVisible() ? 'Close' : 'Open list view'" class="c-centre-list__button c-button">Open list view</span>
+                            <!-- centre list -->
+                            <!-- ko template: {name: 'centre-list', if: showCentreList() && (visibleMarkers().length > 0)} --><!-- /ko -->
+                            <!-- centre list open/close button -->
+                            <span data-bind="click: $root.toggleCentreList, text: $root.showCentreList() ? 'Close' : 'Open list view'" class="c-centre-list__button c-button">Open list view</span>
                         </div>
                     </div>
                 </div>
                 <div id="map" class="c-map"></div>
-            </div>
-        </section>
+            </main>
         <!-- ko template: {name: 'single-centre-modal', if: viewing} --><!-- /ko -->
-        <!-- ko template: {name: 'favourites-modal', if: route() == 'favourites'} --><!-- /ko -->
+        <!-- ko template: {name: 'favourites-modal', if: showFavourites} --><!-- /ko -->
+
+        <!-- TEMPLATES -->
+        <!-- filter message -->
+        <script type="text/html" id="filter-message">
+            <div class="c-top-bar__container c-top-bar__message">
+                <span class="h-container c-message-list__message" data-bind="html: filterMessage"></span>
+            </div>
+        </script>
+        <!-- list view of visible centres -->
         <script type="text/html" id="centre-list">
             <div class="c-centre-list__content scrollbar-outer">
                 <h3 class="c-centre-list__title">Hawker Centres</h3>
                 <ul class="c-centre-list__list" data-bind="foreach: visibleMarkers">
-                    <li data-bind="click: function(){return $root.moreInfo(id)}" class="c-centre-list__list-item">
+                    <li data-bind="click: function(){return $root.showCentre(id)}" class="c-centre-list__list-item">
                         <span class="c-centre-list__name" data-bind="text: name"></span>
                         <div class="c-centre-list__ranks" data-bind="foreach: filteredRankings().filter(function(d){return d.rank <= 3})">
                             <i data-bind="{css: 'c-ranking--' + rank}" class="fa fa-circle"></i>
@@ -62,35 +70,89 @@
                 </ul>
             </div>
         </script>
+
+        <!-- app error popup -->
         <script type="text/html" id="app-error">
             <div class="c-error--app" data-bind="html: appError(), visible: appError()"></div>
         </script>
+
+        <!-- user favourites modal -->
         <script type="text/html" id="favourites-modal">
             <div class="c-modal-container c-modal-container--overlay">
                 <div class="c-modal">
                     <div class="c-modal__above">
-                        <i class="fa fa-times c-modal__close-btn" data-bind="click: exitFavourites"></i>
+                        <i class="fa fa-times c-modal__close-btn" data-bind="click: closeFavourites"></i>
                     </div>
                     <div class="c-modal__main c-favourites">
-                        <div class="c-list" data-bind="template: 'favourite-template'"></div>
+                        <div class="c-list">
+                            <div class="c-list__header">
+                                <h2 class="c-favourites__heading">My Favourites</h2>
+                                <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
+                            </div>
+                            <div class="c-error--favs" data-bind="html: favError(), visible: favError()"></div>
+                            <div class="c-list__main scrollbar-outer" data-bind="foreach: filteredFavourites">
+                                <div data-bind="template: {if: centre(), name: 'favourite-item-defined'}"></div>
+                                <div data-bind="template: {if: !centre(), name: 'favourite-item-undefined'}"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </script>
+
+        <!-- user favourite item - defined -->
+        <script type="text/html" id="favourite-item-defined">
+            <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--defined': $data.centre(), 'c-favourite--editing': $data == $root.editing()}">
+                <div class="c-favourite__details">
+                    <span data-bind="text: dish_name" class="c-favourite__category"></span>
+                    <span class="c-favourite__choice">
+                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centres, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $root.editing()"></select>
+                        <span data-bind="click: function(){console.log($data.centre().id); $root.showCentre($data.centre().id)}, text: $data.centre().name, visible: $data != $root.editing()" class="c-favourite__centre-name"></span>
+                    </span>
+                </div>
+                <div class="c-favourite__actions">
+                    <a data-bind="click: $root.toggleEditing" class="c-favourite__action c-favourite__action--edit" href="#"><i data-bind="css: {'fa-pencil': $data != $root.editing(), 'fa-check': $data == $root.editing()}"class="fa"></i></a>
+                    <a data-bind="click: $root.deleteFavourite" class="c-favourite__action c-favourite__action--delete" href="#"><i class="fa fa-trash-o"></i></a>
+                </div>
+            </div>
+        </script>
+
+        <!-- user favourite item - undefined -->
+        <script type="text/html" id="favourite-item-undefined">
+            <div class="c-list__item c-favourite" data-bind="click: $root.toggleEditing, css: {'c-favourite--editing': $data == $root.editing()}">
+                <div class="c-favourite__details">
+                    <span data-bind="text: dish_name" class="c-favourite__category"></span>
+                    <span class="c-favourite__choice">
+                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centres, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $root.editing()"></select>
+                        <span data-bind="visible: $data != $root.editing()" class="c-favourite__placeholder">Add a favourite</span>
+                    </span>
+                </div>
+                <div class="c-favourite__actions">
+                    <a class="c-favourite__action c-favourite__action--edit" href="#"><i data-bind="css: {'fa-plus': $data != $root.editing(), 'fa-check': $data == $root.editing()}"class="fa"></i></a>
+                </div>
+            </div>
+        </script>
+
+        <!-- single hawker centre modal -->
         <script type="text/html" id="single-centre-modal">
             <div class="c-modal-container c-modal-container--overlay" data-bind="with: viewing">
                 <div class="c-modal c-modal--wide">
+                    <!-- close button -->
                     <div class="c-modal__above">
                         <i class="fa fa-times c-modal__close-btn" data-bind="click: $root.clearViewing"></i>
                     </div>
+                    <!-- main content -->
                     <div class="c-modal__main c-hawker-details">
+                        <!-- left column -->
                         <div class="c-hawker-details__left scrollbar-outer">
                             <h2 class="c-hawker-details__title" data-bind="text: name"></h2>
                             <span data-bind="text: streetno"></span> <span data-bind="text: streetname"></span> <span data-bind="text: postalcode"></span>
                             <div data-bind="foreach: $root.foursquareImages().slice(0,5)">
                                 <img data-bind="attr: {src: prefix + '300x300' + suffix}" alt="Image of hawker centre" class="c-hawker-details__image"/>
                             </div>
-                            <h3 class="c-hawker-details__subtitle" data-bind="visible: rankings.length">Rankings</h3>
+                            <!-- rankings for this centre -->
+                            <!-- ko if: rankings.length -->
+                            <h3 class="c-hawker-details__subtitle">Rankings</h3>
                             <p class="c-hawker-details__ranking-filter">Showing dishes ranked <select data-bind="options: $root.rankFilterOptions, value: $root.rankFilter, visible: rankings.length" class="c-input"></select> and higher</p>
                             <ul class="c-hawker-details__ranking-list" data-bind="foreach: rankings">
                                 <li data-bind="visible: parseInt(rank) <= ($root.rankFilter() || 5), attr: { class: 'c-hawker-details__ranking-item c-hawker-details__ranking-item--' + rank }">
@@ -98,6 +160,8 @@
                                     <span class="c-hawker-details__item-name" data-bind="text: dish_name"></span>
                                 </li>
                             </ul>
+                            <!-- /ko -->
+                            <!-- user favourites from this centre -->
                             <h3 class="c-hawker-details__subtitle" data-bind="visible: $root.dishFavList().length">My favourite for:</h3>
                             <ul class="c-hawker-details__ranking-list" data-bind="foreach: $root.dishFavList">
                                 <li class="c-hawker-details__ranking-item">
@@ -106,6 +170,7 @@
                             </ul>
                             <div data-bind="visible: !$root.foursquareErrorMsg(), html: '<a class=\'c-button\' target=\'_blank\' href=\'' + $root.foursquareUrl() + '\'>View on Foursquare</a>'"></div>
                         </div>
+                        <!-- right column - foursquare tips -->
                         <div class="c-hawker-details__right scrollbar-outer">
                             <span class="c-foursquare__error" data-bind="text: $root.foursquareErrorMsg, visible: $root.foursquareErrorMsg"></span>
                             <h3 data-bind="visible: !$root.foursquareErrorMsg()" class="c-foursquare__heading">Tips from Foursquare:</h3>
@@ -117,46 +182,6 @@
                             </ul>
                         </div>
                     </div>
-                </div>
-            </div>
-        </script>
-        <script type="text/html" id="favourite-template">
-            <div class="c-list__header">
-                <h2 class="c-favourites__heading">My Favourites</h2>
-                <input placeholder="Search" class="c-favourites__search" type="text" data-bind="textInput: favouriteSearch" />
-            </div>
-            <div class="c-error--favs" data-bind="html: favError(), visible: favError()"></div>
-            <div class="c-list__main scrollbar-outer" data-bind="foreach: favouritesList">
-                <div data-bind="template: {if: centre(), name: 'favourite-item-defined'}"></div>
-                <div data-bind="template: {if: !centre(), name: 'favourite-item-undefined'}"></div>
-            </div>
-        </script>
-        <script type="text/html" id="favourite-item-defined">
-            <div class="c-list__item c-favourite" data-bind="css: {'c-favourite--defined': $data.centre(), 'c-favourite--editing': $data == $parent.editing()}">
-                <div class="c-favourite__details">
-                    <span data-bind="text: dish_name" class="c-favourite__category"></span>
-                    <span class="c-favourite__choice">
-                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centres, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
-                        <span data-bind="click: function(){console.log($data.centre().id); $root.moreInfo($data.centre().id)}, text: $data.centre().name, visible: $data != $parent.editing()" class="c-favourite__centre-name"></span>
-                    </span>
-                </div>
-                <div class="c-favourite__actions">
-                    <a data-bind="click: $parent.toggleEditing" class="c-favourite__action c-favourite__action--edit" href="#"><i data-bind="css: {'fa-pencil': $data != $parent.editing(), 'fa-check': $data == $parent.editing()}"class="fa"></i></a>
-                    <a data-bind="click: $parent.deleteItem" class="c-favourite__action c-favourite__action--delete" href="#"><i class="fa fa-trash-o"></i></a>
-                </div>
-            </div>
-        </script>
-        <script type="text/html" id="favourite-item-undefined">
-            <div class="c-list__item c-favourite" data-bind="click: $parent.toggleEditing, css: {'c-favourite--editing': $data == $parent.editing()}">
-                <div class="c-favourite__details">
-                    <span data-bind="text: dish_name" class="c-favourite__category"></span>
-                    <span class="c-favourite__choice">
-                        <select class="c-favourite__select" data-bind="optionsCaption: 'Select a hawker centre...', options: $root.centres, optionsText: 'name', valueAllowUnset: true, value: centre, visible: $data == $parent.editing()"></select>
-                        <span data-bind="visible: $data != $parent.editing()" class="c-favourite__placeholder">Add a favourite</span>
-                    </span>
-                </div>
-                <div class="c-favourite__actions">
-                    <a class="c-favourite__action c-favourite__action--edit" href="#"><i data-bind="css: {'fa-plus': $data != $parent.editing(), 'fa-check': $data == $parent.editing()}"class="fa"></i></a>
                 </div>
             </div>
         </script>

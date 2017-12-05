@@ -1,7 +1,7 @@
 var Favourite = function(data){
     this.dish_id = data.dish_id,
     this.dish_name = data.dish_name;
-    this.centre = ko.observable(data.centre).extend({notify: 'always'})
+    this.centre = ko.observable(data.centre);
 }
 
 var Centre = function(data){
@@ -22,10 +22,36 @@ var ViewModel = function(){
     var self = this;
 
     // user favourite variables
+    this.showFavourites = ko.observable(false);
     this.favouriteSearch = ko.observable();
     this.userFavourites = ko.observableArray([]);
-    this.favouritesList = ko.observableArray([]);
+    this.filteredFavourites = ko.observableArray([]);
+    this.editing = ko.observable();
     this.favError = ko.observable();
+
+    // user favourite functions
+    this.openFavourites = function(){
+        self.showFavourites(true);
+        $('.scrollbar-outer').scrollbar();
+    }
+
+    this.closeFavourites = function(){
+        self.showFavourites(false);
+        self.favouriteSearch('');
+        self.favError('');
+    }
+
+    this.deleteFavourite = function(item){
+        item.centre(undefined);
+        $.ajax({
+            'url': 'http://andreacrawford.design/hawkerdb/deletevote',
+            'method': 'post',
+            'data' : {dish_id: item.dish_id, user_id: self.loggedInUser()},
+            'error':function(){
+                self.favError("Couldn't update your favourites. Please try again later.");
+            }
+        })
+    };
 
     // map variables
     this.infoWindow = ko.observable(new google.maps.InfoWindow({}));
@@ -44,12 +70,13 @@ var ViewModel = function(){
     };
 
     // single hawker centre view
+    this.viewing = ko.observable();
     this.rankFilter = ko.observable(5);
+    this.rankFilterOptions = [3, 5, 10, 20];
     this.foursquareTips = ko.observableArray([]);
     this.foursquareImages = ko.observableArray([]);
     this.foursquareUrl = ko.observable();
     this.foursquareErrorMsg = ko.observable();
-    this.rankFilterOptions = [3, 5, 10, 20];
 
     this.dishFavList = ko.pureComputed(function(){
         return self.userFavourites().filter(function(d){
@@ -58,36 +85,26 @@ var ViewModel = function(){
     })
 
     // top bar
-    this.generalSearch = ko.observable();
+    this.dishSearch = ko.observable();
     this.filterRanking = ko.observable();
+    this.dishes = ko.observableArray([]);
     this.dishExists = ko.pureComputed(function(){
-        var searchTerm = self.generalSearch() ? self.generalSearch().toLowerCase() : '';
+        var searchTerm = self.dishSearch() ? self.dishSearch().toLowerCase() : '';
         return self.dishes()[$.inArray(searchTerm, self.dishes().map(function(d){return d.toLowerCase()}))];
     });
 
     // list view
-    this.centreListVisible = ko.observable(false);
+    this.showCentreList = ko.observable(false);
     this.toggleCentreList = function(){
-        self.centreListVisible(!self.centreListVisible());
+        self.showCentreList(!self.showCentreList());
         $('.scrollbar-outer').scrollbar();
     }
 
     // app variables
-    this.loggedInUser = ko.observable(2);
+    this.loggedInUser = ko.observable(1);
+    this.centres = ko.observableArray([]);
     this.appError = ko.observable();
     this.loading = ko.observable(true);
-    this.route = ko.observable();
-    this.viewing = ko.observable();
-    this.editing = ko.observable();
-    this.adding = ko.observable();
-    this.centres = ko.observableArray([]);
-    this.dishes = ko.pureComputed(function(){
-        var tempDishes = [].concat.apply([],self.centres().map(function(d){return d.rankings.map(function(e){return e.dish_name;})}))
-        tempDishes = $.grep(tempDishes, function(d, i){
-            return $.inArray(d, tempDishes) === i;
-        }).sort();
-        return tempDishes;
-    });
 
     // map functions
     this.setIcon = function(marker, rank, visible){
@@ -113,7 +130,7 @@ var ViewModel = function(){
                     rankingHTML += 'And '+ (rankings.length - 3) +' more&hellip;';
                 };
             }
-            return '<div id="info-window" data-bind="click: function(){moreInfo(' + item.id + ')}" class="c-infowindow"><h4>' + item.name + '</h4>'+
+            return '<div id="info-window" data-bind="click: function(){showCentre(' + item.id + ')}" class="c-infowindow"><h4>' + item.name + '</h4>'+
             rankingHTML +
             '</div>';
         }
@@ -131,7 +148,6 @@ var ViewModel = function(){
             var content = makeInfoWindowContent(thisItem);
             return function(){
                 thisItem.marker.setAnimation(google.maps.Animation.DROP);
-                self.changeViewing(thisItem.id);
                 self.infoWindow().setContent(content);
                 self.infoWindow().open(map, thisItem.marker);
                 ko.applyBindings(self, document.getElementById('info-window'));
@@ -140,39 +156,20 @@ var ViewModel = function(){
     }
 
     this.visibleMarkers = ko.computed(function(){
-        var searchTerm = new RegExp(self.generalSearch(), 'i');
+        var searchTerm = new RegExp(self.dishSearch(), 'i');
         var filterRanking = parseInt(self.filterRanking());
+
         return self.centres().filter(function(d){
-            var rank = d.rankings.filter(function(e){
+            d.filteredRankings(d.rankings.filter(function(e){
                 var dishMatch = e.dish_name.match(searchTerm) ? true : false;
                 var rankMatch = filterRanking ? parseInt(e.rank) <= filterRanking : true;
                 return dishMatch && rankMatch;
-            });
-            d.filteredRankings(rank);
-            if((!self.generalSearch() && !self.filterRanking()) || d.filteredRankings.peek().length){
+            }));
+
+            if((!self.dishSearch() && !self.filterRanking()) || d.filteredRankings.peek().length){
                 return true;
             }
         });
-    });
-
-    this.dishRankings = ko.pureComputed(function(){
-        var dishRankings = [];
-        if(self.dishExists()){
-            self.visibleMarkers().forEach(function(d){
-                var rank = d.filteredRankings.peek()[0].rank;
-                if(dishRankings[rank]){
-                    dishRankings[rank].push(d);
-                } else {
-                    dishRankings[rank] = [d]
-                }
-            })
-        }
-        dishRankings.forEach(function(d){
-            d.sort(function(a, b){
-                return a.name.localeCompare(b.name);
-            })
-        });
-        return dishRankings;
     });
 
     this.clearMap = function(){
@@ -227,17 +224,23 @@ var ViewModel = function(){
         tempArray.sort(function(a, b){
             return a.name.localeCompare(b.name);
         });
+
         self.centres(tempArray);
     }
 
     this.init = function(){
         $.ajax({
+            // get hawker centre data
             'url': 'http://andreacrawford.design/hawkerdb/centres',
             'success': function(data){
+                // populate the centres array
                 self.makeCentresFromData(data);
+
                 $.ajax({
+                    // get user favourites data
                     'url': 'http://andreacrawford.design/hawkerdb/user/' + self.loggedInUser(),
                     'success': function(data){
+                        // populate the userFavourites array
                         var tempFavs = [];
                         for(var i = 0; i<data.favourites.length; i++){
                             var item = data.favourites[i];
@@ -247,6 +250,7 @@ var ViewModel = function(){
                                 'dish_name': item.dish_name})
                             );
                         }
+                        self.dishes(tempFavs.map(function(d){return d.dish_name}));
                         self.userFavourites(tempFavs);
                     },
                     'error': function(){
@@ -263,36 +267,6 @@ var ViewModel = function(){
         })
     };
 
-
-
-    this.exitFavourites = function(){
-        self.route(null);
-        self.favouriteSearch('');
-        self.favError('');
-    };
-
-    this.editFavourites = function(){
-        this.route('favourites');
-        $('.scrollbar-outer').scrollbar();
-    };
-
-    this.cancelAdd = function(){
-        self.adding(null);
-    };
-
-    this.deleteItem = function(item){
-        self.adding(null);
-        item.centre(undefined);
-        $.ajax({
-            'url': 'http://andreacrawford.design/hawkerdb/deletevote',
-            'method': 'post',
-            'data' : {dish_id: item.dish_id, user_id: self.loggedInUser()},
-            'error':function(){
-                self.favError("Couldn't update your favourites. Please try again later.");
-            }
-        })
-    };
-
     this.foursquare = function(){
         var item = self.viewing();
         if(item.foursquare_id){
@@ -301,7 +275,7 @@ var ViewModel = function(){
                 'data': {
                     client_id:"2MC5VARD1M4I2N1ODQ0TFPLR1UNG2OSZPXGG5FVJK1P4NCGT",
                     client_secret:"RTYLP5PAYEWFBWS02LM2U4MMUARWJLIPA3LAGQBUFMPHGMB5",
-                    v:"20170801"
+                    v:"20171205"
                 },
                 'success':function(d){
                     self.foursquareTips(d.response.venue.tips.groups[0].items);
@@ -315,20 +289,13 @@ var ViewModel = function(){
         }
     }
 
-    this.moreInfo = function(id){
+    this.showCentre = function(id){
         var item = $.grep(self.centres(), function(e){return e.id == id})[0]
         self.viewing(item);
-        self.route(null);
-        self.centreListVisible(false);
+        self.showFavourites(false);
+        self.showCentreList(false);
         self.foursquare();
         $('.scrollbar-outer').scrollbar();
-    };
-
-    this.changeViewing = function(id){
-        var item = $.grep(self.centres(), function(e){return e.id == id})[0]
-        if(self.viewing()){
-            self.viewing(item);
-        }
     };
 
     this.clearViewing = function(){
@@ -337,17 +304,9 @@ var ViewModel = function(){
         self.foursquareImages([]);
     };
 
-    this.categoryTemplate = function(category){
-        return self.adding() && category.name == self.adding().category() ? 'adding-item' : 'category-item';
-    };
-
     this.toggleEditing = function(favourite){
         if (!self.editing()){
-            if (self.editing() == favourite){
-                    self.editing(false);
-            } else {
-                self.editing(favourite);
-            }
+            self.editing(favourite);
         } else if (favourite.centre()){
             $.ajax({
                 'url':'http://andreacrawford.design/hawkerdb/votes',
@@ -365,14 +324,17 @@ var ViewModel = function(){
         }
     };
 
+    // function to filter favourites list based on search
+    this.filterFavourites = ko.computed(function(){
+        var searchTerm = new RegExp(self.favouriteSearch(), 'i');
 
-    this.searchResults = ko.computed(function(){
-        var searchTerm = new RegExp(self.favouriteSearch(), 'ig');
+        // show user favourites with dish or centre matching search term
         var list = self.userFavourites().filter(function(d){
             var centreMatch = d.centre() ? d.centre().name.match(searchTerm) : false;
             var dishMatch = d.dish_name.match(searchTerm) ;
             return dishMatch || centreMatch;
         }).sort(function(a, b){
+            // sort by whether a centre is set, then by dish name
             if(typeof(a.centre()) == typeof(b.centre())){
                 return a.dish_name.localeCompare(b.dish_name);
             } else if(a.centre()) {
@@ -381,23 +343,19 @@ var ViewModel = function(){
                 return 1;
             }
         });
+
+        // re-sort favourites list after the user has finished editing
         if(!self.editing()){
-            self.favouritesList(list);
+            self.filteredFavourites(list);
         }
     });
 
-    this.filterMessage = ko.computed(function(){
+    // message that displays below the top bar
+    this.filterMessage = ko.pureComputed(function(){
         var plural = self.visibleMarkers().length == 1 ? '' : 's';
         var category, ranking;
-        if(self.generalSearch()){
-            if(self.dishExists()){
-                category = ' in the category <span class="c-message-list__emphasis">' + self.dishExists() + '</span>';
-            } else {
-                category = ' in categories containing <span class="c-message-list__emphasis">\'' + self.generalSearch() + '\'</span>';
-            }
-        } else {
-            category = ' in <span class="c-message-list__emphasis">any</span> category';
-        }
+
+        // message section: ranking
         if(self.filterRanking()){
             ranking = "a ranking of <span class='c-message-list__emphasis'>" + self.filterRanking();
             ranking += self.filterRanking() == 1 ? '' : ' or higher';
@@ -405,7 +363,20 @@ var ViewModel = function(){
         } else {
             ranking = "<span class='c-message-list__emphasis'>any</span> ranking";
         }
-        if(self.generalSearch() || self.filterRanking()){
+
+        // message section: dish
+        if(self.dishSearch()){
+            if(self.dishExists()){
+                category = ' in the category <span class="c-message-list__emphasis">' + self.dishExists() + '</span>';
+            } else {
+                category = ' in categories containing <span class="c-message-list__emphasis">\'' + self.dishSearch() + '\'</span>';
+            }
+        } else {
+            category = ' in <span class="c-message-list__emphasis">any</span> category';
+        }
+
+        // construct message
+        if(self.dishSearch() || self.filterRanking()){
             return "Showing <span class='c-message-list__emphasis'>" +  self.visibleMarkers().length + "</span> result" + plural + " with " + ranking + category;
         }
     });

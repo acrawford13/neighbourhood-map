@@ -2,13 +2,16 @@
 @import 'modules/helpers';
 @import 'node_modules/font-awesome/scss/font-awesome.scss';
 @import 'node_modules/jquery.scrollbar/sass/jquery.scrollbar.scss';
+
 .scrollbar-outer > .scroll-element {
     background: transparent;
 }
+
 .scrollbar-outer > .scroll-content.scroll-scrolly_visible {
     left: -20px;
     margin-left: 20px;
 }
+
 @fa-font-path: "/fonts/";
 
 $primary-color: #ff2333;
@@ -28,13 +31,6 @@ body {
     margin: 0;
     padding: 0;
     font-family: $primary-font-stack;
-    // overflow: hidden;
-}
-
-.c-section {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
 ul {
@@ -42,8 +38,18 @@ ul {
     list-style-type: none;
 }
 
-main {
+header {
     z-index: 100;
+}
+
+main {
+     flex: auto;
+     position: relative;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
 }
 
 .c-button {
