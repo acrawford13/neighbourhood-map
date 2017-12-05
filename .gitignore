@@ -1,6 +1,5 @@
 node_modules
 firebase_functions
-dist
 test
 
 *.md
