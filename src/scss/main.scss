@@ -6,12 +6,26 @@
 // jquery.scrollbar overrides
 
 .scrollbar-outer > .scroll-element {
-    background: transparent;
+    background: #f5f5f5;
 }
 
 .scrollbar-outer > .scroll-content.scroll-scrolly_visible {
     left: -20px;
     margin-left: 20px;
+}
+
+.scrollbar-outer > .scroll-element.scroll-y {
+    border-left: 8px solid #f5f5f5;
+}
+
+.scrollbar--white {
+    .scroll-element.scroll-y {
+        border-left: 8px solid #fff;
+    }
+
+    .scroll-element {
+        background: #fff;
+    }
 }
 
 /*
@@ -303,6 +317,8 @@ body {
 .c-list {
     display: flex;
     flex-direction: column;
+    flex: 0 1 auto;
+    min-height: 0;
 
     &__header {
         border-top-left-radius: $container-radius;
@@ -611,6 +627,8 @@ header {
 .c-favourites {
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    flex: 0 1 auto;
 
     &__heading {
         margin-top: 0;
