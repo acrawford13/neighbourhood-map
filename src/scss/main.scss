@@ -145,6 +145,13 @@ main {
     }
 }
 
+.c-input {
+    font-family: $primary-font-stack;
+    border: none;
+    border-bottom: 0.5px solid #bbb;
+    background: transparent;
+}
+
 .c-floating-elements {
     height: 100%;
     width: 100%;
@@ -254,12 +261,8 @@ main {
     }
 
     &__input {
-        font-family: $primary-font-stack;
         padding: 0.5rem;
-        border: none;
-        border-bottom: 0.5px solid #bbb;
         color: white;
-        background: transparent;
         margin-right: 1rem;
 
         &--small {
