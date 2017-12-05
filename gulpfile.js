@@ -3,7 +3,7 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var browserSync = require('browser-sync').create();
 
-gulp.task('serve', ['css','html','js','img'], function() {
+gulp.task('serve', ['build:dev'], function() {
     browserSync.init({
         server: "dist"
     });
@@ -34,6 +34,8 @@ gulp.task('img', function(){
 });
 
 gulp.task('js', function(){
+    gulp.src('node_modules/jquery/dist/jquery.min.js')
+        .pipe(gulp.dest('dist/js/vendor/'));
     gulp.src('node_modules/jquery/dist/jquery.min.js')
         .pipe(gulp.dest('dist/js/vendor/'));
     gulp.src('node_modules/jquery.scrollbar/jquery.scrollbar.min.js')
