@@ -25,6 +25,7 @@ var ViewModel = function(){
     this.favouriteSearch = ko.observable();
     this.userFavourites = ko.observableArray([]);
     this.favouritesList = ko.observableArray([]);
+    this.favError = ko.observable();
 
     // map variables
     this.infoWindow = ko.observable(new google.maps.InfoWindow({}));
@@ -72,7 +73,9 @@ var ViewModel = function(){
     }
 
     // app variables
-    this.route = ko.observable(null);
+    this.appError = ko.observable();
+    this.loading = ko.observable(true);
+    this.route = ko.observable();
     this.viewing = ko.observable();
     this.editing = ko.observable();
     this.adding = ko.observable();
@@ -244,9 +247,17 @@ var ViewModel = function(){
                             );
                         }
                         self.userFavourites(tempFavs);
+                    },
+                    'error': function(){
+                        self.loading(false);
+                        self.favError("Couldn't load your favourites.<br>Please try again later.");
                     }
                 })
-                $('#centres-loading-icon').hide();
+                self.loading(false);
+            },
+            'error': function(){
+                self.loading(false);
+                self.appError("Couldn't load hawker centre data.<br>Please try again later.");
             }
         })
     };
@@ -396,9 +407,3 @@ var ViewModel = function(){
         }
     });
 }
-
-$(document).ready(function(){
-    // ko.options.deferUpdates = true;
-
-
-})
