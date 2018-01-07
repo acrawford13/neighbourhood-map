@@ -153,10 +153,10 @@ body {
     }
 
     &--dark {
-        background-color: darken($primary-color, 10);
+        background-color: darken($primary-color, 15);
 
         &:hover {
-            background-color: darken($primary-color, 15);
+            background-color: darken($primary-color, 20);
         }
     }
 }

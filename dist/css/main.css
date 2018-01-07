@@ -3186,9 +3186,9 @@ body {
     .c-button--grey:hover {
       background-color: #373737; }
   .c-button--dark {
-    background-color: #ef0011; }
+    background-color: #d60010; }
     .c-button--dark:hover {
-      background-color: #d60010; }
+      background-color: #bc000e; }
 
 .c-error--favs {
   text-align: center;
